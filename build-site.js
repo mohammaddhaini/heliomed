@@ -25,7 +25,7 @@ const PUBLIC_FILES = [
   "navbar-categories.js",
   "order-confirmation.html",
   "productdetail.html",
-  "product-url.js",
+  "products-cache.js",
   "responsive.css",
   "search.html",
   "track-order.html",
