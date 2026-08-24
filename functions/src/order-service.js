@@ -22,11 +22,87 @@ function dollars(value) {
     return value / 100;
 }
 
+const CHECKOUT_THROTTLE_MS = 60 * 1000;
+const MAX_OPEN_ORDERS_PER_USER = 3;
+const TERMINAL_STATUSES = new Set(["Delivered / paid", "Cancelled"]);
+
 function medicineSnapshots(snapshots, refs) {
     return new Map(snapshots.map((snapshot, index) => [
         refs[index].id,
         snapshot.exists ? { id: refs[index].id, ...snapshot.data() } : null
     ]));
+}
+
+function orderMedicineId(item) {
+    return String(item.productId || item.id || "").split(":")[0];
+}
+
+function orderVariantKeys(item) {
+    const encoded = String(item.id || "").includes(":") ? String(item.id).split(":").slice(1).join(":") : "";
+    return [
+        item.variantSku,
+        item.variantKey,
+        item.variantName,
+        encoded
+    ].map((value) => String(value || "").trim()).filter(Boolean);
+}
+
+function normalizeVariant(value, index) {
+    if (typeof value === "string") {
+        return { index, raw: { name: value }, name: value.trim(), sku: "", inventory: 0 };
+    }
+    const raw = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    return {
+        index,
+        raw,
+        name: String(raw.name ?? raw.title ?? raw.size ?? raw.label ?? "").trim(),
+        sku: String(raw.sku ?? "").trim(),
+        inventory: Number(raw.inventory ?? 0)
+    };
+}
+
+function findVariant(variants, keys) {
+    const exact = variants.find((variant) => keys.includes(variant.sku) || keys.includes(variant.name));
+    if (exact) return exact;
+    const normalizedKeys = new Set(keys.map((key) => key.toLowerCase()));
+    return variants.find((variant) => normalizedKeys.has(variant.sku.toLowerCase()) || normalizedKeys.has(variant.name.toLowerCase()));
+}
+
+function restoredMedicineUpdate(medicine, orderItems) {
+    const variants = Array.isArray(medicine.variants) ? medicine.variants.map(normalizeVariant) : [];
+    if (variants.length) {
+        const nextVariants = variants.map((variant) => ({ ...variant.raw }));
+        for (const item of orderItems) {
+            const variant = findVariant(variants, orderVariantKeys(item));
+            if (!variant) throw new CheckoutError("failed-precondition", "Ordered variant is no longer available for restock.");
+            const currentInventory = Number.isInteger(variant.inventory) ? variant.inventory : 0;
+            const nextInventory = currentInventory + Number(item.quantity || 0);
+            nextVariants[variant.index] = {
+                ...nextVariants[variant.index],
+                inventory: nextInventory,
+                available: nextInventory > 0
+            };
+            variant.inventory = nextInventory;
+        }
+        const inventory = nextVariants.reduce((sum, variant) => sum + Math.max(0, Number(variant.inventory || 0)), 0);
+        return {
+            inventory,
+            available: inventory > 0,
+            variants: nextVariants
+        };
+    }
+
+    const quantity = orderItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+    const inventory = Math.max(0, Number(medicine.inventory || 0)) + quantity;
+    return {
+        inventory,
+        available: inventory > 0
+    };
+}
+
+function openOrderCount(throttle) {
+    const count = Number(throttle?.openOrderCount ?? 0);
+    return Number.isInteger(count) && count > 0 ? count : 0;
 }
 
 function canonicalOrder({ auth, checkout, priced, orderId, createdAt }) {
@@ -61,9 +137,10 @@ export async function createOrder({ db, auth: authValue, data, now, makeOrderId 
     const checkout = parseCheckoutInput(data);
     const fingerprint = fingerprintCheckout(auth.uid, checkout);
     const idempotencyRef = db.collection("orderIdempotency").doc(idempotencyId(auth.uid, checkout.idempotencyKey));
+    const throttleRef = db.collection("checkoutThrottle").doc(auth.uid);
 
     return db.runTransaction(async (transaction) => {
-        const idempotencySnapshot = await transaction.get(idempotencyRef);
+        const [idempotencySnapshot, throttleSnapshot] = await transaction.getAll(idempotencyRef, throttleRef);
         if (idempotencySnapshot.exists) {
             const replay = idempotencySnapshot.data();
             if (replay.userId !== auth.uid || replay.fingerprint !== fingerprint) {
@@ -72,6 +149,21 @@ export async function createOrder({ db, auth: authValue, data, now, makeOrderId 
             const orderSnapshot = await transaction.get(db.collection("orders").doc(replay.orderId));
             if (!orderSnapshot.exists) throw new CheckoutError("internal", "The original order is unavailable.");
             return orderSnapshot.data();
+        }
+
+        const throttle = throttleSnapshot.exists ? throttleSnapshot.data() : null;
+        const throttleTime = Date.parse(String(throttle?.lastCreatedAt ?? ""));
+        const createdAt = now().toISOString();
+        const currentOpenOrders = openOrderCount(throttle);
+        if (Number.isFinite(throttleTime) && Date.parse(createdAt) - throttleTime < CHECKOUT_THROTTLE_MS) {
+            if (throttle?.fingerprint === fingerprint && throttle?.orderId) {
+                const orderSnapshot = await transaction.get(db.collection("orders").doc(throttle.orderId));
+                if (orderSnapshot.exists) return orderSnapshot.data();
+            }
+            throw new CheckoutError("resource-exhausted", "Please wait before placing another order.");
+        }
+        if (currentOpenOrders >= MAX_OPEN_ORDERS_PER_USER) {
+            throw new CheckoutError("resource-exhausted", "You have too many open orders. Please wait for one to finish before placing another.");
         }
 
         const medicineIds = [...new Set(checkout.items.map((item) => item.medicineId))];
@@ -85,16 +177,17 @@ export async function createOrder({ db, auth: authValue, data, now, makeOrderId 
         const discountSnapshot = discountRef ? snapshots.at(-1) : null;
         const discount = discountSnapshot?.exists ? discountSnapshot.data() : null;
         const priced = priceCheckout({ checkout, medicines, discount });
-        const createdAt = now().toISOString();
         const order = canonicalOrder({ auth, checkout, priced, orderId: makeOrderId(), createdAt });
         const medicineRefById = new Map(medicineRefs.map((ref) => [ref.id, ref]));
 
         for (const update of priced.inventoryUpdates) {
-            transaction.update(medicineRefById.get(update.medicineId), {
+            const fields = {
                 inventory: update.remaining,
-                available: update.remaining > 0,
+                available: update.available,
                 updatedAt: createdAt
-            });
+            };
+            if (update.variants) fields.variants = update.variants;
+            transaction.update(medicineRefById.get(update.medicineId), fields);
         }
         transaction.create(db.collection("orders").doc(order.id), order);
         transaction.create(idempotencyRef, {
@@ -103,6 +196,18 @@ export async function createOrder({ db, auth: authValue, data, now, makeOrderId 
             orderId: order.id,
             createdAt
         });
+        const throttleRecord = {
+            userId: auth.uid,
+            fingerprint,
+            orderId: order.id,
+            lastCreatedAt: createdAt,
+            openOrderCount: currentOpenOrders + 1
+        };
+        if (throttleSnapshot.exists) {
+            transaction.update(throttleRef, throttleRecord);
+        } else {
+            transaction.create(throttleRef, throttleRecord);
+        }
         return order;
     });
 }
@@ -122,7 +227,48 @@ export async function updateOrderStatus({ db, auth: authValue, data, now }) {
             || (emailSnapshot.exists && emailSnapshot.data().active !== false);
         if (!authorized) throw new CheckoutError("permission-denied", "Administrator access is required.");
         if (!orderSnapshot.exists) throw new CheckoutError("not-found", "Order not found.");
-        transaction.update(orderRef, { status: update.status, updatedAt: now().toISOString() });
+        const order = orderSnapshot.data();
+        const oldStatus = String(order.status ?? "");
+        const wasTerminal = TERMINAL_STATUSES.has(oldStatus);
+        const willBeTerminal = TERMINAL_STATUSES.has(update.status);
+        if (wasTerminal && update.status !== oldStatus) {
+            throw new CheckoutError("failed-precondition", "Terminal orders cannot be reopened.");
+        }
+        const updatedAt = now().toISOString();
+        if (update.status === "Cancelled" && oldStatus !== "Cancelled") {
+            const items = Array.isArray(order.items) ? order.items : [];
+            const medicineIds = [...new Set(items.map(orderMedicineId).filter(Boolean))];
+            const medicineRefs = medicineIds.map((id) => db.collection("medicines").doc(id));
+            const medicineSnapshots = medicineRefs.length ? await transaction.getAll(...medicineRefs) : [];
+            const itemsByMedicine = new Map();
+            for (const item of items) {
+                const medicineId = orderMedicineId(item);
+                if (!medicineId) continue;
+                itemsByMedicine.set(medicineId, [...(itemsByMedicine.get(medicineId) ?? []), item]);
+            }
+            for (const [index, ref] of medicineRefs.entries()) {
+                const snapshot = medicineSnapshots[index];
+                if (!snapshot.exists) throw new CheckoutError("failed-precondition", "Ordered medicine is no longer available for restock.");
+                transaction.update(ref, {
+                    ...restoredMedicineUpdate(snapshot.data(), itemsByMedicine.get(ref.id) ?? []),
+                    updatedAt
+                });
+            }
+        }
+        if (willBeTerminal && !wasTerminal) {
+            const orderUserId = String(order.userId || "").trim();
+            if (orderUserId) {
+                const throttleRef = db.collection("checkoutThrottle").doc(orderUserId);
+                const throttleSnapshot = await transaction.get(throttleRef);
+                if (throttleSnapshot.exists) {
+                    transaction.update(throttleRef, {
+                        openOrderCount: Math.max(0, openOrderCount(throttleSnapshot.data()) - 1),
+                        updatedAt
+                    });
+                }
+            }
+        }
+        transaction.update(orderRef, { status: update.status, updatedAt });
         return update;
     });
 }

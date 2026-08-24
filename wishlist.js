@@ -77,7 +77,7 @@
             oldPrice: product.oldPrice,
             newPrice: product.newPrice,
             price: product.newPriceValue,
-            url: "./productdetail.html?product=" + encodeURIComponent(product.id)
+            url: window.HeliomedProductUrls.productPath(product)
         });
     }
 

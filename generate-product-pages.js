@@ -27,6 +27,7 @@ const fs = require("fs");
 const path = require("path");
 const { cert, initializeApp } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
+const { productSlug } = require("./product-url.js");
 
 // ---------------------------------------------------------------------------
 // CONFIG — edit these
@@ -65,28 +66,6 @@ const db = getFirestore();
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-function slugify(str) {
-  return String(str || "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80) || "product";
-}
-
-function productSlug(product) {
-  const idPart = String(product.id || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-  if (!idPart) {
-    throw new Error("Cannot generate a stable product slug without a document ID.");
-  }
-
-  return `${slugify(product.title)}-${idPart}`;
-}
-
 function isAvailable(product) {
   if (product.available === false) return false;
 
@@ -128,6 +107,14 @@ function metaDescription(product) {
 
 function priceValue(product) {
   return Number(product.newPriceValue ?? 0) || Number(product.oldPriceValue ?? 0) || undefined;
+}
+
+function replaceRequired(html, pattern, replacement, label) {
+  if (!pattern.test(html)) {
+    throw new Error(`Product template is missing required ${label}.`);
+  }
+
+  return html.replace(pattern, replacement);
 }
 
 // ---------------------------------------------------------------------------
@@ -176,15 +163,19 @@ function buildProductHtml(template, product, slug) {
   let html = template;
 
   // 1. Title
-  html = html.replace(
+  html = replaceRequired(
+    html,
     /<title>.*?<\/title>/s,
-    `<title>${escapeHtml(title)}</title>`
+    `<title>${escapeHtml(title)}</title>`,
+    "<title> tag"
   );
 
   // 2. Meta description
-  html = html.replace(
+  html = replaceRequired(
+    html,
     /<meta name="description" content=".*?">/s,
-    `<meta name="description" content="${escapeAttr(description)}">`
+    `<meta name="description" content="${escapeAttr(description)}">`,
+    "meta description tag"
   );
 
   // 3. Inject canonical + OG tags + JSON-LD + noscript fallback right after <title>
@@ -199,13 +190,15 @@ function buildProductHtml(template, product, slug) {
     <script type="application/ld+json">${jsonForInlineScript(jsonLd)}</script>
     <script>window.__PRERENDERED_PRODUCT_ID__ = ${jsonForInlineScript(product.id)};</script>
 `;
-  html = html.replace(/<title>/, `${headExtras}\n    <title>`);
+  html = replaceRequired(html, /<title>/, `${headExtras}\n    <title>`, "<title> insertion point");
 
   // 4. Keep the Firestore-backed content visible in the initial document.
   //    The client removes this block after it renders the interactive layout.
-  html = html.replace(
+  html = replaceRequired(
+    html,
     /<body([^>]*)>/,
-    `<body$1>\n    <main id="ssg-fallback" style="max-width:1200px;margin:40px auto;padding:24px">${prerenderedBlock}</main>`
+    `<body$1>\n    <main id="ssg-fallback" style="max-width:1200px;margin:40px auto;padding:24px">${prerenderedBlock}</main>`,
+    "<body> tag"
   );
 
   return html;

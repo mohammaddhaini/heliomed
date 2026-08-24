@@ -631,6 +631,7 @@
     </main>
 
     <script src="./cart.js"></script>
+    <script src="./product-url.js"></script>
     <script src="./wishlist.js"></script>
     <script type="module">
         import { db } from "./firebase-init.js";
@@ -895,7 +896,7 @@
             emptyState.classList.toggle("visible", items.length === 0);
             loadMore.classList.toggle("visible", items.length > shown);
             productGrid.innerHTML = visible.map(function (product) {
-                const detailUrl = "./productdetail.html?product=" + encodeURIComponent(product.id);
+                const detailUrl = window.HeliomedProductUrls.productPath(product);
                 const showPrice = productHasVisiblePrice(product);
                 return '<article class="product-card">' +
                     '<a class="product-image" href="' + detailUrl + '">' +
@@ -970,7 +971,7 @@
                 oldPrice: product.oldPrice,
                 newPrice: product.newPrice,
                 price: product.newPriceValue,
-                url: "./productdetail.html?product=" + encodeURIComponent(product.id)
+                url: window.HeliomedProductUrls.productPath(product)
             };
             if (addButton) {
                 window.HeliomedCart.addItem(item, 1);

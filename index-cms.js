@@ -339,7 +339,7 @@ function initHomepageSearchPredictions() {
         rebuildIndex();
         const predictions = getPredictions();
         predictionPanel.innerHTML = predictions.map(product => {
-            const productUrl = product.id ? `./productdetail.html?product=${encodeURIComponent(product.id)}` : "#";
+            const productUrl = product.id ? window.HeliomedProductUrls.productPath(product) : "#";
             const metaParts = [
                 escapeHtml(product.brand || "Heliomed"),
                 productHasVisiblePrice(product) ? `<span class="home-search-predict-price">${escapeHtml(product.newPrice)}</span>` : ""
@@ -786,7 +786,7 @@ function renderConcernMasonry(sec) {
 }
 
 function renderProductCard(product, includeTrustBadge) {
-    const productUrl = product.id ? `./productdetail.html?product=${encodeURIComponent(product.id)}` : "#";
+    const productUrl = product.id ? window.HeliomedProductUrls.productPath(product) : "#";
     const isWishlisted = Boolean(window.HeliomedWishlist && window.HeliomedWishlist.hasItem(product.id));
     const showPrice = productHasVisiblePrice(product);
     return `
@@ -1008,7 +1008,7 @@ function initCartDelegation() {
                 oldPrice: product.oldPrice,
                 newPrice: product.newPrice,
                 price: product.newPriceValue,
-                url: `./productdetail.html?product=${encodeURIComponent(product.id)}`
+                url: window.HeliomedProductUrls.productPath(product)
             } : (card && window.HeliomedCart?.itemFromCard(card));
 
             if (item && window.HeliomedCart) {
@@ -1042,7 +1042,7 @@ function initCartDelegation() {
                 oldPrice: product.oldPrice,
                 newPrice: product.newPrice,
                 price: product.newPriceValue,
-                url: `./productdetail.html?product=${encodeURIComponent(product.id)}`
+                url: window.HeliomedProductUrls.productPath(product)
             } : (card && window.HeliomedCart?.itemFromCard(card));
 
             if (item && window.HeliomedWishlist) {

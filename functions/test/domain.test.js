@@ -36,7 +36,28 @@ const medicines = new Map([
         newPriceValue: 12.34,
         oldPriceValue: 14,
         inventory: 10,
-        available: true
+        available: true,
+        variants: [
+            {
+                name: "Small",
+                sku: "PR-S",
+                newPriceValue: 10,
+                newPrice: "$10.00",
+                oldPrice: "$12.00",
+                inventory: 6,
+                available: true,
+                imageUrl: "https://example.test/pain-relief-small.jpg"
+            },
+            {
+                name: "Large",
+                sku: "PR-L",
+                newPriceValue: 14,
+                newPrice: "$14.00",
+                oldPrice: "$16.00",
+                inventory: 4,
+                available: true
+            }
+        ]
     }]
 ]);
 
@@ -78,9 +99,12 @@ describe("parseCheckoutInput", () => {
 });
 
 describe("priceCheckout", () => {
-    it("uses medicine prices and base inventory for variant cart IDs", () => {
+    it("uses variant prices and inventory for variant cart IDs", () => {
         // Given
-        const checkout = parseCheckoutInput(validCheckout());
+        const checkout = parseCheckoutInput({
+            ...validCheckout(),
+            items: [{ id: "pain-relief:PR-L", quantity: 2 }]
+        });
         const discount = { code: "SAVE10", active: true, type: "percent", value: 10 };
 
         // When
@@ -88,23 +112,41 @@ describe("priceCheckout", () => {
 
         // Then
         assert.deepEqual(priced.moneyCents, {
-            subtotal: 2468,
-            discountAmount: 247,
+            subtotal: 2800,
+            discountAmount: 280,
             delivery: 300,
-            total: 2521
+            total: 2820
         });
-        assert.equal(priced.items[0].price, 12.34);
+        assert.equal(priced.items[0].price, 14);
         assert.equal(priced.items[0].title, "Pain Relief - Large");
+        assert.equal(priced.items[0].variantSku, "PR-L");
+        assert.equal(priced.items[0].url, "./product/pain-relief-pain-relief/");
+        assert.equal(priced.inventoryUpdates[0].remaining, 8);
+        assert.equal(priced.inventoryUpdates[0].variants[1].inventory, 2);
     });
 
-    it("aggregates variants against base medicine inventory", () => {
+    it("aggregates quantities against the selected variant inventory", () => {
         // Given
         const checkout = parseCheckoutInput({
             ...validCheckout(),
             items: [
-                { id: "pain-relief:Small", quantity: 6 },
-                { id: "pain-relief:Large", quantity: 5 }
+                { id: "pain-relief:PR-L", quantity: 3 },
+                { id: "pain-relief:Large", quantity: 2 }
             ]
+        });
+
+        // When / Then
+        assert.throws(
+            () => priceCheckout({ checkout, medicines, discount: null }),
+            (error) => error instanceof CheckoutError && error.code === "failed-precondition"
+        );
+    });
+
+    it("rejects missing variant IDs for products with stored variants", () => {
+        // Given
+        const checkout = parseCheckoutInput({
+            ...validCheckout(),
+            items: [{ id: "pain-relief", quantity: 1 }]
         });
 
         // When / Then
@@ -116,6 +158,9 @@ describe("priceCheckout", () => {
 
     it("applies free delivery at the authoritative threshold", () => {
         // Given
+        const baseMedicines = new Map([
+            ["pain-relief", { ...medicines.get("pain-relief"), variants: [] }]
+        ]);
         const checkout = parseCheckoutInput({
             ...validCheckout(),
             items: [{ id: "pain-relief", quantity: 7 }],
@@ -123,7 +168,7 @@ describe("priceCheckout", () => {
         });
 
         // When
-        const priced = priceCheckout({ checkout, medicines, discount: null });
+        const priced = priceCheckout({ checkout, medicines: baseMedicines, discount: null });
 
         // Then
         assert.equal(priced.moneyCents.subtotal, 8638);

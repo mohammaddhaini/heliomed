@@ -1,11 +1,12 @@
 import { randomBytes } from "node:crypto";
 
 import { initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import * as functionsLogger from "firebase-functions/logger";
 import { defineSecret } from "firebase-functions/params";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
+import { onSchedule } from "firebase-functions/v2/scheduler";
 
 import { medicineWriteOperation, requestPagesDeploy } from "./deploy-hook.js";
 import { CheckoutError } from "./domain.js";
@@ -13,6 +14,12 @@ import {
     createOrder as createOrderTransaction,
     updateOrderStatus as updateOrderStatusTransaction
 } from "./order-service.js";
+import {
+    markProductBuildDirty,
+    PRODUCT_BUILD_STATE_PATH,
+    rebuildDirtyProducts
+} from "./rebuild-service.js";
+import { submitProductReview as submitProductReviewTransaction } from "./review-service.js";
 
 initializeApp();
 
@@ -25,13 +32,22 @@ const callableOptions = {
     maxInstances: 20
 };
 
-const productRebuildOptions = {
+const productDirtyOptions = {
     document: "medicines/{id}",
     region: "europe-west1",
     timeoutSeconds: 30,
     memory: "256MiB",
     maxInstances: 3,
-    retry: false,
+    retry: true
+};
+
+const productRebuildOptions = {
+    schedule: "every 1 minutes",
+    region: "europe-west1",
+    timeZone: "Asia/Beirut",
+    timeoutSeconds: 30,
+    memory: "256MiB",
+    maxInstances: 1,
     secrets: [cloudflareDeployHook]
 };
 
@@ -75,14 +91,39 @@ export const updateOrderStatus = onCall(callableOptions, async (request) => {
     }
 });
 
-export const rebuildProductPages = onDocumentWritten(productRebuildOptions, async (event) => {
+export const submitProductReview = onCall(callableOptions, async (request) => {
+    try {
+        return await submitProductReviewTransaction({
+            db,
+            auth: request.auth,
+            data: request.data,
+            now: () => new Date()
+        });
+    } catch (error) {
+        throw callableError(error);
+    }
+});
+
+export const markProductPagesDirty = onDocumentWritten(productDirtyOptions, async (event) => {
     const operation = medicineWriteOperation(event.data);
 
-    await requestPagesDeploy({
-        hookUrl: cloudflareDeployHook.value(),
+    await markProductBuildDirty({
+        stateRef: db.doc(PRODUCT_BUILD_STATE_PATH),
         eventId: event.id,
         documentId: event.params.id,
         operation,
-        logger: functionsLogger
+        increment: FieldValue.increment,
+        timestamp: FieldValue.serverTimestamp
+    });
+});
+
+export const rebuildProductPages = onSchedule(productRebuildOptions, async () => {
+    await rebuildDirtyProducts({
+        db,
+        stateRef: db.doc(PRODUCT_BUILD_STATE_PATH),
+        hookUrl: cloudflareDeployHook.value(),
+        requestDeploy: requestPagesDeploy,
+        logger: functionsLogger,
+        timestamp: FieldValue.serverTimestamp
     });
 });

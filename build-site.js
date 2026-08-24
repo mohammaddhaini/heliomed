@@ -25,6 +25,7 @@ const PUBLIC_FILES = [
   "navbar-categories.js",
   "order-confirmation.html",
   "productdetail.html",
+  "product-url.js",
   "responsive.css",
   "search.html",
   "track-order.html",
@@ -90,4 +91,3 @@ try {
   console.error(error instanceof Error ? error.message : error);
   process.exit(1);
 }
-

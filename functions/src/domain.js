@@ -140,6 +140,87 @@ function medicinePrice(medicine) {
     return cents(match ? match[0] : Number.NaN, "Medicine price");
 }
 
+function slugify(value) {
+    return String(value || "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 80) || "product";
+}
+
+function productPath({ id, title }) {
+    const idPart = String(id || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    if (!idPart) fail("invalid-argument", "Medicine id is required.");
+    return `./product/${slugify(title)}-${idPart}/`;
+}
+
+function priceFrom(source, fallback, field) {
+    if (source?.newPriceValue !== undefined && source.newPriceValue !== null && source.newPriceValue !== "") {
+        const value = Number(source.newPriceValue);
+        if (Number.isFinite(value) && value > 0) return cents(value, field);
+    }
+    const match = String(source?.newPrice ?? "").match(/[0-9]+(?:\.[0-9]+)?/);
+    return match ? cents(match[0], field) : fallback;
+}
+
+function normalizedVariant(value, index) {
+    if (typeof value === "string") {
+        return {
+            index,
+            raw: { name: value },
+            name: value.trim(),
+            sku: "",
+            available: true,
+            inventory: 0,
+            oldPrice: "",
+            newPrice: "",
+            oldPriceValue: 0,
+            newPriceValue: 0,
+            imageUrl: ""
+        };
+    }
+    const raw = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    const name = String(raw.name ?? raw.title ?? raw.size ?? raw.label ?? "").trim();
+    return {
+        index,
+        raw,
+        name,
+        sku: String(raw.sku ?? "").trim(),
+        available: raw.available !== false,
+        inventory: Number(raw.inventory ?? 0),
+        oldPrice: String(raw.oldPrice ?? ""),
+        newPrice: String(raw.newPrice ?? ""),
+        oldPriceValue: Number(raw.oldPriceValue ?? 0),
+        newPriceValue: Number(raw.newPriceValue ?? 0),
+        imageUrl: String(raw.imageUrl ?? "")
+    };
+}
+
+function normalizedVariants(medicine) {
+    return Array.isArray(medicine.variants)
+        ? medicine.variants.map(normalizedVariant)
+        : [];
+}
+
+function resolveVariant(item, variants) {
+    if (!variants.length) return null;
+    const requested = item.variant.trim();
+    if (!requested && variants.length === 1 && variants[0].name === "Standard" && !variants[0].sku) {
+        return variants[0];
+    }
+    if (!requested) fail("failed-precondition", "Select an available option.");
+    const exact = variants.find((variant) => variant.sku === requested || variant.name === requested);
+    if (exact) return exact;
+    const requestedKey = requested.toLowerCase();
+    const loose = variants.find((variant) => variant.sku.toLowerCase() === requestedKey || variant.name.toLowerCase() === requestedKey);
+    if (loose) return loose;
+    fail("failed-precondition", "Selected option is unavailable.");
+}
+
 function normalizedDiscount(discount, requestedCode, subtotal) {
     if (!requestedCode) return null;
     if (!discount || discount.active === false) fail("failed-precondition", "Discount is unavailable.");
@@ -160,31 +241,85 @@ function normalizedDiscount(discount, requestedCode, subtotal) {
 }
 
 export function priceCheckout({ checkout, medicines, discount }) {
-    const quantities = new Map();
+    const medicineStates = new Map();
+    const pricedInputs = [];
+
     for (const item of checkout.items) {
-        quantities.set(item.medicineId, (quantities.get(item.medicineId) ?? 0) + item.quantity);
-    }
-    const inventoryUpdates = [];
-    for (const [medicineId, quantity] of quantities) {
-        const medicine = medicines.get(medicineId);
-        if (!medicine || medicine.available === false) fail("failed-precondition", "A medicine is unavailable.");
-        const inventory = Number(medicine.inventory);
-        if (!Number.isInteger(inventory) || inventory < quantity) fail("failed-precondition", "Insufficient inventory.");
-        inventoryUpdates.push({ medicineId, quantity, remaining: inventory - quantity });
-    }
-    const items = checkout.items.map((item) => {
         const medicine = medicines.get(item.medicineId);
-        const priceCents = medicinePrice(medicine);
+        if (!medicine || medicine.available === false) fail("failed-precondition", "A medicine is unavailable.");
+        let state = medicineStates.get(item.medicineId);
+        if (!state) {
+            state = {
+                medicine,
+                variants: normalizedVariants(medicine),
+                quantities: new Map()
+            };
+            medicineStates.set(item.medicineId, state);
+        }
+        const variant = resolveVariant(item, state.variants);
+        const inventoryKey = variant ? `variant:${variant.index}` : "base";
+        state.quantities.set(inventoryKey, (state.quantities.get(inventoryKey) ?? 0) + item.quantity);
+        pricedInputs.push({ item, medicine, variant });
+    }
+
+    const inventoryUpdates = [];
+    for (const [medicineId, state] of medicineStates) {
+        const totalQuantity = [...state.quantities.values()].reduce((sum, quantity) => sum + quantity, 0);
+        if (state.variants.length) {
+            const nextVariants = state.variants.map((variant) => ({ ...variant.raw }));
+            for (const [key, quantity] of state.quantities) {
+                const variantIndex = Number(key.slice("variant:".length));
+                const variant = state.variants.find((candidate) => candidate.index === variantIndex);
+                if (!variant || variant.available === false) fail("failed-precondition", "Selected option is unavailable.");
+                if (!Number.isInteger(variant.inventory) || variant.inventory < quantity) {
+                    fail("failed-precondition", "Insufficient inventory.");
+                }
+                const remaining = variant.inventory - quantity;
+                nextVariants[variantIndex] = {
+                    ...nextVariants[variantIndex],
+                    inventory: remaining,
+                    available: remaining > 0
+                };
+            }
+            const remaining = nextVariants.reduce((sum, variant) => sum + Math.max(0, Number(variant.inventory || 0)), 0);
+            inventoryUpdates.push({
+                medicineId,
+                quantity: totalQuantity,
+                remaining,
+                available: remaining > 0,
+                variants: nextVariants
+            });
+        } else {
+            const inventory = Number(state.medicine.inventory);
+            if (!Number.isInteger(inventory) || inventory < totalQuantity) fail("failed-precondition", "Insufficient inventory.");
+            const remaining = inventory - totalQuantity;
+            inventoryUpdates.push({
+                medicineId,
+                quantity: totalQuantity,
+                remaining,
+                available: remaining > 0
+            });
+        }
+    }
+
+    const items = pricedInputs.map(({ item, medicine, variant }) => {
+        const basePriceCents = medicinePrice(medicine);
+        const priceCents = variant ? priceFrom(variant, basePriceCents, "Variant price") : basePriceCents;
         const title = text(medicine.title, "Medicine title", 200);
+        const variantName = variant?.name || item.variant;
         return {
             id: item.id,
-            title: item.variant ? `${title} - ${item.variant}` : title,
+            productId: item.medicineId,
+            variantKey: item.variant,
+            variantSku: variant?.sku || "",
+            variantName: variantName || "",
+            title: variantName ? `${title} - ${variantName}` : title,
             brand: String(medicine.brand ?? "").trim(),
-            imageUrl: String(medicine.imageUrl ?? "").trim(),
-            oldPrice: String(medicine.oldPrice ?? (medicine.oldPriceValue ? `$${Number(medicine.oldPriceValue).toFixed(2)}` : "")),
-            newPrice: String(medicine.newPrice ?? displayMoney(priceCents)),
+            imageUrl: String(variant?.imageUrl || medicine.imageUrl || "").trim(),
+            oldPrice: String(variant?.oldPrice || medicine.oldPrice || (medicine.oldPriceValue ? `$${Number(medicine.oldPriceValue).toFixed(2)}` : "")),
+            newPrice: String(variant?.newPrice || medicine.newPrice || displayMoney(priceCents)),
             price: priceCents / 100,
-            url: `./productdetail.html?id=${encodeURIComponent(item.medicineId)}`,
+            url: productPath({ id: item.medicineId, title }),
             quantity: item.quantity
         };
     });
