@@ -869,7 +869,7 @@
         }
 
         function productIsOutOfStock(product) {
-            return /sold\s*out/i.test(product.badge || "") || product.available === false || Number(product.inventory || 0) === 0;
+            return !window.HeliomedProductUrls.isProductAvailable(product);
         }
 
         function productHasVisiblePrice(product) {
@@ -882,7 +882,7 @@
                 const snapshot = await getDocs(medsQuery);
                 products = snapshot.docs.map(function (documentSnapshot, index) {
                     return normalizeProduct(documentSnapshot.data(), index, documentSnapshot.id);
-                });
+                }).filter(window.HeliomedProductUrls.isProductAvailable);
                 render();
             } catch (error) {
                 products = [];

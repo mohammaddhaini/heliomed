@@ -33,7 +33,18 @@
     return "./product/" + productSlug(product) + "/";
   }
 
+  function isProductAvailable(product) {
+    if (!product || product.available === false) return false;
+    if (product.inventory !== undefined && product.inventory !== null && product.inventory !== "") {
+      const inventory = Number(product.inventory);
+      if (Number.isFinite(inventory) && inventory <= 0) return false;
+    }
+    const badge = String(product.badge || "").toLowerCase();
+    return !badge.includes("sold out") && !badge.includes("out of stock");
+  }
+
   return {
+    isProductAvailable,
     productPath,
     productSlug,
     slugify

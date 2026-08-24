@@ -128,7 +128,9 @@ function ensureProductCatalog() {
     if (productCatalogPromise) return productCatalogPromise;
     productCatalogPromise = getDocs(query(collection(db, "medicines"), orderBy("title")))
         .then(snapshot => {
-            productCatalog = snapshot.docs.map(item => normalizeProduct({ id: item.id, ...item.data() }));
+            productCatalog = snapshot.docs
+                .map(item => normalizeProduct({ id: item.id, ...item.data() }))
+                .filter(window.HeliomedProductUrls.isProductAvailable);
             window.dispatchEvent(new CustomEvent("heliomed:product-catalog-ready"));
         })
         .catch(error => {
@@ -256,7 +258,7 @@ function normalizeSearchText(value) {
 }
 
 function productIsOutOfStock(product) {
-    return /sold\s*out/i.test(product.badge || "") || product.available === false || Number(product.inventory || 0) === 0;
+    return !window.HeliomedProductUrls.isProductAvailable(product);
 }
 
 function productHasVisiblePrice(product) {

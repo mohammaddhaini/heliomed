@@ -776,7 +776,7 @@
             return /new|arrival/i.test([product.badge, product.section, product.category, product.searchText].join(" "));
         }
         function productIsOutOfStock(product) {
-            return /sold\s*out/i.test(product.badge || "") || product.available === false || Number(product.inventory || 0) === 0;
+            return !window.HeliomedProductUrls.isProductAvailable(product);
         }
         function productHasVisiblePrice(product) {
             return !productIsOutOfStock(product) && Boolean(product.newPrice);
@@ -830,7 +830,7 @@
                 const snapshot = await getDocs(query(collection(db, "medicines"), orderBy("title")));
                 products = snapshot.docs.map(function (documentSnapshot) {
                     return normalizeProduct(documentSnapshot.data(), documentSnapshot.id);
-                }).filter(baseMatches);
+                }).filter(window.HeliomedProductUrls.isProductAvailable).filter(baseMatches);
                 setupHero(products);
                 render();
             } catch (error) {

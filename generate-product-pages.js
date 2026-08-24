@@ -27,7 +27,7 @@ const fs = require("fs");
 const path = require("path");
 const { cert, initializeApp } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
-const { productSlug } = require("./product-url.js");
+const { isProductAvailable, productSlug } = require("./product-url.js");
 
 // ---------------------------------------------------------------------------
 // CONFIG — edit these
@@ -66,18 +66,6 @@ const db = getFirestore();
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-function isAvailable(product) {
-  if (product.available === false) return false;
-
-  if (product.inventory !== undefined && product.inventory !== null && product.inventory !== "") {
-    const inventory = Number(product.inventory);
-    if (Number.isFinite(inventory) && inventory <= 0) return false;
-  }
-
-  const badge = String(product.badge || "").toLowerCase();
-  return !badge.includes("sold out") && !badge.includes("out of stock");
-}
-
 function escapeHtml(str) {
   return String(str || "")
     .replace(/&/g, "&amp;")
@@ -230,7 +218,7 @@ async function main() {
     const data = docSnap.data();
     const product = { id: docSnap.id, ...data };
 
-    if (!isAvailable(product)) {
+    if (!isProductAvailable(product)) {
       skippedUnavailable += 1;
       return;
     }

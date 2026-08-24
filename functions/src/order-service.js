@@ -235,6 +235,15 @@ export async function updateOrderStatus({ db, auth: authValue, data, now }) {
             throw new CheckoutError("failed-precondition", "Terminal orders cannot be reopened.");
         }
         const updatedAt = now().toISOString();
+        let throttleRef = null;
+        let throttleSnapshot = null;
+        if (willBeTerminal && !wasTerminal) {
+            const orderUserId = String(order.userId || "").trim();
+            if (orderUserId) {
+                throttleRef = db.collection("checkoutThrottle").doc(orderUserId);
+                throttleSnapshot = await transaction.get(throttleRef);
+            }
+        }
         if (update.status === "Cancelled" && oldStatus !== "Cancelled") {
             const items = Array.isArray(order.items) ? order.items : [];
             const medicineIds = [...new Set(items.map(orderMedicineId).filter(Boolean))];
@@ -255,18 +264,11 @@ export async function updateOrderStatus({ db, auth: authValue, data, now }) {
                 });
             }
         }
-        if (willBeTerminal && !wasTerminal) {
-            const orderUserId = String(order.userId || "").trim();
-            if (orderUserId) {
-                const throttleRef = db.collection("checkoutThrottle").doc(orderUserId);
-                const throttleSnapshot = await transaction.get(throttleRef);
-                if (throttleSnapshot.exists) {
-                    transaction.update(throttleRef, {
-                        openOrderCount: Math.max(0, openOrderCount(throttleSnapshot.data()) - 1),
-                        updatedAt
-                    });
-                }
-            }
+        if (throttleSnapshot?.exists) {
+            transaction.update(throttleRef, {
+                openOrderCount: Math.max(0, openOrderCount(throttleSnapshot.data()) - 1),
+                updatedAt
+            });
         }
         transaction.update(orderRef, { status: update.status, updatedAt });
         return update;

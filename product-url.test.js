@@ -1,7 +1,7 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 
-const { productPath, productSlug, slugify } = require("./product-url.js");
+const { isProductAvailable, productPath, productSlug, slugify } = require("./product-url.js");
 
 test("slugify normalizes product titles for URL paths", () => {
   assert.equal(slugify("  Vitamin C 1000mg + Zinc!  "), "vitamin-c-1000mg-zinc");
@@ -24,4 +24,13 @@ test("productPath returns the generated static product URL", () => {
 
 test("productSlug rejects products without document ids", () => {
   assert.throws(() => productSlug({ title: "No ID" }), /document ID/);
+});
+
+test("isProductAvailable matches the static publishing policy", () => {
+  assert.equal(isProductAvailable({ available: true }), true);
+  assert.equal(isProductAvailable({ inventory: 2 }), true);
+  assert.equal(isProductAvailable({ inventory: 0 }), false);
+  assert.equal(isProductAvailable({ available: false, inventory: 2 }), false);
+  assert.equal(isProductAvailable({ badge: "Sold Out" }), false);
+  assert.equal(isProductAvailable({ badge: "Out of Stock" }), false);
 });

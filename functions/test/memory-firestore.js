@@ -23,9 +23,11 @@ class MemoryReference {
 class MemoryTransaction {
     constructor(store) {
         this.store = store;
+        this.hasWritten = false;
     }
 
     async get(ref) {
+        if (this.hasWritten) throw new Error("Firestore transactions require all reads before all writes.");
         return new MemorySnapshot(ref, this.store.get(ref.path));
     }
 
@@ -35,11 +37,13 @@ class MemoryTransaction {
 
     create(ref, value) {
         if (this.store.has(ref.path)) throw new Error(`Document already exists: ${ref.path}`);
+        this.hasWritten = true;
         this.store.set(ref.path, clone(value));
     }
 
     update(ref, value) {
         if (!this.store.has(ref.path)) throw new Error(`Document does not exist: ${ref.path}`);
+        this.hasWritten = true;
         this.store.set(ref.path, { ...this.store.get(ref.path), ...clone(value) });
     }
 }
