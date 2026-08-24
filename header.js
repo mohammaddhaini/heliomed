@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var navLinks = document.querySelector('.nav-links');
 
     function isMobileNav() {
-        return true;
+        return window.matchMedia('(max-width: 900px)').matches;
     }
 
     function isResponsiveHeader() {
@@ -36,6 +36,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!open) {
             document.querySelectorAll('.nav-item.is-open').forEach(function (item) {
                 item.classList.remove('is-open');
+            });
+            document.querySelectorAll('.mega-group.is-open').forEach(function (group) {
+                group.classList.remove('is-open');
+                group.querySelector('.mega-group-toggle')?.setAttribute('aria-expanded', 'false');
             });
         }
     }
@@ -194,6 +198,30 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        var groupToggle = event.target.closest('.mega-group-toggle');
+        if (groupToggle) {
+            event.preventDefault();
+            event.stopPropagation();
+            var group = groupToggle.closest('.mega-group');
+            if (group) {
+                var isOpen = group.classList.toggle('is-open');
+                groupToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            }
+            return;
+        }
+
+        var groupHeader = event.target.closest('.mega-group-header');
+        if (groupHeader && !event.target.closest('a')) {
+            event.preventDefault();
+            event.stopPropagation();
+            var headerGroup = groupHeader.closest('.mega-group');
+            if (headerGroup) {
+                var isHeaderOpen = headerGroup.classList.toggle('is-open');
+                headerGroup.querySelector('.mega-group-toggle')?.setAttribute('aria-expanded', isHeaderOpen ? 'true' : 'false');
+            }
+            return;
+        }
+
         var trigger = event.target.closest('.nav-trigger');
         if (!trigger) {
             var directLink = event.target.closest('a');
@@ -212,9 +240,21 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
         var shouldOpen = !item.classList.contains('is-open');
         document.querySelectorAll('.nav-item.is-open').forEach(function (openItem) {
-            if (openItem !== item) openItem.classList.remove('is-open');
+            if (openItem !== item) {
+                openItem.classList.remove('is-open');
+                openItem.querySelectorAll('.mega-group.is-open').forEach(function (g) {
+                    g.classList.remove('is-open');
+                    g.querySelector('.mega-group-toggle')?.setAttribute('aria-expanded', 'false');
+                });
+            }
         });
         item.classList.toggle('is-open', shouldOpen);
+        if (!shouldOpen) {
+            item.querySelectorAll('.mega-group.is-open').forEach(function (g) {
+                g.classList.remove('is-open');
+                g.querySelector('.mega-group-toggle')?.setAttribute('aria-expanded', 'false');
+            });
+        }
         if (shouldOpen && submenu.classList.contains('category-menu')) submenu.scrollTop = 0;
     });
 
@@ -231,6 +271,10 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.nav-item.is-open').forEach(function (item) {
             item.classList.remove('is-open');
         });
+        document.querySelectorAll('.mega-group.is-open').forEach(function (group) {
+            group.classList.remove('is-open');
+            group.querySelector('.mega-group-toggle')?.setAttribute('aria-expanded', 'false');
+        });
     });
 
     document.addEventListener('keydown', function (event) {
@@ -239,6 +283,10 @@ document.addEventListener('DOMContentLoaded', function () {
         setCategoryNav(false);
         document.querySelectorAll('.nav-item.is-open').forEach(function (item) {
             item.classList.remove('is-open');
+        });
+        document.querySelectorAll('.mega-group.is-open').forEach(function (group) {
+            group.classList.remove('is-open');
+            group.querySelector('.mega-group-toggle')?.setAttribute('aria-expanded', 'false');
         });
     });
 

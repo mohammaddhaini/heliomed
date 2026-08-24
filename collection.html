@@ -636,6 +636,7 @@
     <script type="module">
         import { db } from "./firebase-init.js";
         import { collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { fetchQueryLazy } from "./products-cache.js";
 
         const params = new URLSearchParams(window.location.search);
         const slug = params.get("collection") || params.get("category") || "best-sellers";
@@ -666,7 +667,7 @@
         let products = [];
 
         const collectionMeta = {
-            "best-sellers": { title: "Best Sellers", description: "Customer-favorite care essentials across pharmacy, beauty, wellness, and recovery.", subs: ["offers", "new-arrivals", "under-20", "beauty-essentials"] },
+            "best-sellers": { title: "Best Sellers", description: "Customer-favorite care essentials across parapharmacy, beauty, wellness, and recovery.", subs: ["offers", "new-arrivals", "under-20", "beauty-essentials"] },
             "new-arrivals": { title: "New Arrivals", description: "Freshly added care products and seasonal essentials.", subs: ["best-sellers", "offers", "summer-essentials"] },
             "offers": { title: "Offers", description: "Discounted products and current Heliomed deals.", subs: ["under-20", "under-50", "best-sellers"] },
             "supports-recovery": { title: "Supports & Recovery", description: "Supports, braces, recovery aids, and mobility care organized by body area and use.", subs: ["neck", "back", "knee", "wrist-support", "compression", "posture-support"] },
@@ -686,7 +687,7 @@
             "makeup": { title: "Makeup", description: "Beauty and makeup picks from Heliomed brands.", subs: ["skincare", "fragrances", "beauty-essentials"] },
             "fragrances": { title: "Fragrances", description: "Fragrance and perfume picks.", subs: ["body-care", "makeup"] },
             "medical-devices": { title: "Medical Devices & Supplies", description: "Home medical supplies and daily monitoring essentials.", subs: ["supports-recovery", "personal-care"] },
-            "personal-care": { title: "Personal Care", description: "Everyday pharmacy and personal care products.", subs: ["body-care", "medical-devices", "mother-baby"] },
+            "personal-care": { title: "Personal Care", description: "Everyday parapharmacy and personal care products.", subs: ["body-care", "medical-devices", "mother-baby"] },
             "dry-skin": { title: "Dry Skin", description: "Moisturizing and barrier-support skincare.", subs: ["skincare", "sensitive-skin", "anti-aging"] },
             "oily-skin": { title: "Oily Skin", description: "Oil-control and balancing skincare.", subs: ["skincare", "acne", "sensitive-skin"] },
             "sensitive-skin": { title: "Sensitive Skin", description: "Gentle skincare for sensitive routines.", subs: ["skincare", "dry-skin", "acne"] },
@@ -827,9 +828,14 @@
         }
         async function loadProducts() {
             try {
-                const snapshot = await getDocs(query(collection(db, "medicines"), orderBy("title")));
-                products = snapshot.docs.map(function (documentSnapshot) {
-                    return normalizeProduct(documentSnapshot.data(), documentSnapshot.id);
+                const rawProducts = await fetchQueryLazy("catalog:all", async () => {
+                    const snapshot = await getDocs(query(collection(db, "medicines"), orderBy("title")));
+                    return snapshot.docs.map(function (documentSnapshot) {
+                        return normalizeProduct(documentSnapshot.data(), documentSnapshot.id);
+                    });
+                });
+                products = (rawProducts || []).map(function (item) {
+                    return normalizeProduct(item, item.id);
                 }).filter(window.HeliomedProductUrls.isProductAvailable).filter(baseMatches);
                 setupHero(products);
                 render();

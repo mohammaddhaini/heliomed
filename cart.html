@@ -542,6 +542,7 @@
     <script type="module">
         import { db } from "./firebase-init.js";
         import { collection, getDocs, limit, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { fetchQueryLazy } from "./products-cache.js";
 
         const cartItems = document.getElementById("cartItems");
         const cartLayout = document.getElementById("cartLayout");
@@ -643,10 +644,14 @@
         async function renderCrossSells() {
             try {
                 const cartIds = new Set(window.HeliomedCart.getItems().map(function (item) { return String(item.id).split(":")[0]; }));
-                const medsQuery = query(collection(db, "medicines"), limit(4));
-                const snapshot = await getDocs(medsQuery);
-                const products = snapshot.docs
-                    .map(function (documentSnapshot) { return { id: documentSnapshot.id, ...documentSnapshot.data() }; })
+                const rawProducts = await fetchQueryLazy("cross_sells:limit:4", async () => {
+                    const medsQuery = query(collection(db, "medicines"), limit(4));
+                    const snapshot = await getDocs(medsQuery);
+                    return snapshot.docs.map(function (documentSnapshot) {
+                        return { id: documentSnapshot.id, ...documentSnapshot.data() };
+                    });
+                });
+                const products = (rawProducts || [])
                     .filter(function (product) { return !cartIds.has(product.id); })
                     .slice(0, 4);
                 if (!products.length) return;

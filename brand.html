@@ -650,6 +650,7 @@
     <script type="module">
         import { db } from "./firebase-init.js";
         import { collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { fetchQueryLazy } from "./products-cache.js";
 
         const params = new URLSearchParams(window.location.search);
         const brandParam = params.get("brand") || "";
@@ -861,9 +862,14 @@
         }
         async function loadProducts() {
             try {
-                const snapshot = await getDocs(query(collection(db, "medicines"), orderBy("title")));
-                products = snapshot.docs.map(function (documentSnapshot) {
-                    return normalizeProduct(documentSnapshot.data(), documentSnapshot.id);
+                const rawProducts = await fetchQueryLazy("catalog:all", async () => {
+                    const snapshot = await getDocs(query(collection(db, "medicines"), orderBy("title")));
+                    return snapshot.docs.map(function (documentSnapshot) {
+                        return normalizeProduct(documentSnapshot.data(), documentSnapshot.id);
+                    });
+                });
+                products = (rawProducts || []).map(function (item) {
+                    return normalizeProduct(item, item.id);
                 }).filter(window.HeliomedProductUrls.isProductAvailable);
                 setupBrandPage();
             } catch (error) {

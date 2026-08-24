@@ -5,15 +5,19 @@ import {
     orderBy,
     query
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+import { fetchQueryLazy } from "./products-cache.js";
 
 document.addEventListener("DOMContentLoaded", async function () {
     const navLinks = document.querySelector(".nav-links");
     if (!navLinks) return;
 
     try {
-        const snapshot = await getDocs(query(collection(db, "categories"), orderBy("sortOrder")));
-        const categories = snapshot.docs
-            .map(function (item) { return { id: item.id, ...item.data() }; })
+        const rawCategories = await fetchQueryLazy("navbar_categories:all", async () => {
+            const snapshot = await getDocs(query(collection(db, "categories"), orderBy("sortOrder")));
+            return snapshot.docs.map(function (item) { return { id: item.id, ...item.data() }; });
+        });
+
+        const categories = (rawCategories || [])
             .filter(function (category) {
                 return category.active !== false && category.displayInNavbar !== false;
             })
@@ -51,7 +55,7 @@ function categoryTemplate(category) {
     }
 
     const totalLinks = children.reduce((sum, c) => sum + 1 + (visibleChildren(c).length || 0), 0);
-    const colClass = children.length <= 1 ? "compact" : (totalLinks <= 4 ? "two" : (totalLinks <= 8 ? "three" : ""));
+    const colClass = children.length <= 1 ? "compact" : (children.length === 2 ? "two" : (children.length === 3 ? "three" : "four"));
 
     return '<li class="nav-item">' +
         '<a href="' + escapeAttr(category.href || collectionHref(category.slug)) + '" class="nav-trigger">' + icon + escapeHtml(category.title || category.slug) + ' <i class="fas fa-chevron-down"></i></a>' +
@@ -70,8 +74,13 @@ function childColumnTemplate(child) {
     const childTitle = escapeHtml(child.title || child.slug);
     if (grandchildren.length) {
         return '<div class="mega-column mega-group">' +
-            '<strong><a href="' + childHref + '">' + childTitle + '</a></strong>' +
-            grandchildren.map(linkTemplate).join("") +
+            '<div class="mega-group-header">' +
+                '<strong><a href="' + childHref + '">' + childTitle + '</a></strong>' +
+                '<button type="button" class="mega-group-toggle" aria-expanded="false" aria-label="Toggle ' + childTitle + ' subcategories"><i class="fas fa-chevron-down"></i></button>' +
+            '</div>' +
+            '<div class="mega-group-links">' +
+                grandchildren.map(linkTemplate).join("") +
+            '</div>' +
         '</div>';
     }
     return '<div class="mega-column mega-single">' +

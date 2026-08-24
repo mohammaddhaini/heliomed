@@ -1,5 +1,7 @@
-.mobile-nav-toggle {
-    display: inline-flex !important;
+html,
+body {
+    max-width: 100%;
+    overflow-x: clip;
 }
 
 .navbar-greeting {
@@ -31,7 +33,7 @@
     html,
     body {
         max-width: 100%;
-        overflow-x: hidden;
+        overflow-x: clip;
     }
 
     main:not(#homepage-dynamic-root) {
@@ -67,6 +69,10 @@
         flex-wrap: wrap;
         gap: 10px !important;
         padding: 12px 14px !important;
+    }
+
+    .mobile-nav-toggle {
+        display: inline-flex !important;
     }
 
     .logo img {

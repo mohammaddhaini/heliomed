@@ -1026,8 +1026,9 @@
     <script type="module">
         import { auth, db, functions } from "./firebase-init.js";
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-        import { collection, doc, getDoc, getDocs, orderBy, query, where } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
         import { httpsCallable } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-functions.js";
+        import { fetchProductLazy, fetchQueryLazy, getCachedQuery } from "./products-cache.js";
 
         const params = new URLSearchParams(window.location.search);
         const productId = params.get("product") || params.get("id") || window.__PRERENDERED_PRODUCT_ID__ || "";
@@ -1471,14 +1472,36 @@
 
         async function loadRecommendations() {
             try {
-                const medsQuery = query(collection(db, "medicines"), orderBy("title"));
-                const snapshot = await getDocs(medsQuery);
-                allProducts = snapshot.docs.map(function (documentSnapshot) {
-                    return normalizeProduct(documentSnapshot.data(), documentSnapshot.id);
-                }).filter(window.HeliomedProductUrls.isProductAvailable);
+                // 1. If catalog is already in IndexedDB cache, use it without querying Firestore
+                const cachedCatalog = await getCachedQuery("catalog:all");
+                if (cachedCatalog && Array.isArray(cachedCatalog)) {
+                    allProducts = cachedCatalog
+                        .map(item => normalizeProduct(item, item.id))
+                        .filter(window.HeliomedProductUrls.isProductAvailable);
+                    renderRecommendations();
+                    return;
+                }
+
+                // 2. Otherwise lazy-load scoped recommendations by category with limit(8)
+                const category = currentProduct?.category || "";
+                const recKey = category ? "rec:cat:" + category : "rec:all";
+                const scopedProducts = await fetchQueryLazy(recKey, async () => {
+                    let q;
+                    if (category) {
+                        q = query(collection(db, "medicines"), where("category", "==", category), limit(8));
+                    } else {
+                        q = query(collection(db, "medicines"), limit(8));
+                    }
+                    const snapshot = await getDocs(q);
+                    return snapshot.docs.map(docSnap => normalizeProduct(docSnap.data(), docSnap.id));
+                });
+
+                allProducts = (scopedProducts || [])
+                    .map(item => normalizeProduct(item, item.id))
+                    .filter(window.HeliomedProductUrls.isProductAvailable);
                 renderRecommendations();
             } catch (error) {
-                console.error(error);
+                console.error("Could not load recommendations:", error);
             }
         }
 
@@ -1511,12 +1534,16 @@
                 return;
             }
             try {
-                const snapshot = await getDoc(doc(db, "medicines", productId));
-                if (!snapshot.exists()) {
+                const rawProduct = await fetchProductLazy(productId, async () => {
+                    const snapshot = await getDoc(doc(db, "medicines", productId));
+                    if (!snapshot.exists()) return null;
+                    return normalizeProduct(snapshot.data(), snapshot.id);
+                });
+                if (!rawProduct) {
                     emptyState.classList.add("visible");
                     return;
                 }
-                currentProduct = normalizeProduct(snapshot.data(), snapshot.id);
+                currentProduct = normalizeProduct(rawProduct, rawProduct.id || productId);
                 renderProduct(currentProduct);
                 loadRecommendations();
             } catch (error) {

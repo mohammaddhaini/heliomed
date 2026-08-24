@@ -7,6 +7,7 @@ import {
     orderBy,
     query
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+import { fetchQueryLazy } from "./products-cache.js";
 
 const isPreviewMode = detectPreviewMode();
 const HOMEPAGE_LOADER_MIN_MS = 3000;
@@ -39,13 +40,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const minimumLoaderTime = waitForHomepageLoaderMinimum();
     try {
-        const [layoutSnap] = await Promise.all([
-            getDoc(doc(db, "homepage_layout", "published")),
+        const [layoutData] = await Promise.all([
+            fetchQueryLazy("homepage_layout:published", async () => {
+                const snap = await getDoc(doc(db, "homepage_layout", "published"));
+                return snap.exists() ? snap.data() : null;
+            }),
             ensureProductCatalog(),
             ensureContentCatalog()
         ]);
-        if (layoutSnap.exists() && Array.isArray(layoutSnap.data().sections) && layoutSnap.data().sections.length > 0) {
-            renderLayout(layoutSnap.data());
+        if (layoutData && Array.isArray(layoutData.sections) && layoutData.sections.length > 0) {
+            renderLayout(layoutData);
         } else {
             renderLayout(getDefaultHomepageLayout());
         }
@@ -126,10 +130,18 @@ function hideHomepageLoader(options = {}) {
 
 function ensureProductCatalog() {
     if (productCatalogPromise) return productCatalogPromise;
-    productCatalogPromise = getDocs(query(collection(db, "medicines"), orderBy("title")))
-        .then(snapshot => {
-            productCatalog = snapshot.docs
-                .map(item => normalizeProduct({ id: item.id, ...item.data() }))
+    
+    const fetcher = async () => {
+        const snapshot = await getDocs(query(collection(db, "medicines"), orderBy("title")));
+        return snapshot.docs.map(item => normalizeProduct({ id: item.id, ...item.data() }));
+    };
+
+    const loaderPromise = isPreviewMode ? fetcher() : fetchQueryLazy("catalog:all", fetcher);
+
+    productCatalogPromise = loaderPromise
+        .then(products => {
+            productCatalog = (products || [])
+                .map(item => normalizeProduct(item))
                 .filter(window.HeliomedProductUrls.isProductAvailable);
             window.dispatchEvent(new CustomEvent("heliomed:product-catalog-ready"));
         })
@@ -143,34 +155,43 @@ function ensureProductCatalog() {
 
 function ensureContentCatalog() {
     if (contentCatalogPromise) return contentCatalogPromise;
-    contentCatalogPromise = ensureProductCatalog().then(() => Promise.all([
-        getDocs(collection(db, "categories")),
-        getDocs(collection(db, "collectionContent")),
-        getDocs(collection(db, "brandContent"))
-    ])).then(([categorySnap, collectionSnap, brandSnap]) => {
+
+    const fetcher = async () => {
+        const [categorySnap, collectionSnap, brandSnap] = await Promise.all([
+            getDocs(collection(db, "categories")),
+            getDocs(collection(db, "collectionContent")),
+            getDocs(collection(db, "brandContent"))
+        ]);
+        return {
+            categories: categorySnap.docs.map(item => ({ id: item.id, ...item.data() })),
+            collections: collectionSnap.docs.map(item => ({ id: item.id, ...item.data() })),
+            brands: brandSnap.docs.map(item => ({ id: item.id, ...item.data() }))
+        };
+    };
+
+    const loaderPromise = isPreviewMode ? fetcher() : fetchQueryLazy("content_catalog:all", fetcher);
+
+    contentCatalogPromise = ensureProductCatalog().then(() => loaderPromise).then(contentData => {
         const categoryCollections = [];
-        categorySnap.docs.forEach(item => {
-            const data = item.data();
+        (contentData.categories || []).forEach(data => {
             collectCategoryOptions(data, "Category", categoryCollections);
         });
-        const contentCollections = collectionSnap.docs.map(item => {
-            const data = item.data();
+        const contentCollections = (contentData.collections || []).map(item => {
             return {
                 id: item.id,
-                title: data.title || item.id,
-                subtitle: data.description || "Collection",
+                title: item.title || item.id,
+                subtitle: item.description || "Collection",
                 href: "./collection.html?collection=" + encodeURIComponent(item.id),
-                imageUrl: data.imageUrl || ""
+                imageUrl: item.imageUrl || ""
             };
         });
-        const contentBrands = brandSnap.docs.map(item => {
-            const data = item.data();
+        const contentBrands = (contentData.brands || []).map(item => {
             return {
                 id: item.id,
-                title: data.title || item.id,
-                subtitle: data.description || "Brand",
+                title: item.title || item.id,
+                subtitle: item.description || "Brand",
                 href: "./brand.html?brand=" + encodeURIComponent(item.id),
-                imageUrl: data.imageUrl || ""
+                imageUrl: item.imageUrl || ""
             };
         });
         const productBrands = Array.from(new Set(productCatalog.map(product => product.brand).filter(Boolean))).map(brand => ({
@@ -1102,7 +1123,7 @@ function getDefaultHomepageLayout() {
                     {
                         headline: "Care You Can Trust at Home",
                         kicker: "Heliomed Essentials",
-                        copy: "Daily pharmacy, beauty, wellness, and recovery essentials organized for fast decisions.",
+                        copy: "Daily parapharmacy, beauty, wellness, and recovery essentials organized for fast decisions.",
                         primaryCtaText: "Shop Daily Care",
                         primaryCtaUrl: "./collection.html?collection=parapharmacy",
                         secondaryCtaText: "Find by concern",
@@ -1130,7 +1151,7 @@ function getDefaultHomepageLayout() {
                 title: "Trust Badges",
                 active: true,
                 items: [
-                    { icon: "fas fa-prescription-bottle-medical", title: "Pharmacy-led product selection" },
+                    { icon: "fas fa-shield-heart", title: "Expert-curated parapharmacy selection" },
                     { icon: "fas fa-truck-fast", title: "Delivery across Lebanon" },
                     { icon: "fas fa-money-bill-wave", title: "COD and Whish Money checkout" }
                 ]

@@ -779,6 +779,7 @@
     <script type="module">
         import { db } from "./firebase-init.js";
         import { collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { fetchQueryLazy } from "./products-cache.js";
 
         const searchInput = document.getElementById("searchInput");
         const clearSearch = document.getElementById("clearSearch");
@@ -878,10 +879,15 @@
 
         async function loadProducts() {
             try {
-                const medsQuery = query(collection(db, "medicines"), orderBy("title"));
-                const snapshot = await getDocs(medsQuery);
-                products = snapshot.docs.map(function (documentSnapshot, index) {
-                    return normalizeProduct(documentSnapshot.data(), index, documentSnapshot.id);
+                const rawProducts = await fetchQueryLazy("catalog:all", async () => {
+                    const medsQuery = query(collection(db, "medicines"), orderBy("title"));
+                    const snapshot = await getDocs(medsQuery);
+                    return snapshot.docs.map(function (documentSnapshot, index) {
+                        return normalizeProduct(documentSnapshot.data(), index, documentSnapshot.id);
+                    });
+                });
+                products = (rawProducts || []).map(function (item, index) {
+                    return normalizeProduct(item, index, item.id);
                 }).filter(window.HeliomedProductUrls.isProductAvailable);
                 render();
             } catch (error) {
