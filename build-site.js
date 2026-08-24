@@ -31,6 +31,7 @@ const PUBLIC_FILES = [
   "track-order.html",
   "wishlist.html",
   "wishlist.js",
+  "product-url.js",
 ];
 
 function copyPublicSite() {
