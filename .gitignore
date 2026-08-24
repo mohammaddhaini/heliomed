@@ -1,0 +1,23 @@
+# Dependencies and generated output
+node_modules/
+functions/node_modules/
+dist/
+
+# Firebase and Cloudflare credentials
+service-account.json
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+
+# Firebase local state and logs
+.firebase/
+firebase-debug.log*
+
+# Local Codex/editor tooling
+.codegraph/
+.omo/
+.omx/
+.playwright-mcp/
+.vscode/
+

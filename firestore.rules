@@ -1,0 +1,97 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function adminByUid() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.get('active', true) != false;
+    }
+
+    function adminByEmail() {
+      return signedIn()
+        && request.auth.token.email != null
+        && exists(/databases/$(database)/documents/adminEmails/$(request.auth.token.email))
+        && get(/databases/$(database)/documents/adminEmails/$(request.auth.token.email)).data.get('active', true) != false;
+    }
+
+    function isAdmin() {
+      return signedIn() && (request.auth.token.admin == true || adminByUid() || adminByEmail());
+    }
+
+    function ownsExistingOrder() {
+      return signedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    match /medicines/{medicineId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /homepage_layout/{layoutId} {
+      allow read: if layoutId == 'published' || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /collectionContent/{contentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /brandContent/{contentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /discountCodes/{discountId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /userProfiles/{userId} {
+      allow read, write: if signedIn() && request.auth.uid == userId;
+      allow read, write: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow read: if ownsExistingOrder() || isAdmin();
+      allow write: if false;
+    }
+
+    match /orderIdempotency/{documentId} {
+      allow read, write: if false;
+    }
+
+    match /productReviews/{reviewId} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if signedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == request.auth.uid;
+      allow delete: if (signedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+    }
+
+    match /admins/{adminId} {
+      allow get: if signedIn() && (request.auth.uid == adminId || isAdmin());
+      allow list, write: if isAdmin();
+    }
+
+    match /adminEmails/{email} {
+      allow get: if signedIn() && (request.auth.token.email == email || isAdmin());
+      allow list, write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

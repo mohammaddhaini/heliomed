@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Heliomed Categories</title>
+    <style>
+        :root {
+            --aqua: #BFE7E1;
+            --gold: #C2A26B;
+            --ink: #07111F;
+            --line: #E8DCC8;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: #FFFFFF;
+            color: var(--ink);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+        main {
+            width: min(760px, calc(100% - 28px));
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 28px;
+            box-shadow: 0 18px 50px rgba(7, 17, 31, 0.10);
+        }
+        h1 {
+            margin: 0 0 10px;
+            font-size: 28px;
+            line-height: 1.15;
+        }
+        p {
+            margin: 0 0 18px;
+            color: #4d5b66;
+            line-height: 1.55;
+        }
+        button {
+            min-height: 46px;
+            border: 0;
+            border-radius: 7px;
+            padding: 0 20px;
+            background: var(--gold);
+            color: #FFFFFF;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        button:disabled {
+            cursor: wait;
+            opacity: 0.66;
+        }
+        pre {
+            min-height: 190px;
+            margin: 20px 0 0;
+            padding: 16px;
+            overflow: auto;
+            white-space: pre-wrap;
+            background: var(--aqua);
+            border-left: 4px solid var(--gold);
+            color: var(--ink);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Upload category tree</h1>
+        <p>This imports the storefront header taxonomy into the Firestore <strong>categories</strong> collection. Existing matching top-level category documents are updated.</p>
+        <button id="uploadButton" type="button">Upload categories</button>
+        <pre id="log">Ready.</pre>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import {
+            getFirestore,
+            writeBatch,
+            doc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFlrhhPDtVxFqkLA3kG-23m-BPflxU9nw",
+            authDomain: "heliomed-13855.firebaseapp.com",
+            projectId: "heliomed-13855",
+            storageBucket: "heliomed-13855.firebasestorage.app",
+            messagingSenderId: "375605550861",
+            appId: "1:375605550861:web:9d8b605cd24ee841df5a44",
+            measurementId: "G-ST63P01MF4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const uploadButton = document.getElementById("uploadButton");
+        const logOutput = document.getElementById("log");
+
+        const categories = [
+            {
+                title: "Parapharmacy",
+                slug: "parapharmacy",
+                href: "./collection.html?collection=parapharmacy",
+                sortOrder: 10,
+                active: true,
+                displayInNavbar: true,
+                children: [
+                    child("Skin Care", "skin-care"),
+                    child("Hair Care", "hair-care"),
+                    child("Face Care", "face-care"),
+                    child("Dental Care", "dental-care"),
+                    child("Body Care", "body-care"),
+                    child("Nail Care", "nail-care"),
+                    child("Foot Care", "foot-care"),
+                    child("Baby Care", "baby-care"),
+                    child("Mother Care", "mother-care"),
+                    child("Kids Care", "kids-care"),
+                    child("Men Care", "men-care"),
+                    child("Geriatric Care", "geriatric-care"),
+                    child("Nutrition", "nutrition"),
+                    child("Supplements", "supplemnts")
+                ]
+            },
+            {
+                title: "Medical Supplies",
+                slug: "medical-supplies",
+                href: "./collection.html?collection=medical-supplies",
+                sortOrder: 20,
+                active: true,
+                displayInNavbar: true,
+                children: [
+                    child("Home Care", "home-care"),
+                    child("Foot Care", "foot-care"),
+                    child("Liposuction", "liposuction"),
+                    group("Orthopedic", [
+                        child("Ankle Support", "ankle-support"),
+                        child("Back Support", "back-support"),
+                        child("Cervical Support", "cervical-support"),
+                        child("Disk Trac", "disk-trac"),
+                        child("Knee Support", "knee-support"),
+                        child("Shoulder and Elbow", "shoulder-and-elbow"),
+                        child("Wrist and Hand Braces", "wrist-and-hand-braces")
+                    ]),
+                    child("Pediatric", "pediatric"),
+                    child("Vascular", "vascular"),
+                    child("Pillows", "pillows"),
+                    group("Disposable Materials", [
+                        child("Gloves", "gloves"),
+                        child("Guaze", "guaze"),
+                        child("Needles", "needles"),
+                        child("Suture", "suture"),
+                        child("Blades", "blades"),
+                        child("Medical Protective Apparel", "medical-protective-apparel"),
+                        child("Wound Care", "wound-care"),
+                        child("Drapes", "drapes")
+                    ])
+                ]
+            },
+            {
+                title: "Organic",
+                slug: "organic",
+                href: "./collection.html?collection=organic",
+                sortOrder: 30,
+                active: true,
+                displayInNavbar: true,
+                children: []
+            },
+            {
+                title: "Perfume",
+                slug: "perfume",
+                href: "./collection.html?collection=perfume",
+                sortOrder: 40,
+                active: true,
+                displayInNavbar: true,
+                children: [
+                    child("Women", "women"),
+                    child("Men", "men"),
+                    child("Kids", "kids"),
+                    child("Bundles", "bundles")
+                ]
+            },
+            {
+                title: "Makeup",
+                slug: "makeup",
+                href: "./collection.html?collection=makeup",
+                sortOrder: 50,
+                active: true,
+                displayInNavbar: true,
+                children: [
+                    child("Face", "face"),
+                    child("Eye", "eye"),
+                    child("Lips", "lips"),
+                    child("Nail", "nail"),
+                    child("Tools and Accessories", "tools-and-accessories"),
+                    child("Makeup Remover", "makeup-remover"),
+                    child("Medical Makeup", "medical-makeup"),
+                    child("Palettes", "palettes"),
+                    child("Korean Products", "korean-products")
+                ]
+            }
+        ];
+
+        function child(title, slug, children = []) {
+            return {
+                title,
+                slug,
+                href: "./collection.html?collection=" + slug,
+                active: true,
+                sortOrder: 0,
+                children
+            };
+        }
+
+        function group(title, children) {
+            return {
+                title,
+                slug: slugify(title),
+                href: "",
+                active: true,
+                sortOrder: 0,
+                children
+            };
+        }
+
+        function slugify(value) {
+            return String(value || "category")
+                .toLowerCase()
+                .replace(/&/g, " and ")
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "")
+                .slice(0, 90) || "category";
+        }
+
+        function log(message) {
+            logOutput.textContent += "\n" + message;
+        }
+
+        uploadButton.addEventListener("click", async function () {
+            uploadButton.disabled = true;
+            logOutput.textContent = "Uploading categories...";
+
+            try {
+                const batch = writeBatch(db);
+                categories.forEach(function (category) {
+                    batch.set(doc(db, "categories", category.slug), {
+                        ...category,
+                        source: "storefront header taxonomy",
+                        updatedAt: serverTimestamp()
+                    }, { merge: true });
+                    log("Queued " + category.title + " (" + category.children.length + " children).");
+                });
+                await batch.commit();
+                log("Done. Uploaded " + categories.length + " top-level category documents to categories.");
+            } catch (error) {
+                console.error(error);
+                log("Upload failed: " + error.message);
+            } finally {
+                uploadButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

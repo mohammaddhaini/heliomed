@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/ico" href="icon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail | Heliomed</title>
+    <meta name="description" content="Heliomed product detail.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --brand-blue: #1D5F73;
+            --brand-pink: #C2A26B;
+            --brand-dark: #07111F;
+            --brand-soft-blue: #FBF7F0;
+            --brand-soft-pink: #F8F2E8;
+            --brand-border: #E8DCC8;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #fff;
+            color: var(--brand-dark);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+        a { color: inherit; text-decoration: none; }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 15px 40px;
+            background: #fff;
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .logo img { display: block; width: 170px; height: auto; }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-links li {
+            font-size: 13px;
+            font-weight: 700;
+            color: #333;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .search-box input {
+            padding: 8px 35px 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+            width: 200px;
+            font-size: 13px;
+        }
+        .search-box i {
+            position: absolute;
+            right: 10px;
+            color: #777;
+            cursor: pointer;
+        }
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 18px;
+        }
+        .cart-icon-wrapper { position: relative; }
+        .cart-icon-wrapper {
+            color: inherit;
+            display: inline-flex;
+            text-decoration: none;
+        }
+        .cart-count,
+        .wishlist-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--brand-pink);
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        main {
+            width: min(1180px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 26px 0 72px;
+        }
+        .breadcrumb {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            color: #697782;
+            font-size: 13px;
+            margin-bottom: 22px;
+        }
+        .breadcrumb a {
+            color: var(--brand-pink);
+            font-weight: 800;
+        }
+        .product-layout {
+            display: grid;
+            grid-template-columns: minmax(320px, 0.95fr) minmax(320px, 1.05fr);
+            gap: 42px;
+            align-items: start;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: 84px minmax(0, 1fr);
+            gap: 14px;
+        }
+        .thumbs {
+            display: grid;
+            gap: 10px;
+            align-content: start;
+        }
+        .thumb {
+            width: 84px;
+            height: 84px;
+            border: 1px solid var(--brand-border);
+            background: #f8f8f8;
+            cursor: pointer;
+            padding: 0;
+            overflow: hidden;
+        }
+        .thumb.active {
+            border-color: var(--brand-pink);
+            box-shadow: inset 0 0 0 2px #fff;
+        }
+        .thumb img,
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+        .main-image {
+            position: relative;
+            min-height: 520px;
+            border: 1px solid var(--brand-border);
+            background: #f8f8f8;
+            overflow: hidden;
+        }
+        .zoom-trigger {
+            position: absolute;
+            right: 14px;
+            bottom: 14px;
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--brand-border);
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--brand-dark);
+            cursor: pointer;
+            z-index: 2;
+            font-size: 15px;
+        }
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            min-height: inherit;
+            display: grid;
+            place-items: center;
+            padding: 32px;
+            background: linear-gradient(135deg, #fff, var(--brand-soft-blue));
+            color: #6c756f;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .discount-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--brand-pink);
+            color: #fff;
+            padding: 7px 11px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            z-index: 2;
+        }
+        .product-info {
+            border-top: 4px solid var(--brand-blue);
+            padding-top: 20px;
+        }
+        .brand {
+            color: var(--brand-pink);
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        h1 {
+            margin: 0 0 16px;
+            max-width: 760px;
+            font-size: clamp(31px, 4vw, 48px);
+            line-height: 1.06;
+            letter-spacing: 0;
+        }
+        .meta-line {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            color: #53616c;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+        .rating-summary {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            font-weight: 900;
+        }
+        .stars {
+            display: inline-flex;
+            gap: 2px;
+            color: var(--brand-pink);
+            letter-spacing: 0;
+        }
+        .review-link {
+            color: #53616c;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        .availability {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+            padding: 8px 11px;
+            margin-bottom: 18px;
+            background: var(--brand-soft-blue);
+            color: #31524e;
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        .availability.is-out {
+            background: #fff1ee;
+            color: #9c2d12;
+        }
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .old-price {
+            color: #8b9298;
+            text-decoration: line-through;
+            font-size: 16px;
+        }
+        .new-price {
+            color: #b22709;
+            font-size: 31px;
+            font-weight: 900;
+        }
+        .discount-text {
+            color: var(--brand-pink);
+            font-size: 13px;
+            font-weight: 900;
+            margin-bottom: 24px;
+        }
+        .option-group {
+            margin-bottom: 18px;
+        }
+        .option-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 9px;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+        .size-guide-link {
+            border: 0;
+            background: transparent;
+            color: var(--brand-pink);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 900;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        .variant-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .variant-option {
+            min-height: 42px;
+            min-width: 68px;
+            padding: 0 14px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+            color: var(--brand-dark);
+            cursor: pointer;
+            font-weight: 900;
+        }
+        .variant-option small {
+            display: block;
+            margin-top: 3px;
+            color: #697782;
+            font-size: 11px;
+            font-weight: 800;
+        }
+        .variant-option.is-out {
+            color: #8b9298;
+            background: #f7f7f7;
+        }
+        .variant-option.is-selected {
+            border-color: var(--brand-pink);
+            background: var(--brand-soft-pink);
+        }
+        .size-guide-panel {
+            display: none;
+            margin: 0 0 18px;
+            padding: 14px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+            color: #53616c;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+        .size-guide-panel.visible { display: block; }
+        .purchase-row {
+            display: grid;
+            grid-template-columns: 128px 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .quantity {
+            display: grid;
+            grid-template-columns: 38px 1fr 38px;
+            min-height: 48px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+        }
+        .quantity button {
+            border: 0;
+            background: #fff;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 900;
+        }
+        .quantity input {
+            width: 100%;
+            border: 0;
+            border-left: 1px solid var(--brand-border);
+            border-right: 1px solid var(--brand-border);
+            text-align: center;
+            font-weight: 900;
+            outline: none;
+        }
+        .add-cart {
+            min-height: 48px;
+            border: 1px solid var(--brand-pink);
+            background: var(--brand-pink);
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+        .buy-now {
+            min-height: 48px;
+            border: 1px solid var(--brand-dark);
+            background: var(--brand-dark);
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+        .add-cart:disabled,
+        .buy-now:disabled,
+        .sticky-add:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .payment-note {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 26px;
+            color: #53616c;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .payment-note span {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+        }
+        .payment-note i {
+            color: var(--brand-pink);
+        }
+        .details {
+            border-top: 1px solid var(--brand-border);
+        }
+        .detail-section {
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .detail-section summary {
+            min-height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            list-style: none;
+        }
+        .detail-section summary::-webkit-details-marker { display: none; }
+        .detail-section summary::after {
+            content: "+";
+            color: var(--brand-pink);
+            font-size: 22px;
+            line-height: 1;
+        }
+        .detail-section[open] summary::after {
+            content: "-";
+        }
+        .detail-section p {
+            margin: 0 0 18px;
+            color: #53616c;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        .product-section {
+            margin-top: 54px;
+        }
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+        .section-head h2 {
+            margin: 0;
+            font-size: clamp(24px, 3vw, 34px);
+            letter-spacing: 0;
+        }
+        .review-shell {
+            display: grid;
+            grid-template-columns: 300px minmax(0, 1fr);
+            gap: 22px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+        }
+        .review-score {
+            padding: 22px;
+            background: var(--brand-soft-blue);
+        }
+        .score-number {
+            display: block;
+            font-size: 52px;
+            line-height: 1;
+            font-weight: 900;
+        }
+        .review-form {
+            display: grid;
+            gap: 12px;
+            padding: 22px;
+        }
+        .review-form input,
+        .review-form textarea {
+            width: 100%;
+            border: 1px solid #d8d2c9;
+            padding: 12px;
+            outline: none;
+            font: inherit;
+        }
+        .review-form textarea {
+            min-height: 96px;
+            resize: vertical;
+        }
+        .review-eligibility-note {
+            margin: 0;
+            padding: 12px 14px;
+            border: 1px solid var(--brand-border);
+            border-radius: 8px;
+            background: var(--brand-soft-blue);
+            color: var(--brand-dark);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .review-eligibility-note.is-eligible { border-color: var(--brand-pink); }
+        .review-form[hidden] { display: none !important; }
+        .rating-picker {
+            display: flex;
+            gap: 6px;
+        }
+        .rating-picker button {
+            border: 0;
+            background: transparent;
+            color: var(--brand-pink);
+            cursor: pointer;
+            font-size: 22px;
+            padding: 0;
+        }
+        .submit-review,
+        .sticky-add {
+            min-height: 44px;
+            border: 1px solid var(--brand-pink);
+            background: var(--brand-pink);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .reviews-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .review-card {
+            border: 1px solid var(--brand-border);
+            padding: 16px;
+            background: #fff;
+        }
+        .review-card strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .review-card p {
+            margin: 8px 0 0;
+            color: #53616c;
+            line-height: 1.55;
+            font-size: 14px;
+        }
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+        .related-card {
+            border: 1px solid var(--brand-border);
+            background: #fff;
+            overflow: hidden;
+        }
+        .related-image {
+            height: 190px;
+            background: var(--brand-soft-blue);
+            overflow: hidden;
+        }
+        .related-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        .related-body {
+            padding: 13px;
+        }
+        .related-brand {
+            color: var(--brand-pink);
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        .related-title {
+            min-height: 50px;
+            margin: 6px 0 10px;
+            font-size: 14px;
+            line-height: 1.3;
+            font-weight: 900;
+        }
+        .related-price {
+            color: #b22709;
+            font-weight: 900;
+        }
+        .zoom-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            place-items: center;
+            padding: 28px;
+            background: rgba(7, 17, 31, 0.82);
+            z-index: 3000;
+        }
+        .zoom-modal.visible { display: grid; }
+        .zoom-modal img {
+            max-width: min(100%, 980px);
+            max-height: 88vh;
+            object-fit: contain;
+            background: #fff;
+        }
+        .zoom-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 42px;
+            height: 42px;
+            border: 0;
+            background: #fff;
+            color: var(--brand-dark);
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .sticky-cart {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1800;
+            display: none;
+            grid-template-columns: minmax(0, 1fr) 138px;
+            gap: 12px;
+            align-items: center;
+            padding: 10px 14px;
+            background: #fff;
+            border-top: 1px solid var(--brand-border);
+            box-shadow: 0 -12px 24px rgba(7, 17, 31, 0.08);
+        }
+        .sticky-copy {
+            min-width: 0;
+        }
+        .sticky-title {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-size: 13px;
+            font-weight: 900;
+        }
+        .sticky-price {
+            color: #b22709;
+            font-size: 13px;
+            font-weight: 900;
+        }
+        .empty {
+            display: none;
+            border: 1px dashed var(--brand-border);
+            padding: 28px;
+            text-align: center;
+            color: #53616c;
+            font-weight: 800;
+        }
+        .empty.visible { display: block; }
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--brand-dark);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 6px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 2000;
+            font-size: 13px;
+            font-weight: 800;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 880px) {
+            .product-layout {
+                grid-template-columns: 1fr;
+                gap: 28px;
+            }
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+            .thumbs {
+                display: flex;
+                order: 2;
+                overflow-x: auto;
+            }
+            .main-image {
+                min-height: 380px;
+            }
+            .purchase-row {
+                grid-template-columns: 1fr;
+            }
+            .review-shell {
+                grid-template-columns: 1fr;
+            }
+            .related-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 14px;
+            }
+            .related-image {
+                height: 160px;
+            }
+            body.has-product {
+                padding-bottom: 74px;
+            }
+            .sticky-cart {
+                display: grid;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="./responsive.css">
+    <link rel="stylesheet" href="./header.css">
+</head>
+<body>
+    <!-- HEADER -->
+        <header class="header">
+            <div class="logo">
+                <a href="./index.html">
+                    <img src="heliomed-logo.png" alt="Heliomed logo">
+                </a>
+            </div>
+    
+            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-navigation" aria-expanded="false">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+    
+            <ul class="nav-links" id="primary-navigation">
+                <li class="nav-panel-header" aria-hidden="true">
+                    <span class="nav-panel-title">MENU</span>
+                    <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=parapharmacy" class="nav-trigger">PARAPHARMACY <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu">
+                        <div class="mega-grid">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=skin-care">Skin Care</a>
+                                <a href="./collection.html?collection=hair-care">Hair Care</a>
+                                <a href="./collection.html?collection=face-care">Face Care</a>
+                                <a href="./collection.html?collection=dental-care">Dental Care</a>
+                                <a href="./collection.html?collection=body-care">Body Care</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=nail-care">Nail Care</a>
+                                <a href="./collection.html?collection=foot-care">Foot Care</a>
+                                <a href="./collection.html?collection=baby-care">Baby Care</a>
+                                <a href="./collection.html?collection=mother-care">Mother Care</a>
+                                <a href="./collection.html?collection=kids-care">Kids Care</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=men-care">Men Care</a>
+                                <a href="./collection.html?collection=geriatric-care">Geriatric Care</a>
+                                <a href="./collection.html?collection=nutrition">Nutrition</a>
+                                <a href="./collection.html?collection=supplemnts">Supplements</a>
+                            </div>
+                            <div class="mega-column">
+                                <a class="category-view-all" style="border:0;padding:5px 0;margin:0;" href="./collection.html?collection=parapharmacy">View all Parapharmacy &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=medical-supplies" class="nav-trigger">MEDICAL SUPPLIES <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu">
+                        <div class="mega-grid three">
+                            <div class="mega-column">
+                                <strong>Supports</strong>
+                                <a href="./collection.html?collection=ankle-support">Ankle Support</a>
+                                <a href="./collection.html?collection=back-support">Back Support</a>
+                                <a href="./collection.html?collection=cervical-support">Cervical Support</a>
+                                <a href="./collection.html?collection=disk-trac">Disk Trac</a>
+                                <a href="./collection.html?collection=knee-support">Knee Support</a>
+                                <a href="./collection.html?collection=shoulder-and-elbow">Shoulder &amp; Elbow</a>
+                                <a href="./collection.html?collection=wrist-and-hand-braces">Wrist &amp; Hand Braces</a>
+                            </div>
+                            <div class="mega-column">
+                                <strong>Disposables</strong>
+                                <a href="./collection.html?collection=gloves">Gloves</a>
+                                <a href="./collection.html?collection=guaze">Gauze</a>
+                                <a href="./collection.html?collection=needles">Needles</a>
+                                <a href="./collection.html?collection=suture">Sutures</a>
+                                <a href="./collection.html?collection=blades">Blades</a>
+                                <a href="./collection.html?collection=wound-care">Wound Care</a>
+                                <a href="./collection.html?collection=drapes">Drapes / Apparel</a>
+                            </div>
+                            <div class="mega-column">
+                                <strong>Other</strong>
+                                <a href="./collection.html?collection=home-care">Home Care</a>
+                                <a href="./collection.html?collection=foot-care">Foot Care</a>
+                                <a href="./collection.html?collection=liposuction">Liposuction</a>
+                                <a href="./collection.html?collection=pediatric">Pediatric</a>
+                                <a href="./collection.html?collection=vascular">Vascular</a>
+                                <a href="./collection.html?collection=pillows">Pillows</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=organic" class="nav-trigger">ORGANIC <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu compact">
+                        <div class="mega-grid">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=organic">View All Organic</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=perfume" class="nav-trigger">PERFUME <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu compact">
+                        <div class="mega-grid">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=women">Women</a>
+                                <a href="./collection.html?collection=men">Men</a>
+                                <a href="./collection.html?collection=kids">Kids</a>
+                                <a href="./collection.html?collection=bundles">Bundles</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=makeup" class="nav-trigger">MAKEUP <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu compact">
+                        <div class="mega-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));max-width:360px;">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=face">Face</a>
+                                <a href="./collection.html?collection=eye">Eye</a>
+                                <a href="./collection.html?collection=lips">Lips</a>
+                                <a href="./collection.html?collection=nail">Nail</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=tools-and-accessories">Tools &amp; Accessories</a>
+                                <a href="./collection.html?collection=makeup-remover">Makeup Remover</a>
+                                <a href="./collection.html?collection=medical-makeup">Medical Makeup</a>
+                                <a href="./collection.html?collection=palettes">Palettes</a>
+                                <a href="./collection.html?collection=korean-products">Korean Products</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                 <li class="nav-item">
+                    <a href="./collection.html?collection=offers" class="nav-trigger"><i class="fas fa-tags"></i> OFFERS</a>
+                </li>
+                <li class="nav-item"><a href="#blog" class="nav-trigger"><i class="fas fa-newspaper"></i> BLOG</a></li>
+                <li class="nav-item mobile-only-nav"><a href="./account.html" class="nav-trigger account-link"><i class="far fa-user"></i> LOGIN</a></li>
+                <li class="nav-item mobile-only-nav"><a href="./wishlist.html" class="nav-trigger"><i class="far fa-heart"></i> WISHLIST</a></li>
+                <li class="nav-item mobile-only-nav"><a href="./cart.html" class="nav-trigger"><i class="fas fa-shopping-bag"></i> CART</a></li>
+            </ul>
+    
+            <div class="header-actions">
+                <div class="search-box">
+                    <input type="text" placeholder="Search for products">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="header-icons">
+                    <a href="./account.html" aria-label="Open account"><i class="far fa-user"></i></a>
+                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist">
+                        <i class="far fa-heart"></i>
+                        <span class="wishlist-count">0</span>
+                    </a>
+                    <a class="cart-icon-wrapper" href="./cart.html" aria-label="Open cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+    <main>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="./search.html">Products</a>
+            <span>/</span>
+            <span id="breadcrumbName">Product detail</span>
+        </nav>
+
+        <div class="empty" id="emptyState">Product not found. Go back to products and choose another item.</div>
+
+        <section class="product-layout" id="productLayout" hidden>
+            <div class="gallery">
+                <div class="thumbs" id="thumbs"></div>
+                <div class="main-image">
+                    <span class="discount-badge" id="badge"></span>
+                    <img id="mainImage" src="" alt="">
+                    <button class="zoom-trigger" id="zoomTrigger" type="button" aria-label="Zoom product image"><i class="fas fa-magnifying-glass-plus"></i></button>
+                </div>
+            </div>
+
+            <article class="product-info">
+                <div class="brand" id="brand"></div>
+                <h1 id="title"></h1>
+                <div class="meta-line">
+                    <span id="category"></span>
+                    <span id="section"></span>
+                </div>
+                <div class="rating-summary" id="ratingSummary">
+                    <span class="stars" id="ratingStars"></span>
+                    <a class="review-link" href="#reviews" id="reviewCountLink">No reviews yet</a>
+                </div>
+                <div class="availability" id="availability"></div>
+                <div class="price-row">
+                    <span class="old-price" id="oldPrice"></span>
+                    <span class="new-price" id="newPrice"></span>
+                </div>
+                <div class="discount-text" id="discountText"></div>
+
+                <div class="option-group" id="variantGroup">
+                    <div class="option-label">
+                        <span id="variantLabel">Size</span>
+                        <button class="size-guide-link" id="sizeGuideToggle" type="button">Size guide</button>
+                    </div>
+                    <div class="variant-options" id="variantOptions"></div>
+                </div>
+                <div class="size-guide-panel" id="sizeGuidePanel"></div>
+
+                <div class="purchase-row">
+                    <div class="quantity" aria-label="Quantity selector">
+                        <button type="button" id="decreaseQty" aria-label="Decrease quantity">-</button>
+                        <input id="quantity" type="number" min="1" value="1" aria-label="Quantity">
+                        <button type="button" id="increaseQty" aria-label="Increase quantity">+</button>
+                    </div>
+                    <button class="add-cart" id="addToCart" type="button">Add to cart</button>
+                    <button class="buy-now" id="buyNow" type="button">Buy now</button>
+                </div>
+
+                <div class="payment-note">
+                    <span><i class="fas fa-money-bill-wave"></i> Cash on Delivery available</span>
+                    <span><i class="fas fa-wallet"></i> Whish payment available at checkout</span>
+                </div>
+
+                <div class="details">
+                    <details class="detail-section" open>
+                        <summary>Details</summary>
+                        <p id="detailsText"></p>
+                    </details>
+                    <details class="detail-section">
+                        <summary>Usage</summary>
+                        <p id="usageText"></p>
+                    </details>
+                    <details class="detail-section">
+                        <summary>Warnings</summary>
+                        <p id="warningsText"></p>
+                    </details>
+                </div>
+            </article>
+        </section>
+
+        <section class="product-section" id="reviews">
+            <div class="section-head">
+                <h2>Reviews</h2>
+            </div>
+            <div class="review-shell">
+                <div class="review-score">
+                    <span class="score-number" id="scoreNumber">0.0</span>
+                    <div class="stars" id="scoreStars"></div>
+                    <p id="scoreText">No reviews yet.</p>
+                </div>
+                <form class="review-form" id="reviewForm">
+                    <strong>Write a review</strong>
+                    <p class="review-eligibility-note" id="reviewEligibilityNote">Sign in to check whether this product is ready for review.</p>
+                    <div class="rating-picker" id="ratingPicker" aria-label="Choose rating"></div>
+                    <input id="reviewName" type="text" placeholder="Your name" required>
+                    <textarea id="reviewText" placeholder="Your review" required></textarea>
+                    <button class="submit-review" type="submit">Submit review</button>
+                </form>
+            </div>
+            <div class="reviews-list" id="reviewsList"></div>
+        </section>
+
+        <section class="product-section" id="relatedSection" hidden>
+            <div class="section-head">
+                <h2>You May Also Like</h2>
+                <a class="review-link" href="./search.html">View products</a>
+            </div>
+            <div class="related-grid" id="relatedGrid"></div>
+        </section>
+
+        <section class="product-section" id="brandSection" hidden>
+            <div class="section-head">
+                <h2 id="brandSectionTitle">More From This Brand</h2>
+                <a class="review-link" id="brandSearchLink" href="./search.html">View brand</a>
+            </div>
+            <div class="related-grid" id="brandGrid"></div>
+        </section>
+    </main>
+
+    <div class="toast" id="toast" aria-live="polite"></div>
+    <div class="zoom-modal" id="zoomModal" aria-modal="true" role="dialog" aria-label="Product image zoom">
+        <button class="zoom-close" id="zoomClose" type="button" aria-label="Close image zoom">x</button>
+        <img id="zoomImage" src="" alt="">
+    </div>
+    <div class="sticky-cart" id="stickyCart" aria-label="Sticky add to cart">
+        <div class="sticky-copy">
+            <div class="sticky-title" id="stickyTitle">Product</div>
+            <div class="sticky-price" id="stickyPrice">$0.00</div>
+        </div>
+        <button class="sticky-add" id="stickyAdd" type="button">Add</button>
+    </div>
+
+    <script src="./cart.js"></script>
+    <script src="./wishlist.js"></script>
+    <script type="module">
+        import { auth, db } from "./firebase-init.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+        import { collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, where } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get("product") || params.get("id") || window.__PRERENDERED_PRODUCT_ID__ || "";
+        const requestedVariant = params.get("variant") || "";
+
+        function productPath(product) {
+            const titleSlug = String(product?.title || "")
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "")
+                .slice(0, 80) || "product";
+            const idSlug = String(product?.id || "")
+                .toLowerCase()
+                .replace(/[^a-z0-9_-]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+            return `/product/${titleSlug}-${idSlug}/`;
+        }
+        const productLayout = document.getElementById("productLayout");
+        const emptyState = document.getElementById("emptyState");
+        const mainImage = document.getElementById("mainImage");
+        const thumbs = document.getElementById("thumbs");
+        const quantity = document.getElementById("quantity");
+        const toast = document.getElementById("toast");
+        const availability = document.getElementById("availability");
+        const variantOptions = document.getElementById("variantOptions");
+        const variantLabel = document.getElementById("variantLabel");
+        const variantGroup = document.getElementById("variantGroup");
+        const sizeGuideToggle = document.getElementById("sizeGuideToggle");
+        const sizeGuidePanel = document.getElementById("sizeGuidePanel");
+        const ratingStars = document.getElementById("ratingStars");
+        const reviewCountLink = document.getElementById("reviewCountLink");
+        const scoreNumber = document.getElementById("scoreNumber");
+        const scoreStars = document.getElementById("scoreStars");
+        const scoreText = document.getElementById("scoreText");
+        const reviewsList = document.getElementById("reviewsList");
+        const reviewForm = document.getElementById("reviewForm");
+        const reviewEligibilityNote = document.getElementById("reviewEligibilityNote");
+        const ratingPicker = document.getElementById("ratingPicker");
+        const relatedSection = document.getElementById("relatedSection");
+        const relatedGrid = document.getElementById("relatedGrid");
+        const brandSection = document.getElementById("brandSection");
+        const brandGrid = document.getElementById("brandGrid");
+        const brandSectionTitle = document.getElementById("brandSectionTitle");
+        const brandSearchLink = document.getElementById("brandSearchLink");
+        const zoomModal = document.getElementById("zoomModal");
+        const zoomImage = document.getElementById("zoomImage");
+        const stickyTitle = document.getElementById("stickyTitle");
+        const stickyPrice = document.getElementById("stickyPrice");
+        const addToCart = document.getElementById("addToCart");
+        const stickyAdd = document.getElementById("stickyAdd");
+        const buyNow = document.getElementById("buyNow");
+        let currentProduct = null;
+        let currentImages = [];
+        let selectedVariant = null;
+        let selectedRating = 5;
+        let allProducts = [];
+        let touchStartX = 0;
+        let reviews = [];
+        let currentUser = null;
+        let eligibleOrder = null;
+        let existingReview = null;
+        let reviewerName = "";
+
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, function (char) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char];
+            });
+        }
+
+        function parseMoney(value) {
+            const match = String(value || "").match(/[0-9]+(?:\.[0-9]+)?/);
+            const amount = match ? Number(match[0]) : 0;
+            return Number.isFinite(amount) ? amount : 0;
+        }
+
+        function getBrand(title) {
+            const clean = String(title || "").trim();
+            if (!clean) return "Other";
+            if (clean.includes(" - ")) return clean.split(" - ")[0].trim();
+            return clean.split(/\s+/)[0];
+        }
+
+        function normalizeProduct(data, id) {
+            const title = data.title || "Untitled product";
+            const newPrice = data.newPrice || "";
+            return {
+                id,
+                ...data,
+                title,
+                brand: data.brand || getBrand(title),
+                newPriceValue: Number(data.newPriceValue ?? parseMoney(newPrice)),
+                oldPriceValue: Number(data.oldPriceValue ?? parseMoney(data.oldPrice)),
+                variants: Array.isArray(data.variants) ? data.variants.map(normalizeVariant) : []
+            };
+        }
+
+        function normalizeVariant(variant) {
+            if (typeof variant === "string") {
+                return {
+                    name: variant,
+                    sku: "",
+                    oldPrice: "",
+                    newPrice: "",
+                    oldPriceValue: 0,
+                    newPriceValue: 0,
+                    inventory: null,
+                    available: true,
+                    imageUrl: ""
+                };
+            }
+            const name = variant?.name || variant?.title || variant?.size || variant?.label || "Option";
+            return {
+                name,
+                sku: variant?.sku || "",
+                oldPrice: variant?.oldPrice || "",
+                newPrice: variant?.newPrice || "",
+                oldPriceValue: Number(variant?.oldPriceValue ?? parseMoney(variant?.oldPrice)),
+                newPriceValue: Number(variant?.newPriceValue ?? parseMoney(variant?.newPrice)),
+                inventory: variant?.inventory === undefined || variant?.inventory === "" ? null : Number(variant.inventory),
+                available: variant?.available !== false,
+                imageUrl: variant?.imageUrl || ""
+            };
+        }
+
+        function starsHtml(value) {
+            const rating = Math.round(Number(value || 0));
+            return Array.from({ length: 5 }, function (_, index) {
+                return index < rating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+            }).join("");
+        }
+
+        function reviewDocumentId(userId) {
+            return userId + "__" + productId;
+        }
+
+        function baseProductId(item) {
+            return String(item?.id || "").split(":")[0];
+        }
+
+        function isDelivered(order) {
+            return String(order?.status || "").trim().toLowerCase() === "delivered / paid";
+        }
+
+        async function loadReviews() {
+            if (!productId) return;
+            try {
+                const snapshot = await getDocs(query(collection(db, "productReviews"), where("productId", "==", productId)));
+                reviews = snapshot.docs.map(function (reviewDoc) {
+                    return { id: reviewDoc.id, ...reviewDoc.data() };
+                }).sort(function (a, b) {
+                    const aTime = a.createdAt?.toMillis?.() || Date.parse(a.createdAt || 0) || 0;
+                    const bTime = b.createdAt?.toMillis?.() || Date.parse(b.createdAt || 0) || 0;
+                    return bTime - aTime;
+                });
+            } catch (error) {
+                console.error("Could not load reviews.", error);
+                reviews = [];
+            }
+            renderReviews();
+        }
+
+        async function loadReviewerName(user) {
+            let name = String(user?.displayName || "").trim();
+            try {
+                const profile = await getDoc(doc(db, "userProfiles", user.uid));
+                if (profile.exists()) name = String(profile.data().name || name).trim();
+            } catch (error) {
+                console.warn("Could not load reviewer profile.", error);
+            }
+            return name || String(user?.email || "Customer").split("@")[0];
+        }
+
+        async function checkReviewEligibility() {
+            eligibleOrder = null;
+            existingReview = null;
+            reviewEligibilityNote.classList.remove("is-eligible");
+            reviewForm.hidden = false;
+            Array.from(reviewForm.elements).forEach(function (field) { field.disabled = true; });
+
+            if (!currentProduct || !currentUser) {
+                reviewEligibilityNote.textContent = "Sign in to review products you purchased after their order is marked Delivered / paid.";
+                return;
+            }
+
+            reviewEligibilityNote.textContent = "Checking your delivered orders...";
+            try {
+                const orderSnapshot = await getDocs(query(collection(db, "orders"), where("userId", "==", currentUser.uid)));
+                eligibleOrder = orderSnapshot.docs.map(function (orderDoc) {
+                    return { id: orderDoc.id, ...orderDoc.data() };
+                }).find(function (order) {
+                    const purchasedIds = (order.productIds || []).concat((order.items || []).map(baseProductId));
+                    return isDelivered(order) && purchasedIds.includes(productId);
+                }) || null;
+
+                if (!eligibleOrder) {
+                    reviewEligibilityNote.textContent = "You can review this product after purchasing it and after the order is marked Delivered / paid.";
+                    return;
+                }
+
+                reviewerName = await loadReviewerName(currentUser);
+                const reviewSnapshot = await getDoc(doc(db, "productReviews", reviewDocumentId(currentUser.uid)));
+                existingReview = reviewSnapshot.exists() ? { id: reviewSnapshot.id, ...reviewSnapshot.data() } : null;
+                reviewEligibilityNote.textContent = existingReview
+                    ? "Verified purchase. You can update your review."
+                    : "Verified purchase. Your delivered order allows you to review this product.";
+                reviewEligibilityNote.classList.add("is-eligible");
+                Array.from(reviewForm.elements).forEach(function (field) { field.disabled = false; });
+                document.getElementById("reviewName").value = reviewerName;
+                document.getElementById("reviewName").readOnly = true;
+                if (existingReview) {
+                    selectedRating = Number(existingReview.rating || 5);
+                    document.getElementById("reviewText").value = existingReview.text || "";
+                    reviewForm.querySelector(".submit-review").textContent = "Update review";
+                    renderRatingPicker();
+                }
+            } catch (error) {
+                console.error("Could not check review eligibility.", error);
+                reviewEligibilityNote.textContent = "Could not check your delivered orders right now. Please try again later.";
+            }
+        }
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add("show");
+            window.clearTimeout(showToast.timer);
+            showToast.timer = window.setTimeout(function () {
+                toast.classList.remove("show");
+            }, 2200);
+        }
+
+        function getImages(product, variant = selectedVariant) {
+            const images = [
+                variant?.imageUrl,
+                product.imageUrl,
+                ...(Array.isArray(product.images) ? product.images : [])
+            ].filter(Boolean);
+            return [...new Set(images)];
+        }
+
+        function setImage(src, title) {
+            if (!src) {
+                mainImage.removeAttribute("src");
+                mainImage.alt = "";
+                mainImage.hidden = true;
+                if (!document.querySelector(".image-placeholder")) {
+                    mainImage.insertAdjacentHTML("afterend", '<div class="image-placeholder">Image coming soon</div>');
+                }
+                return;
+            }
+            document.querySelector(".image-placeholder")?.remove();
+            mainImage.hidden = false;
+            mainImage.src = src;
+            mainImage.alt = title;
+            zoomImage.src = src;
+            zoomImage.alt = title;
+            thumbs.querySelectorAll(".thumb").forEach(function (button) {
+                button.classList.toggle("active", button.dataset.src === src);
+            });
+        }
+
+        function renderGallery(product, variant = selectedVariant) {
+            const images = getImages(product, variant);
+            currentImages = images;
+            thumbs.innerHTML = images.map(function (src, index) {
+                return '<button class="thumb' + (index === 0 ? " active" : "") + '" type="button" data-src="' + escapeHtml(src) + '">' +
+                    '<img src="' + escapeHtml(src) + '" alt="' + escapeHtml(product.title) + ' view ' + (index + 1) + '">' +
+                '</button>';
+            }).join("");
+            setImage(images[0] || "", product.title);
+        }
+
+        function inferVariants(product) {
+            if (Array.isArray(product.variants) && product.variants.length) return product.variants.map(normalizeVariant);
+            if (Array.isArray(product.sizes) && product.sizes.length) return product.sizes.map(normalizeVariant);
+            const title = product.title || "";
+            const found = title.match(/\b\d+\s?(ml|caps|cap|comp|g|kg|oz|tablets|tabs)\b/ig);
+            if (found && found.length) return [...new Set(found.map(function (item) { return item.toUpperCase(); }))].map(normalizeVariant);
+            if (/support|brace|knee|wrist|ankle|back|neck/i.test(title + " " + product.category)) return ["S", "M", "L", "XL"].map(normalizeVariant);
+            return [normalizeVariant({
+                name: "Standard",
+                oldPrice: product.oldPrice || "",
+                newPrice: product.newPrice || "",
+                oldPriceValue: product.oldPriceValue || 0,
+                newPriceValue: product.newPriceValue || 0,
+                inventory: product.inventory,
+                available: product.available !== false,
+                imageUrl: product.imageUrl || ""
+            })];
+        }
+
+        function variantPrice(variant, product) {
+            const oldPrice = variant?.oldPrice || product.oldPrice || "";
+            const newPrice = variant?.newPrice || product.newPrice || "";
+            const oldValue = Number(variant?.oldPriceValue || product.oldPriceValue || parseMoney(oldPrice));
+            const newValue = Number(variant?.newPriceValue || product.newPriceValue || parseMoney(newPrice));
+            return { oldPrice, newPrice, oldValue, newValue };
+        }
+
+        function isSoldOut(product, variant = selectedVariant) {
+            const inventory = variant?.inventory ?? product.inventory;
+            return /sold\s*out/i.test(product.badge || "") || product.available === false || variant?.available === false || Number(inventory) === 0;
+        }
+
+        function renderPrice(product, variant = selectedVariant) {
+            const price = variantPrice(variant, product);
+            const hidePrice = isSoldOut(product, variant) || !price.newPrice;
+            const discount = price.oldValue > price.newValue && price.newValue > 0
+                ? Math.round(((price.oldValue - price.newValue) / price.oldValue) * 100)
+                : 0;
+            document.querySelector(".price-row").hidden = hidePrice;
+            document.getElementById("oldPrice").textContent = !hidePrice && price.oldPrice ? "MSRP: " + price.oldPrice : "";
+            document.getElementById("newPrice").textContent = !hidePrice ? price.newPrice : "";
+            document.getElementById("discountText").textContent = hidePrice ? "" : (discount ? "Save " + discount + "% today" : "Everyday care pricing");
+            document.getElementById("badge").textContent = product.badge || (!hidePrice && discount ? "-" + discount + "%" : "");
+            document.getElementById("badge").hidden = !(product.badge || (!hidePrice && discount));
+            stickyPrice.textContent = hidePrice ? "" : price.newPrice;
+            return price;
+        }
+
+        function sizeGuideText(product) {
+            const blob = [product.title, product.category, product.section].join(" ");
+            if (/support|brace|knee|wrist|ankle|back|neck/i.test(blob)) {
+                return "Measure the body area comfortably, then choose the size that matches the product pack. If you are between sizes, choose the larger support for comfort.";
+            }
+            if (/cream|gel|serum|sunscreen|skincare|skin/i.test(blob)) {
+                return "Size refers to pack volume. Choose smaller sizes for trial or travel, and larger sizes for daily routines.";
+            }
+            if (/caps|tablet|supplement|vitamin|mineral/i.test(blob)) {
+                return "Size refers to capsule, tablet, or serving count. Check suggested use before choosing the pack.";
+            }
+            return "Choose the option that matches the product packaging. Confirm directions and size details on the label before use.";
+        }
+
+        function renderVariants(product) {
+            const variants = inferVariants(product);
+            const hasStoredVariants = Array.isArray(product.variants) && product.variants.length > 0;
+            const requested = String(requestedVariant || "").toLowerCase();
+            selectedVariant = variants.find(function (variant) {
+                return requested && [variant.name, variant.sku].some(function (value) {
+                    return String(value || "").toLowerCase() === requested;
+                });
+            }) || variants[0] || null;
+            variantLabel.textContent = /support|brace/i.test(product.title + " " + product.category) ? "Size" : "Option";
+            variantOptions.innerHTML = variants.map(function (variant, index) {
+                const price = variantPrice(variant, product);
+                const selected = selectedVariant && variant.name === selectedVariant.name && variant.sku === selectedVariant.sku;
+                const out = isSoldOut(product, variant);
+                return '<button class="variant-option' + (selected ? " is-selected" : "") + (out ? " is-out" : "") + '" type="button" data-variant-index="' + index + '">' +
+                    '<span>' + escapeHtml(variant.name) + '</span>' +
+                    (!out && price.newPrice ? '<small>' + escapeHtml(price.newPrice) + '</small>' : '') +
+                '</button>';
+            }).join("");
+            sizeGuidePanel.textContent = sizeGuideText(product);
+            variantGroup.hidden = variants.length === 0 || (variants.length === 1 && variants[0].name === "Standard" && !hasStoredVariants);
+            renderPrice(product, selectedVariant);
+            renderAvailability(product, selectedVariant);
+            renderGallery(product, selectedVariant);
+        }
+
+        function renderAvailability(product, variant = selectedVariant) {
+            const inventory = variant?.inventory ?? product.inventory;
+            const soldOut = isSoldOut(product, variant);
+            const hasPrice = Boolean(variantPrice(variant, product).newPrice);
+            availability.classList.toggle("is-out", soldOut);
+            availability.innerHTML = soldOut
+                ? '<i class="fas fa-circle-xmark"></i> Out of stock'
+                : '<i class="fas fa-check-circle"></i> In stock' + (Number(inventory) > 0 ? ' (' + Number(inventory) + ')' : '');
+            addToCart.disabled = soldOut || !hasPrice;
+            buyNow.disabled = soldOut || !hasPrice;
+            stickyAdd.disabled = soldOut || !hasPrice;
+        }
+
+        function renderReviews() {
+            const average = reviews.length
+                ? reviews.reduce(function (total, review) { return total + Number(review.rating || 0); }, 0) / reviews.length
+                : 0;
+            ratingStars.innerHTML = starsHtml(average);
+            reviewCountLink.textContent = reviews.length ? reviews.length + " review" + (reviews.length === 1 ? "" : "s") : "No reviews yet";
+            scoreNumber.textContent = reviews.length ? average.toFixed(1) : "0.0";
+            scoreStars.innerHTML = starsHtml(average);
+            scoreText.textContent = reviews.length ? "Based on " + reviews.length + " customer review" + (reviews.length === 1 ? "" : "s") + "." : "No reviews yet.";
+            reviewsList.innerHTML = reviews.length ? reviews.map(function (review) {
+                return '<article class="review-card">' +
+                    '<strong>' + escapeHtml(review.name) + (review.verifiedPurchase ? ' · Verified purchase' : '') + '</strong>' +
+                    '<div class="stars">' + starsHtml(review.rating) + '</div>' +
+                    '<p>' + escapeHtml(review.text) + '</p>' +
+                '</article>';
+            }).join("") : '<article class="review-card"><strong>No reviews yet</strong><p>Be the first to review this product.</p></article>';
+        }
+
+        function renderRatingPicker() {
+            ratingPicker.innerHTML = Array.from({ length: 5 }, function (_, index) {
+                const value = index + 1;
+                return '<button type="button" data-rating="' + value + '" aria-label="' + value + ' stars">' +
+                    (value <= selectedRating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>') +
+                '</button>';
+            }).join("");
+        }
+
+        function productCard(product) {
+            const detailUrl = productPath(product);
+            const out = isSoldOut(product, null);
+            const image = product.imageUrl
+                ? '<img src="' + escapeHtml(product.imageUrl) + '" alt="' + escapeHtml(product.title) + '">'
+                : "";
+            return '<a class="related-card" href="' + detailUrl + '">' +
+                '<div class="related-image">' + image + '</div>' +
+                '<div class="related-body">' +
+                    '<div class="related-brand">' + escapeHtml(product.brand || getBrand(product.title)) + '</div>' +
+                    '<div class="related-title">' + escapeHtml(product.title) + '</div>' +
+                    (!out && product.newPrice ? '<div class="related-price">' + escapeHtml(product.newPrice) + '</div>' : '') +
+                '</div>' +
+            '</a>';
+        }
+
+        function renderRecommendations() {
+            const brand = getBrand(currentProduct.title);
+            const sameCategory = allProducts.filter(function (product) {
+                return product.id !== currentProduct.id && product.category && product.category === currentProduct.category;
+            }).slice(0, 4);
+            const sameBrand = allProducts.filter(function (product) {
+                return product.id !== currentProduct.id && (product.brand || getBrand(product.title)) === brand;
+            }).slice(0, 4);
+
+            if (sameCategory.length) {
+                relatedGrid.innerHTML = sameCategory.map(productCard).join("");
+                relatedSection.hidden = false;
+            }
+            if (sameBrand.length) {
+                brandSectionTitle.textContent = "More From " + brand;
+                brandSearchLink.href = "./search.html?q=" + encodeURIComponent(brand);
+                brandGrid.innerHTML = sameBrand.map(productCard).join("");
+                brandSection.hidden = false;
+            }
+        }
+
+        async function loadRecommendations() {
+            try {
+                const medsQuery = query(collection(db, "medicines"), orderBy("title"));
+                const snapshot = await getDocs(medsQuery);
+                allProducts = snapshot.docs.map(function (documentSnapshot) {
+                    return normalizeProduct(documentSnapshot.data(), documentSnapshot.id);
+                });
+                renderRecommendations();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function renderProduct(product) {
+            const brand = getBrand(product.title);
+
+            document.title = product.title + " | Heliomed";
+            document.getElementById("breadcrumbName").textContent = product.title;
+            document.getElementById("brand").textContent = brand;
+            document.getElementById("title").textContent = product.title;
+            document.getElementById("category").textContent = product.category || "Product";
+            document.getElementById("section").textContent = product.section ? "/ " + product.section : "";
+            document.getElementById("detailsText").textContent = product.description || product.title + " from " + brand + ", selected for Heliomed care routines.";
+            document.getElementById("usageText").textContent = product.usage || "Use as directed on the product packaging or as recommended by your healthcare professional.";
+            document.getElementById("warningsText").textContent = product.warnings || "Read the label before use. Keep out of reach of children. Ask a healthcare professional if you are unsure whether this product is suitable for you.";
+            stickyTitle.textContent = product.title;
+
+            renderVariants(product);
+            loadReviews();
+            productLayout.hidden = false;
+            emptyState.classList.remove("visible");
+            document.body.classList.add("has-product");
+            document.getElementById("ssg-fallback")?.remove();
+            checkReviewEligibility();
+        }
+
+        async function loadProduct() {
+            if (!productId) {
+                emptyState.classList.add("visible");
+                return;
+            }
+            try {
+                const snapshot = await getDoc(doc(db, "medicines", productId));
+                if (!snapshot.exists()) {
+                    emptyState.classList.add("visible");
+                    return;
+                }
+                currentProduct = normalizeProduct(snapshot.data(), snapshot.id);
+                renderProduct(currentProduct);
+                loadRecommendations();
+            } catch (error) {
+                console.error(error);
+                emptyState.textContent = "Could not load this product right now.";
+                emptyState.classList.add("visible");
+            }
+        }
+
+        thumbs.addEventListener("click", function (event) {
+            const button = event.target.closest(".thumb");
+            if (!button) return;
+            setImage(button.dataset.src, currentProduct?.title || "Product");
+        });
+        thumbs.addEventListener("keydown", function (event) {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            const button = event.target.closest(".thumb");
+            if (!button) return;
+            event.preventDefault();
+            setImage(button.dataset.src, currentProduct?.title || "Product");
+        });
+        variantOptions.addEventListener("click", function (event) {
+            const button = event.target.closest(".variant-option");
+            if (!button) return;
+            const variants = inferVariants(currentProduct || {});
+            selectedVariant = variants[Number(button.dataset.variantIndex)] || variants[0] || null;
+            variantOptions.querySelectorAll(".variant-option").forEach(function (option) {
+                option.classList.toggle("is-selected", option === button);
+            });
+            renderPrice(currentProduct, selectedVariant);
+            renderAvailability(currentProduct, selectedVariant);
+            renderGallery(currentProduct, selectedVariant);
+        });
+        sizeGuideToggle.addEventListener("click", function () {
+            sizeGuidePanel.classList.toggle("visible");
+        });
+        document.getElementById("decreaseQty").addEventListener("click", function () {
+            quantity.value = Math.max(1, Number(quantity.value || 1) - 1);
+        });
+        document.getElementById("increaseQty").addEventListener("click", function () {
+            quantity.value = Number(quantity.value || 1) + 1;
+        });
+        function addCurrentToCart() {
+            if (!currentProduct || addToCart.disabled) return false;
+            const selectedQuantity = Math.max(1, Number(quantity.value || 1));
+            const brand = getBrand(currentProduct.title);
+            const price = variantPrice(selectedVariant, currentProduct);
+            const variantName = selectedVariant?.name && selectedVariant.name !== "Standard" ? selectedVariant.name : "";
+            const variantKey = selectedVariant?.sku || variantName;
+            const variantUrl = variantName ? window.location.pathname + "?product=" + encodeURIComponent(currentProduct.id) + "&variant=" + encodeURIComponent(variantName) : window.location.pathname + window.location.search;
+            window.HeliomedCart.addItem({
+                id: currentProduct.id + (variantKey ? ":" + variantKey : ""),
+                title: currentProduct.title + (variantName ? " - " + variantName : ""),
+                brand: brand,
+                imageUrl: selectedVariant?.imageUrl || currentProduct.imageUrl || "",
+                oldPrice: price.oldPrice,
+                newPrice: price.newPrice,
+                price: Number(price.newValue || parseMoney(price.newPrice)),
+                url: variantUrl
+            }, selectedQuantity);
+            showToast((currentProduct?.title || "Product") + " added to cart.");
+            return true;
+        }
+        addToCart.addEventListener("click", addCurrentToCart);
+        stickyAdd.addEventListener("click", addCurrentToCart);
+        buyNow.addEventListener("click", function () {
+            if (addCurrentToCart()) window.location.href = "./checkout.html";
+        });
+        document.getElementById("zoomTrigger").addEventListener("click", function () {
+            if (!mainImage.src) return;
+            zoomModal.classList.add("visible");
+        });
+        mainImage.addEventListener("click", function () {
+            if (!mainImage.src) return;
+            zoomModal.classList.add("visible");
+        });
+        document.getElementById("zoomClose").addEventListener("click", function () {
+            zoomModal.classList.remove("visible");
+        });
+        zoomModal.addEventListener("click", function (event) {
+            if (event.target === zoomModal) zoomModal.classList.remove("visible");
+        });
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") zoomModal.classList.remove("visible");
+        });
+        document.querySelector(".main-image").addEventListener("touchstart", function (event) {
+            touchStartX = event.changedTouches[0].clientX;
+        }, { passive: true });
+        document.querySelector(".main-image").addEventListener("touchend", function (event) {
+            if (currentImages.length < 2) return;
+            const delta = event.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(delta) < 40) return;
+            const currentIndex = Math.max(0, currentImages.indexOf(mainImage.getAttribute("src")));
+            const nextIndex = delta < 0
+                ? (currentIndex + 1) % currentImages.length
+                : (currentIndex - 1 + currentImages.length) % currentImages.length;
+            setImage(currentImages[nextIndex], currentProduct?.title || "Product");
+        }, { passive: true });
+        ratingPicker.addEventListener("click", function (event) {
+            const button = event.target.closest("button[data-rating]");
+            if (!button) return;
+            selectedRating = Number(button.dataset.rating);
+            renderRatingPicker();
+        });
+        reviewForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            if (!currentProduct || !currentUser || !eligibleOrder) {
+                showToast("Only delivered purchases can be reviewed.");
+                return;
+            }
+            const name = reviewerName || document.getElementById("reviewName").value.trim();
+            const text = document.getElementById("reviewText").value.trim();
+            if (!name || !text) return;
+            const reviewData = {
+                productId,
+                userId: currentUser.uid,
+                orderId: eligibleOrder.id,
+                name,
+                text,
+                rating: Number(selectedRating),
+                verifiedPurchase: true,
+                updatedAt: serverTimestamp()
+            };
+            if (!existingReview) reviewData.createdAt = serverTimestamp();
+            try {
+                await setDoc(doc(db, "productReviews", reviewDocumentId(currentUser.uid)), reviewData, { merge: true });
+                showToast(existingReview ? "Review updated." : "Review submitted.");
+                await loadReviews();
+                await checkReviewEligibility();
+            } catch (error) {
+                console.error("Could not save review.", error);
+                showToast("Could not save your review.");
+            }
+        });
+        document.querySelector(".search-box i").addEventListener("click", function () {
+            const query = document.querySelector(".search-box input").value.trim();
+            window.location.href = "./search.html" + (query ? "?q=" + encodeURIComponent(query) : "");
+        });
+        document.querySelector(".search-box input").addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                const query = event.currentTarget.value.trim();
+                window.location.href = "./search.html" + (query ? "?q=" + encodeURIComponent(query) : "");
+            }
+        });
+
+        renderRatingPicker();
+        onAuthStateChanged(auth, function (user) {
+            currentUser = user;
+            checkReviewEligibility();
+        });
+        loadProduct();
+    </script>
+    <script type="module" src="./navbar-categories.js"></script>
+    <script src="./header.js"></script>
+</body>
+</html>

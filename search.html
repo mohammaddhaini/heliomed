@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/ico" href="icon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search | Heliomed</title>
+    <meta name="description" content="Search Heliomed products.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./responsive.css">
+    <style>
+        :root {
+            --brand-blue: #1D5F73;
+            --brand-pink: #C2A26B;
+            --brand-dark: #07111F;
+            --brand-soft-blue: #FBF7F0;
+            --brand-soft-pink: #F8F2E8;
+            --brand-border: #E8DCC8;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #fff;
+            color: var(--brand-dark);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+        a { color: inherit; text-decoration: none; }
+
+        main {
+            width: min(1320px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 24px 0 72px;
+        }
+        .search-layout {
+            display: grid;
+            grid-template-columns: 292px minmax(0, 1fr);
+            gap: 30px;
+            align-items: start;
+        }
+        .filter-sidebar {
+            position: sticky;
+            top: 94px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(7, 17, 31, 0.04);
+        }
+        .mobile-filter-toggle,
+        .filter-panel-header,
+        .apply-filters {
+            display: none;
+        }
+        .side-search {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .side-search-control {
+            position: relative;
+        }
+        .side-search input {
+            width: 100%;
+            min-height: 48px;
+            border: 1px solid #d6d6d6;
+            border-radius: 4px;
+            padding: 0 38px 0 14px;
+            font-size: 14px;
+            outline: none;
+        }
+        .side-search input:focus { border-color: var(--brand-pink); }
+        .mobile-filter-toggle:focus-visible,
+        .close-filters:focus-visible,
+        .apply-filters:focus-visible,
+        .clear-filters:focus-visible,
+        .filter-heading:focus-visible,
+        .side-search input:focus-visible,
+        .filter-search:focus-visible,
+        .price-body input:focus-visible {
+            outline: 3px solid rgba(29, 95, 115, 0.28);
+            outline-offset: 2px;
+        }
+        .clear-search {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 0;
+            border-radius: 50%;
+            background: #d1c5b3;
+            color: #fff;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            font-size: 12px;
+        }
+        .filter-group {
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .filter-group.is-hidden { display: none; }
+        .filter-heading {
+            width: 100%;
+            min-height: 46px;
+            border: 0;
+            background: #fff;
+            color: var(--brand-dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+        .filter-heading i { transition: transform 0.2s ease; }
+        .filter-group.is-collapsed .filter-heading i { transform: rotate(-90deg); }
+        .filter-body {
+            max-height: 300px;
+            overflow: auto;
+            padding: 2px 14px 15px;
+        }
+        .filter-group.is-collapsed .filter-body { display: none; }
+        .filter-search {
+            width: 100%;
+            min-height: 36px;
+            margin: 0 0 10px;
+            border: 1px solid #d6d6d6;
+            padding: 0 10px;
+            outline: none;
+        }
+        .check-row {
+            display: grid;
+            grid-template-columns: 16px 1fr auto;
+            gap: 8px;
+            align-items: center;
+            min-height: 32px;
+            color: #172739;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .check-row input {
+            width: 13px;
+            height: 13px;
+            margin: 0;
+            accent-color: var(--brand-pink);
+        }
+        .check-row.is-empty {
+            color: #9aa3aa;
+        }
+        .check-count {
+            color: var(--brand-pink);
+            font-weight: 800;
+        }
+        .check-row.is-empty .check-count {
+            color: #9aa3aa;
+        }
+        .price-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 0 12px 14px;
+        }
+        .price-body input {
+            width: 100%;
+            min-height: 36px;
+            border: 1px solid #d6d6d6;
+            padding: 0 10px;
+            outline: none;
+        }
+        .clear-filters {
+            width: calc(100% - 24px);
+            min-height: 40px;
+            margin: 14px 12px;
+            border: 1px solid var(--brand-border);
+            background: var(--brand-soft-pink);
+            color: var(--brand-dark);
+            cursor: pointer;
+            font-weight: 900;
+        }
+        .clear-filters:hover {
+            background: var(--brand-pink);
+            color: #fff;
+        }
+        .category-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 22px;
+            align-items: center;
+            min-height: 34px;
+            margin-bottom: 22px;
+            font-size: 13px;
+        }
+        .category-links span {
+            color: #53616c;
+            letter-spacing: 0.8px;
+        }
+        .category-links button {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            color: var(--brand-dark);
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 13px;
+        }
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 0;
+            margin: -8px 0 20px;
+        }
+        .active-chip {
+            min-height: 30px;
+            border: 1px solid var(--brand-border);
+            background: var(--brand-soft-blue);
+            color: var(--brand-dark);
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 0 10px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .active-chip i {
+            color: var(--brand-pink);
+            font-size: 11px;
+        }
+        .results-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+        .status-row {
+            color: #53616c;
+            font-size: 14px;
+            font-weight: 800;
+        }
+        .sort-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #53616c;
+            font-size: 13px;
+            font-weight: 800;
+        }
+        .sort-wrap select {
+            min-height: 38px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+            color: var(--brand-dark);
+            padding: 0 10px;
+            outline: none;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 24px 18px;
+        }
+        .medicine-card {
+            background: #fff;
+            border: 1px solid var(--brand-border);
+            display: flex;
+            min-height: 100%;
+            flex-direction: column;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        }
+        .medicine-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--brand-pink);
+        }
+        .medicine-image {
+            position: relative;
+            height: 236px;
+            background: #f8f8f8;
+            overflow: hidden;
+            border-bottom: 1px solid #f0ebe3;
+        }
+        .medicine-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        .medicine-placeholder {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            background: linear-gradient(135deg, #fff, var(--brand-soft-blue));
+            color: #6c756f;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--brand-pink);
+            color: #fff;
+            padding: 5px 9px;
+            font-size: 11px;
+            font-weight: 900;
+            border-radius: 999px;
+        }
+        .medicine-title {
+            margin: 0 0 8px;
+            font-size: 14px;
+            line-height: 1.32;
+            font-weight: 800;
+            min-height: 56px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .medicine-brand {
+            color: var(--brand-pink);
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 9px;
+            font-weight: 900;
+            letter-spacing: 0.4px;
+        }
+        .medicine-body {
+            padding: 14px;
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+        }
+        .medicine-price {
+            display: flex;
+            align-items: baseline;
+            justify-content: flex-start;
+            gap: 6px;
+            color: #999;
+            font-size: 13px;
+            min-height: 24px;
+            margin-top: auto;
+            flex-wrap: wrap;
+        }
+        .old-price { text-decoration: line-through; }
+        .new-price {
+            color: #b22709;
+            font-size: 16px;
+            font-weight: 900;
+        }
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 42px;
+            gap: 8px;
+            margin-top: 14px;
+        }
+        .quick-add,
+        .add-card-btn,
+        .wishlist-btn {
+            min-height: 40px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+            color: var(--brand-dark);
+            cursor: pointer;
+            font-weight: 900;
+        }
+        .quick-add {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border-color: var(--brand-border);
+            color: var(--brand-dark);
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+        .add-card-btn {
+            background: var(--brand-pink);
+            border-color: var(--brand-pink);
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+        .wishlist-btn {
+            color: var(--brand-pink);
+            font-size: 16px;
+        }
+        .quick-add:hover,
+        .wishlist-btn:hover {
+            filter: brightness(0.96);
+        }
+        .empty-state {
+            display: none;
+            border: 1px dashed var(--brand-border);
+            background: #fff;
+            padding: 28px;
+            color: #53616c;
+            font-weight: 700;
+            text-align: center;
+        }
+        .empty-state.visible { display: block; }
+
+        @media (max-width: 1120px) {
+            .header { padding: 12px 18px; gap: 12px; }
+            .nav-links { gap: 10px; }
+            .nav-links li { font-size: 11px; }
+            .search-box input { width: 150px; }
+            .results-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .medicine-image { height: 220px; }
+        }
+        @media (max-width: 820px) {
+            main { width: min(100% - 20px, 1320px); }
+            .search-layout { grid-template-columns: 1fr; }
+            body.filter-panel-open { overflow: hidden; }
+            .results-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .medicine-image { height: 220px; }
+            .mobile-filter-toggle {
+                width: auto;
+                min-width: 132px;
+                min-height: 44px;
+                margin: 0 0 16px;
+                padding: 0 16px;
+                border: 1px solid var(--brand-border);
+                border-radius: 0;
+                background: #fff;
+                color: var(--brand-dark);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 900;
+                text-transform: uppercase;
+                transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+            }
+            .mobile-filter-toggle:hover { border-color: var(--brand-blue); color: var(--brand-blue); }
+            .mobile-filter-toggle i { color: var(--brand-pink); font-size: 14px; }
+            .filter-sidebar {
+                position: fixed;
+                inset: 0;
+                width: 100vw;
+                height: 100dvh;
+                max-height: none;
+                border: 0;
+                box-shadow: none;
+                padding: 56px 0 18px;
+                overflow-y: auto;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transform: translateX(-105%);
+                transition: transform 0.28s ease;
+                z-index: 1140;
+            }
+            body.filter-panel-open .filter-sidebar {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+                transform: translateX(0);
+            }
+            .filter-panel-header {
+                position: fixed;
+                inset: 0 0 auto 0;
+                width: 100vw;
+                height: 56px;
+                padding: 0 16px;
+                border-bottom: 1px solid var(--brand-border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: #fff;
+                color: var(--brand-dark);
+                font-size: 14px;
+                font-weight: 900;
+                text-transform: uppercase;
+                z-index: 1;
+            }
+            .close-filters {
+                width: 44px;
+                height: 44px;
+                border: 0;
+                background: transparent;
+                color: var(--brand-dark);
+                cursor: pointer;
+                font-size: 16px;
+            }
+            .side-search { padding: 20px; }
+            .filter-heading {
+                min-height: 54px;
+                padding: 0 20px;
+                font-size: 14px;
+                letter-spacing: 0;
+            }
+            .filter-body {
+                max-height: none;
+                padding: 4px 20px 18px;
+            }
+            .check-row {
+                min-height: 44px;
+                grid-template-columns: 18px 1fr auto;
+                font-size: 14px;
+            }
+            .check-row input {
+                width: 16px;
+                height: 16px;
+            }
+            .price-body {
+                padding: 0 20px 18px;
+            }
+            .apply-filters {
+                width: calc(100% - 40px);
+                min-height: 46px;
+                margin: 0 20px 16px;
+                border: 0;
+                background: var(--brand-pink);
+                color: #fff;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                font-weight: 900;
+                text-transform: uppercase;
+            }
+            .clear-filters {
+                width: calc(100% - 40px);
+                min-height: 44px;
+                margin: 16px 20px 10px;
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .mobile-filter-toggle,
+                .filter-sidebar {
+                    transition: none;
+                }
+            }
+            .category-links { gap: 14px; margin-bottom: 16px; }
+            .results-top { align-items: flex-start; flex-direction: column; }
+            .results-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
+            .medicine-image { height: 190px; }
+        }
+        @media (max-width: 460px) {
+            .results-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+        <header class="header">
+            <div class="logo">
+                <a href="./index.html">
+                    <img src="heliomed-logo.png" alt="Heliomed logo">
+                </a>
+            </div>
+    
+            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-navigation" aria-expanded="false">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+    
+            <ul class="nav-links" id="primary-navigation">
+                <li class="nav-panel-header" aria-hidden="true">
+                    <span class="nav-panel-title">MENU</span>
+                    <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=parapharmacy" class="nav-trigger">PARAPHARMACY <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu">
+                        <div class="mega-grid">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=skin-care">Skin Care</a>
+                                <a href="./collection.html?collection=hair-care">Hair Care</a>
+                                <a href="./collection.html?collection=face-care">Face Care</a>
+                                <a href="./collection.html?collection=dental-care">Dental Care</a>
+                                <a href="./collection.html?collection=body-care">Body Care</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=nail-care">Nail Care</a>
+                                <a href="./collection.html?collection=foot-care">Foot Care</a>
+                                <a href="./collection.html?collection=baby-care">Baby Care</a>
+                                <a href="./collection.html?collection=mother-care">Mother Care</a>
+                                <a href="./collection.html?collection=kids-care">Kids Care</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=men-care">Men Care</a>
+                                <a href="./collection.html?collection=geriatric-care">Geriatric Care</a>
+                                <a href="./collection.html?collection=nutrition">Nutrition</a>
+                                <a href="./collection.html?collection=supplemnts">Supplements</a>
+                            </div>
+                            <div class="mega-column">
+                                <a class="category-view-all" style="border:0;padding:5px 0;margin:0;" href="./collection.html?collection=parapharmacy">View all Parapharmacy &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=medical-supplies" class="nav-trigger">MEDICAL SUPPLIES <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu">
+                        <div class="mega-grid three">
+                            <div class="mega-column">
+                                <strong>Supports</strong>
+                                <a href="./collection.html?collection=ankle-support">Ankle Support</a>
+                                <a href="./collection.html?collection=back-support">Back Support</a>
+                                <a href="./collection.html?collection=cervical-support">Cervical Support</a>
+                                <a href="./collection.html?collection=disk-trac">Disk Trac</a>
+                                <a href="./collection.html?collection=knee-support">Knee Support</a>
+                                <a href="./collection.html?collection=shoulder-and-elbow">Shoulder &amp; Elbow</a>
+                                <a href="./collection.html?collection=wrist-and-hand-braces">Wrist &amp; Hand Braces</a>
+                            </div>
+                            <div class="mega-column">
+                                <strong>Disposables</strong>
+                                <a href="./collection.html?collection=gloves">Gloves</a>
+                                <a href="./collection.html?collection=guaze">Gauze</a>
+                                <a href="./collection.html?collection=needles">Needles</a>
+                                <a href="./collection.html?collection=suture">Sutures</a>
+                                <a href="./collection.html?collection=blades">Blades</a>
+                                <a href="./collection.html?collection=wound-care">Wound Care</a>
+                                <a href="./collection.html?collection=drapes">Drapes / Apparel</a>
+                            </div>
+                            <div class="mega-column">
+                                <strong>Other</strong>
+                                <a href="./collection.html?collection=home-care">Home Care</a>
+                                <a href="./collection.html?collection=foot-care">Foot Care</a>
+                                <a href="./collection.html?collection=liposuction">Liposuction</a>
+                                <a href="./collection.html?collection=pediatric">Pediatric</a>
+                                <a href="./collection.html?collection=vascular">Vascular</a>
+                                <a href="./collection.html?collection=pillows">Pillows</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=organic" class="nav-trigger">ORGANIC <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu compact">
+                        <div class="mega-grid">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=organic">View All Organic</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=perfume" class="nav-trigger">PERFUME <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu compact">
+                        <div class="mega-grid">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=women">Women</a>
+                                <a href="./collection.html?collection=men">Men</a>
+                                <a href="./collection.html?collection=kids">Kids</a>
+                                <a href="./collection.html?collection=bundles">Bundles</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=makeup" class="nav-trigger">MAKEUP <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu compact">
+                        <div class="mega-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));max-width:360px;">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=face">Face</a>
+                                <a href="./collection.html?collection=eye">Eye</a>
+                                <a href="./collection.html?collection=lips">Lips</a>
+                                <a href="./collection.html?collection=nail">Nail</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=tools-and-accessories">Tools &amp; Accessories</a>
+                                <a href="./collection.html?collection=makeup-remover">Makeup Remover</a>
+                                <a href="./collection.html?collection=medical-makeup">Medical Makeup</a>
+                                <a href="./collection.html?collection=palettes">Palettes</a>
+                                <a href="./collection.html?collection=korean-products">Korean Products</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                 <li class="nav-item">
+                    <a href="./collection.html?collection=offers" class="nav-trigger"><i class="fas fa-tags"></i> OFFERS</a>
+                </li>
+                <li class="nav-item"><a href="#blog" class="nav-trigger"><i class="fas fa-newspaper"></i> BLOG</a></li>
+                <li class="nav-item mobile-only-nav"><a href="./account.html" class="nav-trigger account-link"><i class="far fa-user"></i> LOGIN</a></li>
+                <li class="nav-item mobile-only-nav"><a href="./wishlist.html" class="nav-trigger"><i class="far fa-heart"></i> WISHLIST</a></li>
+                <li class="nav-item mobile-only-nav"><a href="./cart.html" class="nav-trigger"><i class="fas fa-shopping-bag"></i> CART</a></li>
+            </ul>
+    
+            <div class="header-actions">
+                <div class="search-box">
+                    <input type="text" placeholder="Search for products">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="header-icons">
+                    <a href="./account.html" aria-label="Open account"><i class="far fa-user"></i></a>
+                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist">
+                        <i class="far fa-heart"></i>
+                        <span class="wishlist-count">0</span>
+                    </a>
+                    <a class="cart-icon-wrapper" href="./cart.html" aria-label="Open cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+    <main>
+        <div class="search-layout">
+            <aside class="filter-sidebar" id="filterSidebar" aria-label="Product filters">
+                <div class="filter-panel-header">
+                    <span>Filters</span>
+                    <button class="close-filters" id="closeFilters" type="button" aria-label="Close filters"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="side-search">
+                    <div class="side-search-control">
+                        <input id="searchInput" type="search" autocomplete="off" placeholder="SEARCH" aria-label="Search products">
+                        <button class="clear-search" id="clearSearch" type="button" aria-label="Clear search">x</button>
+                    </div>
+                </div>
+                <div class="filter-group" data-filter-group="category">
+                    <button class="filter-heading" type="button">Category <i class="fas fa-chevron-down"></i></button>
+                    <div class="filter-body" id="categoryFilters"></div>
+                </div>
+                <div class="filter-group" data-filter-group="brand">
+                    <button class="filter-heading" type="button">Brand <i class="fas fa-chevron-down"></i></button>
+                    <div class="filter-body" id="brandFilters"></div>
+                </div>
+                <div class="filter-group" data-filter-group="section">
+                    <button class="filter-heading" type="button">Section <i class="fas fa-chevron-down"></i></button>
+                    <div class="filter-body" id="sectionFilters"></div>
+                </div>
+                <div class="filter-group" data-filter-group="offer">
+                    <button class="filter-heading" type="button">Offer <i class="fas fa-chevron-down"></i></button>
+                    <div class="filter-body" id="offerFilters"></div>
+                </div>
+                <div class="filter-group" data-filter-group="price">
+                    <button class="filter-heading" type="button">Price <i class="fas fa-chevron-down"></i></button>
+                    <div class="price-body">
+                        <input id="minPrice" type="number" min="0" step="0.01" placeholder="Min">
+                        <input id="maxPrice" type="number" min="0" step="0.01" placeholder="Max">
+                    </div>
+                </div>
+                <button class="clear-filters" id="clearFilters" type="button">Clear filters</button>
+                <button class="apply-filters" id="applyFilters" type="button">View results</button>
+            </aside>
+
+            <section class="results-area">
+                <button class="mobile-filter-toggle" id="mobileFilterToggle" type="button" aria-controls="filterSidebar" aria-expanded="false">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Filters</span>
+                </button>
+                <div class="category-links" id="categoryLinks"></div>
+                <div class="active-filters" id="activeFilters" aria-label="Active filters"></div>
+                <div class="results-top">
+                    <div class="status-row" id="statusRow">Loading products...</div>
+                    <label class="sort-wrap">Sort
+                        <select id="sortSelect" aria-label="Sort products">
+                            <option value="az">A to Z</option>
+                            <option value="za">Z to A</option>
+                            <option value="priceAsc">Price: low to high</option>
+                            <option value="priceDesc">Price: high to low</option>
+                        </select>
+                    </label>
+                </div>
+                <section class="results-grid" id="resultsGrid" aria-label="Search results"></section>
+                <div class="empty-state" id="emptyState">No products matched that search.</div>
+            </section>
+        </div>
+    </main>
+
+    <script src="./cart.js"></script>
+    <script src="./wishlist.js"></script>
+    <script type="module">
+        import { db } from "./firebase-init.js";
+        import { collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const searchInput = document.getElementById("searchInput");
+        const clearSearch = document.getElementById("clearSearch");
+        const sortSelect = document.getElementById("sortSelect");
+        const minPrice = document.getElementById("minPrice");
+        const maxPrice = document.getElementById("maxPrice");
+        const clearFilters = document.getElementById("clearFilters");
+        const mobileFilterToggle = document.getElementById("mobileFilterToggle");
+        const closeFilters = document.getElementById("closeFilters");
+        const applyFilters = document.getElementById("applyFilters");
+        const categoryLinks = document.getElementById("categoryLinks");
+        const activeFilters = document.getElementById("activeFilters");
+        const statusRow = document.getElementById("statusRow");
+        const resultsGrid = document.getElementById("resultsGrid");
+        const emptyState = document.getElementById("emptyState");
+        const headerSearchInput = document.querySelector(".search-box input");
+        const headerSearchIcon = document.querySelector(".search-box i");
+        const filterTargets = {
+            category: document.getElementById("categoryFilters"),
+            brand: document.getElementById("brandFilters"),
+            section: document.getElementById("sectionFilters"),
+            offer: document.getElementById("offerFilters")
+        };
+        const fieldMap = {
+            category: "category",
+            brand: "brand",
+            section: "section",
+            offer: "badge"
+        };
+        const selected = {
+            category: new Set(),
+            brand: new Set(),
+            section: new Set(),
+            offer: new Set()
+        };
+        let products = [];
+
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, function (char) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char];
+            });
+        }
+
+        function parseMoney(value) {
+            const match = String(value || "").match(/[0-9]+(?:\.[0-9]+)?/);
+            const amount = match ? Number(match[0]) : 0;
+            return Number.isFinite(amount) ? amount : 0;
+        }
+
+        function getBrand(title) {
+            const clean = String(title || "").trim();
+            if (!clean) return "Other";
+            if (clean.includes(" - ")) return clean.split(" - ")[0].trim();
+            return clean.split(/\s+/)[0];
+        }
+
+        function getSearchBlob(product) {
+            return [product.title, product.section, product.category, product.badge, product.brand, product.searchText, product.imageQuery].join(" ").toLowerCase();
+        }
+
+        function normalizeVariant(variant) {
+            if (typeof variant === "string") return { name: variant };
+            return {
+                name: variant?.name || variant?.title || variant?.size || variant?.label || "",
+                oldPrice: variant?.oldPrice || "",
+                newPrice: variant?.newPrice || "",
+                oldPriceValue: Number(variant?.oldPriceValue ?? parseMoney(variant?.oldPrice)),
+                newPriceValue: Number(variant?.newPriceValue ?? parseMoney(variant?.newPrice)),
+                imageUrl: variant?.imageUrl || ""
+            };
+        }
+        function normalizeProduct(data, index, id) {
+            const title = data.title || "Untitled product";
+            const variants = Array.isArray(data.variants) ? data.variants.map(normalizeVariant) : [];
+            const firstVariant = variants[0] || {};
+            return {
+                id,
+                ...data,
+                imageUrl: data.imageUrl || firstVariant.imageUrl || "",
+                title,
+                brand: getBrand(title),
+                oldPrice: data.oldPrice || firstVariant.oldPrice || "",
+                newPrice: data.newPrice || firstVariant.newPrice || "",
+                newPriceValue: Number(data.newPriceValue ?? firstVariant.newPriceValue ?? parseMoney(data.newPrice || firstVariant.newPrice)),
+                oldPriceValue: Number(data.oldPriceValue ?? firstVariant.oldPriceValue ?? parseMoney(data.oldPrice || firstVariant.oldPrice)),
+                variants
+            };
+        }
+
+        function productIsOutOfStock(product) {
+            return /sold\s*out/i.test(product.badge || "") || product.available === false || Number(product.inventory || 0) === 0;
+        }
+
+        function productHasVisiblePrice(product) {
+            return !productIsOutOfStock(product) && Boolean(product.newPrice);
+        }
+
+        async function loadProducts() {
+            try {
+                const medsQuery = query(collection(db, "medicines"), orderBy("title"));
+                const snapshot = await getDocs(medsQuery);
+                products = snapshot.docs.map(function (documentSnapshot, index) {
+                    return normalizeProduct(documentSnapshot.data(), index, documentSnapshot.id);
+                });
+                render();
+            } catch (error) {
+                products = [];
+                statusRow.textContent = "Could not load products.";
+                emptyState.classList.add("visible");
+                console.error(error);
+            }
+        }
+
+        function matchesFacet(product, group) {
+            const values = selected[group];
+            if (!values.size) return true;
+            return values.has(product[fieldMap[group]]);
+        }
+
+        function filteredProducts(options = {}) {
+            const exclude = options.exclude;
+            const term = searchInput.value.trim().toLowerCase();
+            const min = minPrice.value === "" ? null : Number(minPrice.value);
+            const max = maxPrice.value === "" ? null : Number(maxPrice.value);
+            return products.filter(function (product) {
+                const price = Number(product.newPriceValue ?? parseMoney(product.newPrice));
+                return (!term || getSearchBlob(product).includes(term)) &&
+                    (exclude === "category" || matchesFacet(product, "category")) &&
+                    (exclude === "brand" || matchesFacet(product, "brand")) &&
+                    (exclude === "section" || matchesFacet(product, "section")) &&
+                    (exclude === "offer" || matchesFacet(product, "offer")) &&
+                    (exclude === "price" || min === null || price >= min) &&
+                    (exclude === "price" || max === null || price <= max);
+            });
+        }
+
+        function countValues(group) {
+            const field = fieldMap[group];
+            const counts = new Map();
+            filteredProducts({ exclude: group }).forEach(function (product) {
+                const value = product[field];
+                if (!value) return;
+                counts.set(value, (counts.get(value) || 0) + 1);
+            });
+            selected[group].forEach(function (value) {
+                if (!counts.has(value)) counts.set(value, 0);
+            });
+            return [...counts.entries()].sort(function (a, b) {
+                return String(a[0]).localeCompare(String(b[0]));
+            });
+        }
+
+        function renderFacet(group) {
+            const values = countValues(group);
+            const wrapper = document.querySelector('[data-filter-group="' + group + '"]');
+            wrapper.classList.toggle("is-hidden", values.length === 0);
+            filterTargets[group].innerHTML = values.map(function ([value, count]) {
+                const id = group + "-" + value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+                const checked = selected[group].has(value) ? " checked" : "";
+                const emptyClass = count === 0 ? " is-empty" : "";
+                return '<label class="check-row' + emptyClass + '" for="' + escapeHtml(id) + '">' +
+                    '<input id="' + escapeHtml(id) + '" type="checkbox" data-group="' + group + '" value="' + escapeHtml(value) + '"' + checked + '>' +
+                    '<span>' + escapeHtml(value) + '</span>' +
+                    '<span class="check-count">(' + count + ')</span>' +
+                '</label>';
+            }).join("");
+        }
+
+        function renderCategoryLinks() {
+            const categories = countValues("category").slice(0, 7);
+            categoryLinks.innerHTML = categories.length
+                ? '<span>Categories:</span>' + categories.map(function ([category]) {
+                    return '<button type="button" data-category-link="' + escapeHtml(category) + '">' + escapeHtml(category) + '</button>';
+                }).join("")
+                : "";
+        }
+
+        function renderActiveFilters() {
+            const chips = [];
+            if (searchInput.value.trim()) {
+                chips.push({ label: 'Search: ' + searchInput.value.trim(), type: "term", value: "" });
+            }
+            Object.entries(selected).forEach(function ([group, values]) {
+                values.forEach(function (value) {
+                    chips.push({ label: value, type: group, value });
+                });
+            });
+            if (minPrice.value !== "") chips.push({ label: "Min $" + minPrice.value, type: "minPrice", value: "" });
+            if (maxPrice.value !== "") chips.push({ label: "Max $" + maxPrice.value, type: "maxPrice", value: "" });
+            activeFilters.innerHTML = chips.map(function (chip) {
+                return '<button class="active-chip" type="button" data-chip-type="' + escapeHtml(chip.type) + '" data-chip-value="' + escapeHtml(chip.value) + '">' +
+                    escapeHtml(chip.label) + ' <i class="fas fa-times"></i>' +
+                '</button>';
+            }).join("");
+        }
+
+        function sortProducts(items) {
+            const sorted = [...items];
+            sorted.sort(function (a, b) {
+                if (sortSelect.value === "za") return String(b.title).localeCompare(String(a.title));
+                if (sortSelect.value === "priceAsc") return Number(a.newPriceValue) - Number(b.newPriceValue);
+                if (sortSelect.value === "priceDesc") return Number(b.newPriceValue) - Number(a.newPriceValue);
+                return String(a.title).localeCompare(String(b.title));
+            });
+            return sorted;
+        }
+
+        function renderProducts(items) {
+            emptyState.classList.toggle("visible", items.length === 0);
+            resultsGrid.innerHTML = items.map(function (product) {
+                const imageUrl = product.imageUrl || "";
+                const detailUrl = "./productdetail.html?product=" + encodeURIComponent(product.id);
+                const showPrice = productHasVisiblePrice(product);
+                return '<article class="medicine-card">' +
+                    '<a class="medicine-image" href="' + detailUrl + '">' +
+                        (imageUrl
+                            ? '<img src="' + escapeHtml(imageUrl) + '" alt="' + escapeHtml(product.title || "Product") + '">'
+                            : '<div class="medicine-placeholder">Image coming soon</div>') +
+                        (product.badge ? '<span class="badge">' + escapeHtml(product.badge) + '</span>' : "") +
+                    '</a>' +
+                    '<div class="medicine-body">' +
+                        '<div class="medicine-brand">' + escapeHtml(product.brand || "Heliomed") + '</div>' +
+                        '<h2 class="medicine-title"><a href="' + detailUrl + '">' + escapeHtml(product.title || "Untitled product") + '</a></h2>' +
+                        (showPrice ? '<div class="medicine-price">' +
+                            (product.oldPrice ? '<span class="old-price">MSRP: ' + escapeHtml(product.oldPrice) + '</span>' : "") +
+                            '<span>Now: </span><span class="new-price">' + escapeHtml(product.newPrice) + '</span>' +
+                        '</div>' : '') +
+                        '<div class="card-actions">' +
+                            '<a class="quick-add" href="' + detailUrl + '">Details</a>' +
+                            '<button class="add-card-btn" type="button" data-product-id="' + escapeHtml(product.id) + '"' + (showPrice ? "" : " disabled") + '>Add</button>' +
+                            '<button class="wishlist-btn" type="button" data-product-id="' + escapeHtml(product.id) + '" aria-label="Toggle wishlist"><i class="' + (window.HeliomedWishlist.hasItem(product.id) ? "fas" : "far") + ' fa-heart"></i></button>' +
+                        '</div>' +
+                    '</div>' +
+                '</article>';
+            }).join("");
+        }
+
+        function render() {
+            renderCategoryLinks();
+            Object.keys(filterTargets).forEach(renderFacet);
+            renderActiveFilters();
+            const visibleProducts = sortProducts(filteredProducts());
+            statusRow.textContent = visibleProducts.length + " product" + (visibleProducts.length === 1 ? "" : "s");
+            renderProducts(visibleProducts);
+        }
+
+        resultsGrid.addEventListener("click", function (event) {
+            const button = event.target.closest(".add-card-btn");
+            if (!button) return;
+            const product = products.find(function (item) { return item.id === button.dataset.productId; });
+            if (!product) return;
+            if (!productHasVisiblePrice(product)) return;
+            window.HeliomedCart.addItem({
+                id: product.id,
+                title: product.title,
+                brand: product.brand,
+                imageUrl: product.imageUrl,
+                oldPrice: product.oldPrice,
+                newPrice: product.newPrice,
+                price: product.newPriceValue,
+                url: "./productdetail.html?product=" + encodeURIComponent(product.id)
+            }, 1);
+            button.textContent = "Added";
+            window.setTimeout(function () { button.textContent = "Add"; }, 1200);
+        });
+        resultsGrid.addEventListener("click", function (event) {
+            const button = event.target.closest(".wishlist-btn");
+            if (!button) return;
+            const product = products.find(function (item) { return item.id === button.dataset.productId; });
+            if (!product) return;
+            const saved = window.HeliomedWishlist.toggleItem(window.HeliomedWishlist.itemFromSearchProduct(product));
+            button.querySelector("i").className = (saved ? "fas" : "far") + " fa-heart";
+        });
+
+        function clearAll() {
+            searchInput.value = "";
+            headerSearchInput.value = "";
+            minPrice.value = "";
+            maxPrice.value = "";
+            sortSelect.value = "az";
+            Object.values(selected).forEach(function (set) { set.clear(); });
+            history.replaceState(null, "", window.location.pathname);
+            render();
+        }
+
+        document.querySelectorAll(".filter-heading").forEach(function (button) {
+            button.addEventListener("click", function () {
+                button.closest(".filter-group").classList.toggle("is-collapsed");
+            });
+        });
+        document.querySelector(".filter-sidebar").addEventListener("change", function (event) {
+            const checkbox = event.target.closest('input[type="checkbox"][data-group]');
+            if (!checkbox) return;
+            const values = selected[checkbox.dataset.group];
+            if (checkbox.checked) values.add(checkbox.value);
+            else values.delete(checkbox.value);
+            render();
+        });
+        categoryLinks.addEventListener("click", function (event) {
+            const button = event.target.closest("[data-category-link]");
+            if (!button) return;
+            selected.category.clear();
+            selected.category.add(button.dataset.categoryLink);
+            render();
+        });
+        activeFilters.addEventListener("click", function (event) {
+            const chip = event.target.closest(".active-chip");
+            if (!chip) return;
+            const type = chip.dataset.chipType;
+            const value = chip.dataset.chipValue;
+            if (type === "term") {
+                searchInput.value = "";
+                headerSearchInput.value = "";
+            } else if (type === "minPrice") {
+                minPrice.value = "";
+            } else if (type === "maxPrice") {
+                maxPrice.value = "";
+            } else if (selected[type]) {
+                selected[type].delete(value);
+            }
+            render();
+        });
+        [searchInput, minPrice, maxPrice, sortSelect].forEach(function (control) {
+            control.addEventListener("input", render);
+            control.addEventListener("change", render);
+        });
+        clearSearch.addEventListener("click", function () {
+            searchInput.value = "";
+            headerSearchInput.value = "";
+            render();
+        });
+        clearFilters.addEventListener("click", clearAll);
+        function setFilterPanel(open) {
+            document.body.classList.toggle("filter-panel-open", open);
+            mobileFilterToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        }
+        mobileFilterToggle.addEventListener("click", function () {
+            setCategoryNav(false);
+            setFilterPanel(true);
+        });
+        closeFilters.addEventListener("click", function () { setFilterPanel(false); });
+        applyFilters.addEventListener("click", function () { setFilterPanel(false); });
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") setFilterPanel(false);
+        });
+
+        function runHeaderSearch() {
+            searchInput.value = headerSearchInput.value.trim();
+            render();
+        }
+        headerSearchIcon.addEventListener("click", runHeaderSearch);
+        headerSearchInput.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                runHeaderSearch();
+            }
+        });
+
+        document.querySelector(".mobile-nav-toggle").addEventListener("click", function () {
+            const header = document.querySelector(".header");
+            updateHeaderOffset();
+            setCategoryNav(false);
+            setFilterPanel(false);
+            const open = !header.classList.contains("mobile-nav-open");
+            header.classList.toggle("mobile-nav-open", open);
+            document.body.classList.toggle("mobile-nav-lock", open);
+            this.setAttribute("aria-expanded", open ? "true" : "false");
+            if (!open) restoreAllCategoryMenus();
+        });
+        function setCategoryNav(open) {
+            const header = document.querySelector(".header");
+            const toggle = document.querySelector(".mobile-category-toggle");
+            const categoryItem = document.querySelector(".category-nav-item");
+            if (!header || !toggle || !categoryItem) return;
+            if (open) {
+                setFilterPanel(false);
+                header.classList.remove("mobile-nav-open");
+                document.querySelector(".mobile-nav-toggle").setAttribute("aria-expanded", "false");
+            }
+            header.classList.toggle("mobile-category-open", open);
+            categoryItem.classList.toggle("is-open", open);
+            document.body.classList.toggle("mobile-nav-lock", open);
+            toggle.setAttribute("aria-expanded", open ? "true" : "false");
+            if (!open) restoreCategoryMenu(categoryItem.querySelector(".category-menu"));
+        }
+        
+        function updateHeaderOffset() {
+            const header = document.querySelector(".header");
+            if (!header) return;
+            document.documentElement.style.setProperty("--header-bottom", header.getBoundingClientRect().bottom + "px");
+        }
+        updateHeaderOffset();
+        if ('ResizeObserver' in window) new ResizeObserver(updateHeaderOffset).observe(document.querySelector(".header"));
+        window.addEventListener("scroll", updateHeaderOffset, { passive: true });
+        document.querySelector(".header")?.addEventListener("transitionend", updateHeaderOffset);
+        function restoreCategoryMenu(menu) {
+            if (!menu || !menu.dataset.originalContent) return;
+            const grid = menu.querySelector(".category-menu-grid");
+            if (grid) grid.innerHTML = menu.dataset.originalContent;
+            menu.scrollTop = 0;
+        }
+        function restoreAllCategoryMenus() {
+            document.querySelectorAll(".category-menu").forEach(restoreCategoryMenu);
+        }
+        document.querySelector(".nav-links").addEventListener("click", function (event) {
+            const summary = event.target.closest(".category-branch summary");
+            if (summary) {
+                event.preventDefault();
+                event.stopPropagation();
+                const branch = summary.closest(".category-branch");
+                const menu = summary.closest(".category-menu");
+                const grid = menu?.querySelector(".category-menu-grid");
+                const branchLinks = branch?.querySelector("div");
+                if (!menu || !grid || !branchLinks) return;
+                if (!menu.dataset.originalContent) menu.dataset.originalContent = grid.innerHTML;
+                const title = summary.childNodes[0]?.textContent.trim() || summary.textContent.trim();
+                grid.innerHTML = '<button class="category-back" type="button"><i class="fas fa-chevron-left"></i> Back</button>' +
+                    '<div class="category-panel"><strong>' + title + '</strong>' + branchLinks.innerHTML + '</div>';
+                menu.scrollTop = 0;
+                return;
+            }
+
+            const back = event.target.closest(".category-back");
+            if (back) {
+                event.preventDefault();
+                event.stopPropagation();
+                restoreCategoryMenu(back.closest(".category-menu"));
+                return;
+            }
+
+            const trigger = event.target.closest(".nav-trigger");
+            if (!trigger) return;
+            const item = trigger.closest(".nav-item");
+            const submenu = item.querySelector(".mega-menu");
+            if (!submenu) return;
+            event.preventDefault();
+            const shouldOpen = !item.classList.contains("is-open");
+            if (!shouldOpen && submenu.classList.contains("category-menu")) restoreCategoryMenu(submenu);
+            document.querySelectorAll(".nav-item.is-open").forEach(function (openItem) {
+                if (openItem !== item) {
+                    restoreCategoryMenu(openItem.querySelector(".category-menu"));
+                    openItem.classList.remove("is-open");
+                }
+            });
+            item.classList.toggle("is-open", shouldOpen);
+            if (shouldOpen && submenu.classList.contains("category-menu")) submenu.scrollTop = 0;
+        });
+        document.addEventListener("click", function (event) {
+            if (event.target.closest(".nav-links") || event.target.closest(".mobile-nav-toggle") || event.target.closest(".mobile-category-toggle")) return;
+            const header = document.querySelector(".header");
+            if (header.classList.contains("mobile-category-open")) {
+                setCategoryNav(false);
+                return;
+            }
+            document.querySelectorAll(".nav-item.is-open").forEach(function (item) {
+                restoreCategoryMenu(item.querySelector(".category-menu"));
+                item.classList.remove("is-open");
+            });
+        });
+        window.addEventListener("resize", updateHeaderOffset);
+
+        const params = new URLSearchParams(window.location.search);
+        searchInput.value = params.get("q") || "";
+        headerSearchInput.value = searchInput.value;
+        loadProducts();
+    </script>
+    
+    <script type="module" src="./navbar-categories.js"></script>
+    <script src="./header.js"></script>
+</body>
+</html>

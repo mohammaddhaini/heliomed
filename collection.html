@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/ico" href="icon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collection | Heliomed</title>
+    <meta name="description" content="Browse Heliomed collections.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --brand-blue: #1D5F73;
+            --brand-pink: #C2A26B;
+            --brand-dark: #07111F;
+            --brand-soft-blue: #FBF7F0;
+            --brand-soft-pink: #F8F2E8;
+            --brand-border: #E8DCC8;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #fff;
+            color: var(--brand-dark);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+        a { color: inherit; text-decoration: none; }
+        button, input, select { font: inherit; }
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 14px 28px;
+            background: #fff;
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .logo img { width: 132px; display: block; }
+        .nav-links {
+            display: flex;
+            gap: 22px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 13px;
+            font-weight: 900;
+        }
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 18px;
+        }
+        .icon-link,
+        .cart-icon-wrapper {
+            position: relative;
+            display: inline-flex;
+        }
+        .cart-count,
+        .wishlist-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--brand-pink);
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 50%;
+            font-weight: 900;
+        }
+        main {
+            width: min(1320px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 28px 0 76px;
+        }
+        .breadcrumb {
+            display: flex;
+            gap: 8px;
+            color: #697782;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+        .breadcrumb a { color: var(--brand-pink); font-weight: 900; }
+        .collection-hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 280px;
+            gap: 24px;
+            align-items: end;
+            padding: clamp(22px, 4vw, 42px);
+            margin-bottom: 24px;
+            background: var(--brand-soft-blue);
+            border: 1px solid var(--brand-border);
+        }
+        h1 {
+            margin: 0 0 12px;
+            font-size: clamp(28px, 5vw, 64px);
+            line-height: 1.08;
+            letter-spacing: 0;
+            overflow-wrap: break-word;
+            word-break: normal;
+        }
+        .hero-copy {
+            max-width: 720px;
+            margin: 0;
+            color: #53616c;
+            line-height: 1.6;
+            font-weight: 700;
+        }
+        .hero-stat {
+            padding: 18px;
+            background: #fff;
+            border-left: 4px solid var(--brand-pink);
+            font-weight: 900;
+        }
+        .hero-stat strong {
+            display: block;
+            font-size: 34px;
+            line-height: 1;
+        }
+        .subcategories,
+        .related-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .subcategories a,
+        .related-links a {
+            min-height: 36px;
+            display: inline-flex;
+            align-items: center;
+            padding: 0 13px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+            font-size: 13px;
+            font-weight: 900;
+        }
+        .shop-layout {
+            display: grid;
+            grid-template-columns: 292px minmax(0, 1fr);
+            gap: 30px;
+            align-items: start;
+        }
+        .filter-sidebar {
+            position: sticky;
+            top: 92px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+        }
+        .filter-group {
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .filter-heading {
+            width: 100%;
+            min-height: 46px;
+            border: 0;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        .filter-body {
+            max-height: 300px;
+            overflow: auto;
+            padding: 2px 14px 15px;
+        }
+        .filter-group.is-hidden { display: none; }
+        .filter-group.is-collapsed .filter-body { display: none; }
+        .filter-group.is-collapsed .filter-heading i { transform: rotate(-90deg); }
+        .check-row {
+            display: grid;
+            grid-template-columns: 16px 1fr auto;
+            gap: 8px;
+            align-items: center;
+            min-height: 32px;
+            color: #172739;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .check-row input {
+            width: 13px;
+            height: 13px;
+            margin: 0;
+            accent-color: var(--brand-pink);
+        }
+        .check-count { color: var(--brand-pink); font-weight: 900; }
+        .price-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 0 12px 14px;
+        }
+        .price-body input {
+            width: 100%;
+            min-width: 0;
+            min-height: 38px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+            padding: 0 10px;
+            outline: none;
+        }
+        .sort-wrap select {
+            min-height: 38px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+            padding: 0 10px;
+            outline: none;
+        }
+        .clear-filters {
+            width: calc(100% - 24px);
+            min-height: 40px;
+            margin: 14px 12px;
+            border: 1px solid var(--brand-border);
+            background: var(--brand-soft-pink);
+            cursor: pointer;
+            font-weight: 900;
+        }
+        .results-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+        .status-row {
+            color: #53616c;
+            font-size: 14px;
+            font-weight: 900;
+        }
+        .sort-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #53616c;
+            font-size: 13px;
+            font-weight: 900;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 24px 18px;
+        }
+        .product-card {
+            background: #fff;
+            border: 1px solid var(--brand-border);
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+        .product-card:hover { border-color: var(--brand-pink); }
+        .product-image {
+            position: relative;
+            height: 236px;
+            background: var(--brand-soft-blue);
+            overflow: hidden;
+            border-bottom: 1px solid #f0ebe3;
+        }
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        .placeholder {
+            height: 100%;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            color: #6c756f;
+            font-size: 12px;
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--brand-pink);
+            color: #fff;
+            padding: 5px 9px;
+            font-size: 11px;
+            font-weight: 900;
+            border-radius: 999px;
+        }
+        .product-body {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            padding: 14px;
+        }
+        .product-brand {
+            color: var(--brand-pink);
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 9px;
+            font-weight: 900;
+        }
+        .product-title {
+            min-height: 56px;
+            margin: 0 0 8px;
+            font-size: 14px;
+            line-height: 1.32;
+            font-weight: 900;
+        }
+        .product-price {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: auto;
+            color: #999;
+            font-size: 13px;
+        }
+        .old-price { text-decoration: line-through; }
+        .new-price {
+            color: #b22709;
+            font-size: 16px;
+            font-weight: 900;
+        }
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 42px;
+            gap: 8px;
+            margin-top: 14px;
+        }
+        .details-btn,
+        .add-btn,
+        .wish-btn {
+            min-height: 40px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+            cursor: pointer;
+            font-weight: 900;
+        }
+        .details-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        .add-btn {
+            background: var(--brand-pink);
+            border-color: var(--brand-pink);
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        .wish-btn { color: var(--brand-pink); font-size: 16px; }
+        .load-more {
+            display: none;
+            min-height: 46px;
+            margin: 28px auto 0;
+            padding: 0 24px;
+            border: 1px solid var(--brand-pink);
+            background: #fff;
+            color: var(--brand-dark);
+            cursor: pointer;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        .load-more.visible { display: block; }
+        .empty-state {
+            display: none;
+            border: 1px dashed var(--brand-border);
+            padding: 28px;
+            color: #53616c;
+            font-weight: 800;
+            text-align: center;
+        }
+        .empty-state.visible { display: block; }
+        .related-section {
+            margin-top: 44px;
+        }
+        .related-section h2 {
+            margin: 0 0 14px;
+            font-size: 28px;
+        }
+        @media (max-width: 1120px) {
+            .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .collection-hero { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 820px) {
+            .shop-layout { grid-template-columns: 1fr; }
+            .filter-sidebar { position: static; }
+            .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; }
+            .product-image { height: 190px; }
+            .results-top { align-items: flex-start; flex-direction: column; }
+        }
+        @media (max-width: 460px) {
+            .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+    </style>
+    <link rel="stylesheet" href="./responsive.css">
+    <link rel="stylesheet" href="./header.css">
+</head>
+<body>
+    <!-- HEADER -->
+        <header class="header">
+            <div class="logo">
+                <a href="./index.html">
+                    <img src="heliomed-logo.png" alt="Heliomed logo">
+                </a>
+            </div>
+    
+            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-navigation" aria-expanded="false">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+    
+            <ul class="nav-links" id="primary-navigation">
+                <li class="nav-panel-header" aria-hidden="true">
+                    <span class="nav-panel-title">MENU</span>
+                    <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=parapharmacy" class="nav-trigger">PARAPHARMACY <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu">
+                        <div class="mega-grid">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=skin-care">Skin Care</a>
+                                <a href="./collection.html?collection=hair-care">Hair Care</a>
+                                <a href="./collection.html?collection=face-care">Face Care</a>
+                                <a href="./collection.html?collection=dental-care">Dental Care</a>
+                                <a href="./collection.html?collection=body-care">Body Care</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=nail-care">Nail Care</a>
+                                <a href="./collection.html?collection=foot-care">Foot Care</a>
+                                <a href="./collection.html?collection=baby-care">Baby Care</a>
+                                <a href="./collection.html?collection=mother-care">Mother Care</a>
+                                <a href="./collection.html?collection=kids-care">Kids Care</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=men-care">Men Care</a>
+                                <a href="./collection.html?collection=geriatric-care">Geriatric Care</a>
+                                <a href="./collection.html?collection=nutrition">Nutrition</a>
+                                <a href="./collection.html?collection=supplemnts">Supplements</a>
+                            </div>
+                            <div class="mega-column">
+                                <a class="category-view-all" style="border:0;padding:5px 0;margin:0;" href="./collection.html?collection=parapharmacy">View all Parapharmacy &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=medical-supplies" class="nav-trigger">MEDICAL SUPPLIES <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu">
+                        <div class="mega-grid three">
+                            <div class="mega-column">
+                                <strong>Supports</strong>
+                                <a href="./collection.html?collection=ankle-support">Ankle Support</a>
+                                <a href="./collection.html?collection=back-support">Back Support</a>
+                                <a href="./collection.html?collection=cervical-support">Cervical Support</a>
+                                <a href="./collection.html?collection=disk-trac">Disk Trac</a>
+                                <a href="./collection.html?collection=knee-support">Knee Support</a>
+                                <a href="./collection.html?collection=shoulder-and-elbow">Shoulder &amp; Elbow</a>
+                                <a href="./collection.html?collection=wrist-and-hand-braces">Wrist &amp; Hand Braces</a>
+                            </div>
+                            <div class="mega-column">
+                                <strong>Disposables</strong>
+                                <a href="./collection.html?collection=gloves">Gloves</a>
+                                <a href="./collection.html?collection=guaze">Gauze</a>
+                                <a href="./collection.html?collection=needles">Needles</a>
+                                <a href="./collection.html?collection=suture">Sutures</a>
+                                <a href="./collection.html?collection=blades">Blades</a>
+                                <a href="./collection.html?collection=wound-care">Wound Care</a>
+                                <a href="./collection.html?collection=drapes">Drapes / Apparel</a>
+                            </div>
+                            <div class="mega-column">
+                                <strong>Other</strong>
+                                <a href="./collection.html?collection=home-care">Home Care</a>
+                                <a href="./collection.html?collection=foot-care">Foot Care</a>
+                                <a href="./collection.html?collection=liposuction">Liposuction</a>
+                                <a href="./collection.html?collection=pediatric">Pediatric</a>
+                                <a href="./collection.html?collection=vascular">Vascular</a>
+                                <a href="./collection.html?collection=pillows">Pillows</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=organic" class="nav-trigger">ORGANIC <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu compact">
+                        <div class="mega-grid">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=organic">View All Organic</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=perfume" class="nav-trigger">PERFUME <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu compact">
+                        <div class="mega-grid">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=women">Women</a>
+                                <a href="./collection.html?collection=men">Men</a>
+                                <a href="./collection.html?collection=kids">Kids</a>
+                                <a href="./collection.html?collection=bundles">Bundles</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=makeup" class="nav-trigger">MAKEUP <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu compact">
+                        <div class="mega-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));max-width:360px;">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=face">Face</a>
+                                <a href="./collection.html?collection=eye">Eye</a>
+                                <a href="./collection.html?collection=lips">Lips</a>
+                                <a href="./collection.html?collection=nail">Nail</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=tools-and-accessories">Tools &amp; Accessories</a>
+                                <a href="./collection.html?collection=makeup-remover">Makeup Remover</a>
+                                <a href="./collection.html?collection=medical-makeup">Medical Makeup</a>
+                                <a href="./collection.html?collection=palettes">Palettes</a>
+                                <a href="./collection.html?collection=korean-products">Korean Products</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                 <li class="nav-item">
+                    <a href="./collection.html?collection=offers" class="nav-trigger"><i class="fas fa-tags"></i> OFFERS</a>
+                </li>
+                <li class="nav-item"><a href="#blog" class="nav-trigger"><i class="fas fa-newspaper"></i> BLOG</a></li>
+                <li class="nav-item mobile-only-nav"><a href="./account.html" class="nav-trigger account-link"><i class="far fa-user"></i> LOGIN</a></li>
+                <li class="nav-item mobile-only-nav"><a href="./wishlist.html" class="nav-trigger"><i class="far fa-heart"></i> WISHLIST</a></li>
+                <li class="nav-item mobile-only-nav"><a href="./cart.html" class="nav-trigger"><i class="fas fa-shopping-bag"></i> CART</a></li>
+            </ul>
+    
+            <div class="header-actions">
+                <div class="search-box">
+                    <input type="text" placeholder="Search for products">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="header-icons">
+                    <a href="./account.html" aria-label="Open account"><i class="far fa-user"></i></a>
+                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist">
+                        <i class="far fa-heart"></i>
+                        <span class="wishlist-count">0</span>
+                    </a>
+                    <a class="cart-icon-wrapper" href="./cart.html" aria-label="Open cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+    <main>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="./index.html">Home</a>
+            <span>/</span>
+            <span id="breadcrumbName">Collection</span>
+        </nav>
+
+        <section class="collection-hero">
+            <div>
+                <h1 id="collectionTitle">Collection</h1>
+                <p class="hero-copy" id="collectionDescription">Browse Heliomed products.</p>
+            </div>
+            <div class="hero-stat">
+                <strong id="heroCount">0</strong>
+                <span>products found</span>
+            </div>
+        </section>
+
+        <div class="subcategories" id="subcategories"></div>
+
+        <section class="shop-layout">
+            <aside class="filter-sidebar" aria-label="Collection filters">
+                <div class="filter-group" data-filter-group="brand">
+                    <button class="filter-heading" type="button">Brand <i class="fas fa-chevron-down"></i></button>
+                    <div class="filter-body" id="brandFilters"></div>
+                </div>
+                <div class="filter-group" data-filter-group="category">
+                    <button class="filter-heading" type="button">Category <i class="fas fa-chevron-down"></i></button>
+                    <div class="filter-body" id="categoryFilters"></div>
+                </div>
+                <div class="filter-group" data-filter-group="section">
+                    <button class="filter-heading" type="button">Section <i class="fas fa-chevron-down"></i></button>
+                    <div class="filter-body" id="sectionFilters"></div>
+                </div>
+                <div class="filter-group" data-filter-group="offer">
+                    <button class="filter-heading" type="button">Offer <i class="fas fa-chevron-down"></i></button>
+                    <div class="filter-body" id="offerFilters"></div>
+                </div>
+                <div class="filter-group" data-filter-group="price">
+                    <button class="filter-heading" type="button">Price <i class="fas fa-chevron-down"></i></button>
+                    <div class="price-body">
+                        <input id="minPrice" type="number" min="0" step="0.01" placeholder="Min">
+                        <input id="maxPrice" type="number" min="0" step="0.01" placeholder="Max">
+                    </div>
+                </div>
+                <button class="clear-filters" id="clearFilters" type="button">Clear filters</button>
+            </aside>
+
+            <section class="results-area">
+                <div class="results-top">
+                    <div class="status-row" id="statusRow">Loading products...</div>
+                    <label class="sort-wrap">Sort
+                        <select id="sortSelect" aria-label="Sort products">
+                            <option value="az">A to Z</option>
+                            <option value="za">Z to A</option>
+                            <option value="priceAsc">Price: low to high</option>
+                            <option value="priceDesc">Price: high to low</option>
+                        </select>
+                    </label>
+                </div>
+                <section class="product-grid" id="productGrid" aria-label="Collection products"></section>
+                <button class="load-more" id="loadMore" type="button">Load more</button>
+                <div class="empty-state" id="emptyState">No products matched this collection.</div>
+            </section>
+        </section>
+
+        <section class="related-section">
+            <h2>Related Collections</h2>
+            <div class="related-links" id="relatedLinks"></div>
+        </section>
+    </main>
+
+    <script src="./cart.js"></script>
+    <script src="./wishlist.js"></script>
+    <script type="module">
+        import { db } from "./firebase-init.js";
+        import { collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const params = new URLSearchParams(window.location.search);
+        const slug = params.get("collection") || params.get("category") || "best-sellers";
+        const titleEl = document.getElementById("collectionTitle");
+        const descriptionEl = document.getElementById("collectionDescription");
+        const breadcrumbName = document.getElementById("breadcrumbName");
+        const heroCount = document.getElementById("heroCount");
+        const subcategories = document.getElementById("subcategories");
+        const relatedLinks = document.getElementById("relatedLinks");
+        const productGrid = document.getElementById("productGrid");
+        const statusRow = document.getElementById("statusRow");
+        const emptyState = document.getElementById("emptyState");
+        const loadMore = document.getElementById("loadMore");
+        const sortSelect = document.getElementById("sortSelect");
+        const minPrice = document.getElementById("minPrice");
+        const maxPrice = document.getElementById("maxPrice");
+        const clearFilters = document.getElementById("clearFilters");
+        const filterTargets = {
+            brand: document.getElementById("brandFilters"),
+            category: document.getElementById("categoryFilters"),
+            section: document.getElementById("sectionFilters"),
+            offer: document.getElementById("offerFilters")
+        };
+        const fieldMap = { brand: "brand", category: "category", section: "section", offer: "badge" };
+        const selected = { brand: new Set(), category: new Set(), section: new Set(), offer: new Set() };
+        const pageSize = 12;
+        let shown = pageSize;
+        let products = [];
+
+        const collectionMeta = {
+            "best-sellers": { title: "Best Sellers", description: "Customer-favorite care essentials across pharmacy, beauty, wellness, and recovery.", subs: ["offers", "new-arrivals", "under-20", "beauty-essentials"] },
+            "new-arrivals": { title: "New Arrivals", description: "Freshly added care products and seasonal essentials.", subs: ["best-sellers", "offers", "summer-essentials"] },
+            "offers": { title: "Offers", description: "Discounted products and current Heliomed deals.", subs: ["under-20", "under-50", "best-sellers"] },
+            "supports-recovery": { title: "Supports & Recovery", description: "Supports, braces, recovery aids, and mobility care organized by body area and use.", subs: ["neck", "back", "knee", "wrist-support", "compression", "posture-support"] },
+            "vitamins": { title: "Vitamins", description: "Daily vitamins and supplement essentials for wellness routines.", subs: ["minerals", "multivitamins", "immune-support", "energy", "sleep"] },
+            "minerals": { title: "Minerals", description: "Mineral supplements and daily wellness support.", subs: ["vitamins", "multivitamins", "immune-support"] },
+            "multivitamins": { title: "Multivitamins", description: "Broad daily supplement support for adults and family routines.", subs: ["vitamins", "minerals", "energy"] },
+            "immune-support": { title: "Immune Support", description: "Products selected for immunity and seasonal wellness.", subs: ["vitamins", "minerals", "wellness-essentials"] },
+            "energy": { title: "Energy", description: "Wellness products for daily energy support.", subs: ["vitamins", "sleep", "wellness-essentials"] },
+            "sleep": { title: "Sleep", description: "Care products for calmer nighttime routines.", subs: ["wellness-essentials", "energy"] },
+            "digestive-health": { title: "Digestive Health", description: "Digestive comfort and gut health essentials.", subs: ["wellness-essentials", "vitamins"] },
+            "joint-health": { title: "Joint Health", description: "Products for joints, movement, and daily comfort.", subs: ["supports-recovery", "knee", "back"] },
+            "skincare": { title: "Skincare", description: "Dermocosmetic skincare for daily face and body routines.", subs: ["dry-skin", "oily-skin", "sensitive-skin", "acne", "anti-aging", "pigmentation"] },
+            "haircare": { title: "Haircare", description: "Hair and scalp care products organized for common routines.", subs: ["hair-loss", "dandruff", "dry-hair", "scalp-care"] },
+            "body-care": { title: "Body Care", description: "Daily body care, moisturizers, and personal care essentials.", subs: ["skincare", "oral-care", "fragrances"] },
+            "oral-care": { title: "Oral Care", description: "Dental and oral hygiene products for daily routines.", subs: ["body-care", "personal-care"] },
+            "mother-baby": { title: "Mother & Baby", description: "Care essentials for mother and baby routines.", subs: ["baby-care", "mother-care", "personal-care"] },
+            "makeup": { title: "Makeup", description: "Beauty and makeup picks from Heliomed brands.", subs: ["skincare", "fragrances", "beauty-essentials"] },
+            "fragrances": { title: "Fragrances", description: "Fragrance and perfume picks.", subs: ["body-care", "makeup"] },
+            "medical-devices": { title: "Medical Devices & Supplies", description: "Home medical supplies and daily monitoring essentials.", subs: ["supports-recovery", "personal-care"] },
+            "personal-care": { title: "Personal Care", description: "Everyday pharmacy and personal care products.", subs: ["body-care", "medical-devices", "mother-baby"] },
+            "dry-skin": { title: "Dry Skin", description: "Moisturizing and barrier-support skincare.", subs: ["skincare", "sensitive-skin", "anti-aging"] },
+            "oily-skin": { title: "Oily Skin", description: "Oil-control and balancing skincare.", subs: ["skincare", "acne", "sensitive-skin"] },
+            "sensitive-skin": { title: "Sensitive Skin", description: "Gentle skincare for sensitive routines.", subs: ["skincare", "dry-skin", "acne"] },
+            "acne": { title: "Acne", description: "Acne-prone skincare and cleansing routines.", subs: ["oily-skin", "sensitive-skin", "skincare"] },
+            "anti-aging": { title: "Anti-Aging", description: "Care products for fine lines, texture, and aging concerns.", subs: ["pigmentation", "dry-skin", "skincare"] },
+            "pigmentation": { title: "Pigmentation", description: "Products for tone, spots, and discoloration concerns.", subs: ["anti-aging", "skincare"] },
+            "hair-loss": { title: "Hair Loss", description: "Hair loss support and scalp care products.", subs: ["haircare", "scalp-care"] },
+            "dandruff": { title: "Dandruff", description: "Scalp care products for flakes and irritation.", subs: ["haircare", "scalp-care"] },
+            "dry-hair": { title: "Dry Hair", description: "Hydrating products for dry hair routines.", subs: ["haircare", "scalp-care"] },
+            "scalp-care": { title: "Scalp Care", description: "Scalp-focused products for healthy hair routines.", subs: ["haircare", "hair-loss", "dandruff"] },
+            "immunity": { title: "Immunity", description: "Products for immune wellness routines.", subs: ["immune-support", "vitamins"] },
+            "digestion": { title: "Digestion", description: "Digestive wellness and comfort products.", subs: ["digestive-health", "wellness-essentials"] },
+            "joints": { title: "Joints", description: "Joint comfort and movement support.", subs: ["joint-health", "supports-recovery"] },
+            "neck-pain": { title: "Neck Pain", description: "Neck support and recovery products.", subs: ["neck", "posture", "supports-recovery"] },
+            "back-support": { title: "Back Support", description: "Back braces, posture support, and recovery essentials.", subs: ["back", "posture-support", "supports-recovery"] },
+            "knee-support": { title: "Knee Support", description: "Knee braces and recovery supports.", subs: ["knee", "sports", "recovery"] },
+            "wrist-support": { title: "Wrist Support", description: "Wrist and hand support products.", subs: ["wrist-hand", "supports-recovery"] },
+            "posture": { title: "Posture", description: "Posture support and daily comfort products.", subs: ["posture-support", "back-support"] },
+            "under-20": { title: "Under $20", description: "Care essentials priced under $20.", subs: ["offers", "best-sellers"] },
+            "under-50": { title: "Under $50", description: "Products priced under $50.", subs: ["offers", "best-sellers"] },
+            "summer-essentials": { title: "Summer Essentials", description: "Sun care, hydration, and warm-weather care essentials.", subs: ["skincare", "offers"] },
+            "beauty-essentials": { title: "Beauty Essentials", description: "Skincare, haircare, makeup, and beauty favorites.", subs: ["skincare", "haircare", "makeup"] },
+            "wellness-essentials": { title: "Wellness Essentials", description: "Vitamins, supplements, and daily wellness support.", subs: ["vitamins", "immunity", "energy"] },
+            "featured-collection": { title: "Featured Collection", description: "Highlighted care picks from Heliomed.", subs: ["best-sellers", "new-arrivals"] }
+        };
+
+        function titleFromSlug(value) {
+            return String(value || "").split("-").map(function (part) {
+                return part ? part[0].toUpperCase() + part.slice(1) : "";
+            }).join(" ");
+        }
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, function (char) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char];
+            });
+        }
+        function parseMoney(value) {
+            const match = String(value || "").match(/[0-9]+(?:\.[0-9]+)?/);
+            const amount = match ? Number(match[0]) : 0;
+            return Number.isFinite(amount) ? amount : 0;
+        }
+        function getBrand(title) {
+            const clean = String(title || "").trim();
+            if (!clean) return "Other";
+            if (clean.includes(" - ")) return clean.split(" - ")[0].trim();
+            return clean.split(/\s+/)[0];
+        }
+        function normalizeText(value) {
+            return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+        }
+        function normalizeVariant(variant) {
+            if (typeof variant === "string") return { name: variant };
+            return {
+                name: variant?.name || variant?.title || variant?.size || variant?.label || "",
+                oldPrice: variant?.oldPrice || "",
+                newPrice: variant?.newPrice || "",
+                oldPriceValue: Number(variant?.oldPriceValue ?? parseMoney(variant?.oldPrice)),
+                newPriceValue: Number(variant?.newPriceValue ?? parseMoney(variant?.newPrice)),
+                inventory: Number(variant?.inventory || 0),
+                imageUrl: variant?.imageUrl || ""
+            };
+        }
+        function normalizeProduct(data, id) {
+            const title = data.title || "Untitled product";
+            const variants = Array.isArray(data.variants) ? data.variants.map(normalizeVariant) : [];
+            const firstVariant = variants[0] || {};
+            return {
+                id,
+                ...data,
+                imageUrl: data.imageUrl || firstVariant.imageUrl || "",
+                title,
+                brand: data.brand || getBrand(title),
+                oldPrice: data.oldPrice || firstVariant.oldPrice || "",
+                newPrice: data.newPrice || firstVariant.newPrice || "",
+                newPriceValue: Number(data.newPriceValue ?? firstVariant.newPriceValue ?? parseMoney(data.newPrice || firstVariant.newPrice)),
+                oldPriceValue: Number(data.oldPriceValue ?? firstVariant.oldPriceValue ?? parseMoney(data.oldPrice || firstVariant.oldPrice)),
+                variants
+            };
+        }
+        function searchBlob(product) {
+            return normalizeText([product.title, product.brand, product.category, product.section, product.badge, product.searchText, product.imageQuery].join(" "));
+        }
+        function isOffer(product) {
+            return /sale|offer|off|%|discount/i.test(product.badge || "") || Number(product.oldPriceValue) > Number(product.newPriceValue);
+        }
+        function isNew(product) {
+            return /new|arrival/i.test([product.badge, product.section, product.category, product.searchText].join(" "));
+        }
+        function productIsOutOfStock(product) {
+            return /sold\s*out/i.test(product.badge || "") || product.available === false || Number(product.inventory || 0) === 0;
+        }
+        function productHasVisiblePrice(product) {
+            return !productIsOutOfStock(product) && Boolean(product.newPrice);
+        }
+        function slugifyText(value) {
+            return String(value || "")
+                .toLowerCase()
+                .replace(/&/g, "and")
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+        }
+
+        function baseMatches(product) {
+            const cleanSlug = slugifyText(slug);
+            const catSlug = slugifyText(product.category);
+            const secSlug = slugifyText(product.section);
+
+            if (cleanSlug && (catSlug === cleanSlug || secSlug === cleanSlug)) return true;
+
+            if (cleanSlug === "all" || cleanSlug === "all-products") return true;
+            if (cleanSlug === "best-sellers") return Number(product.inventory || 0) > 0;
+            if (cleanSlug === "new-arrivals") return isNew(product);
+            if (cleanSlug === "offers") return isOffer(product);
+            if (cleanSlug === "under-20") return Number(product.newPriceValue) > 0 && Number(product.newPriceValue) < 20;
+            if (cleanSlug === "under-50") return Number(product.newPriceValue) > 0 && Number(product.newPriceValue) < 50;
+
+            const catNorm = normalizeText(product.category || "");
+            const secNorm = normalizeText(product.section || "");
+            const slugNorm = normalizeText(slug || "");
+            if (slugNorm && (catNorm.includes(slugNorm) || secNorm.includes(slugNorm))) return true;
+
+            return false;
+        }
+        function setupHero(items) {
+            const meta = collectionMeta[slug] || { title: titleFromSlug(slug), description: "Browse products selected for this Heliomed collection.", subs: ["best-sellers", "offers", "new-arrivals"] };
+            document.title = meta.title + " | Heliomed";
+            titleEl.textContent = meta.title;
+            breadcrumbName.textContent = meta.title;
+            descriptionEl.textContent = meta.description;
+            heroCount.textContent = items.length;
+            subcategories.innerHTML = (meta.subs || []).map(function (item) {
+                return '<a href="./collection.html?collection=' + encodeURIComponent(item) + '">' + escapeHtml(collectionMeta[item]?.title || titleFromSlug(item)) + '</a>';
+            }).join("");
+            const related = ["best-sellers", "new-arrivals", "offers", "supports-recovery", "skincare", "vitamins"].filter(function (item) { return item !== slug; });
+            relatedLinks.innerHTML = related.map(function (item) {
+                return '<a href="./collection.html?collection=' + encodeURIComponent(item) + '">' + escapeHtml(collectionMeta[item]?.title || titleFromSlug(item)) + '</a>';
+            }).join("");
+        }
+        async function loadProducts() {
+            try {
+                const snapshot = await getDocs(query(collection(db, "medicines"), orderBy("title")));
+                products = snapshot.docs.map(function (documentSnapshot) {
+                    return normalizeProduct(documentSnapshot.data(), documentSnapshot.id);
+                }).filter(baseMatches);
+                setupHero(products);
+                render();
+            } catch (error) {
+                console.error(error);
+                statusRow.textContent = "Could not load products.";
+                emptyState.classList.add("visible");
+            }
+        }
+        function matchesFacet(product, group) {
+            if (!selected[group].size) return true;
+            return selected[group].has(product[fieldMap[group]]);
+        }
+        function filteredProducts(options = {}) {
+            const exclude = options.exclude;
+            const min = minPrice.value === "" ? null : Number(minPrice.value);
+            const max = maxPrice.value === "" ? null : Number(maxPrice.value);
+            return products.filter(function (product) {
+                const price = Number(product.newPriceValue ?? parseMoney(product.newPrice));
+                return (exclude === "brand" || matchesFacet(product, "brand")) &&
+                    (exclude === "category" || matchesFacet(product, "category")) &&
+                    (exclude === "section" || matchesFacet(product, "section")) &&
+                    (exclude === "offer" || matchesFacet(product, "offer")) &&
+                    (exclude === "price" || min === null || price >= min) &&
+                    (exclude === "price" || max === null || price <= max);
+            });
+        }
+        function countValues(group) {
+            const field = fieldMap[group];
+            const counts = new Map();
+            filteredProducts({ exclude: group }).forEach(function (product) {
+                const value = product[field];
+                if (!value) return;
+                counts.set(value, (counts.get(value) || 0) + 1);
+            });
+            return [...counts.entries()].sort(function (a, b) {
+                return String(a[0]).localeCompare(String(b[0]));
+            });
+        }
+        function renderFacet(group) {
+            const values = countValues(group);
+            const wrapper = document.querySelector('[data-filter-group="' + group + '"]');
+            wrapper.classList.toggle("is-hidden", values.length === 0);
+            filterTargets[group].innerHTML = values.map(function ([value, count]) {
+                const id = group + "-" + value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+                return '<label class="check-row" for="' + escapeHtml(id) + '">' +
+                    '<input id="' + escapeHtml(id) + '" type="checkbox" data-group="' + group + '" value="' + escapeHtml(value) + '"' + (selected[group].has(value) ? " checked" : "") + '>' +
+                    '<span>' + escapeHtml(value) + '</span><span class="check-count">(' + count + ')</span>' +
+                '</label>';
+            }).join("");
+        }
+        function sortProducts(items) {
+            const sorted = [...items];
+            sorted.sort(function (a, b) {
+                if (sortSelect.value === "za") return String(b.title).localeCompare(String(a.title));
+                if (sortSelect.value === "priceAsc") return Number(a.newPriceValue) - Number(b.newPriceValue);
+                if (sortSelect.value === "priceDesc") return Number(b.newPriceValue) - Number(a.newPriceValue);
+                return String(a.title).localeCompare(String(b.title));
+            });
+            return sorted;
+        }
+        function renderProducts(items) {
+            const visible = items.slice(0, shown);
+            emptyState.classList.toggle("visible", items.length === 0);
+            loadMore.classList.toggle("visible", items.length > shown);
+            productGrid.innerHTML = visible.map(function (product) {
+                const detailUrl = "./productdetail.html?product=" + encodeURIComponent(product.id);
+                const showPrice = productHasVisiblePrice(product);
+                return '<article class="product-card">' +
+                    '<a class="product-image" href="' + detailUrl + '">' +
+                        (product.imageUrl ? '<img src="' + escapeHtml(product.imageUrl) + '" alt="' + escapeHtml(product.title) + '">' : '<div class="placeholder">Image coming soon</div>') +
+                        (product.badge ? '<span class="badge">' + escapeHtml(product.badge) + '</span>' : "") +
+                    '</a>' +
+                    '<div class="product-body">' +
+                        '<div class="product-brand">' + escapeHtml(product.brand || "Heliomed") + '</div>' +
+                        '<h2 class="product-title"><a href="' + detailUrl + '">' + escapeHtml(product.title) + '</a></h2>' +
+                        (showPrice ? '<div class="product-price">' +
+                            (product.oldPrice ? '<span class="old-price">' + escapeHtml(product.oldPrice) + '</span>' : "") +
+                            '<span class="new-price">' + escapeHtml(product.newPrice) + '</span>' +
+                        '</div>' : '') +
+                        '<div class="card-actions">' +
+                            '<a class="details-btn" href="' + detailUrl + '">Details</a>' +
+                            '<button class="add-btn" type="button" data-product-id="' + escapeHtml(product.id) + '"' + (showPrice ? "" : " disabled") + '>Add</button>' +
+                            '<button class="wish-btn" type="button" data-product-id="' + escapeHtml(product.id) + '" aria-label="Toggle wishlist"><i class="' + (window.HeliomedWishlist.hasItem(product.id) ? "fas" : "far") + ' fa-heart"></i></button>' +
+                        '</div>' +
+                    '</div>' +
+                '</article>';
+            }).join("");
+        }
+        function render() {
+            Object.keys(filterTargets).forEach(renderFacet);
+            const visible = sortProducts(filteredProducts());
+            statusRow.textContent = visible.length + " product" + (visible.length === 1 ? "" : "s");
+            renderProducts(visible);
+        }
+        document.querySelectorAll(".filter-heading").forEach(function (button) {
+            button.addEventListener("click", function () {
+                button.closest(".filter-group").classList.toggle("is-collapsed");
+            });
+        });
+        document.querySelector(".filter-sidebar").addEventListener("change", function (event) {
+            const checkbox = event.target.closest('input[type="checkbox"][data-group]');
+            if (!checkbox) return;
+            const values = selected[checkbox.dataset.group];
+            if (checkbox.checked) values.add(checkbox.value);
+            else values.delete(checkbox.value);
+            shown = pageSize;
+            render();
+        });
+        [minPrice, maxPrice, sortSelect].forEach(function (control) {
+            control.addEventListener("input", function () { shown = pageSize; render(); });
+            control.addEventListener("change", function () { shown = pageSize; render(); });
+        });
+        clearFilters.addEventListener("click", function () {
+            Object.values(selected).forEach(function (set) { set.clear(); });
+            minPrice.value = "";
+            maxPrice.value = "";
+            sortSelect.value = "az";
+            shown = pageSize;
+            render();
+        });
+        loadMore.addEventListener("click", function () {
+            shown += pageSize;
+            render();
+        });
+        productGrid.addEventListener("click", function (event) {
+            const addButton = event.target.closest(".add-btn");
+            const wishButton = event.target.closest(".wish-btn");
+            const button = addButton || wishButton;
+            if (!button) return;
+            const product = products.find(function (item) { return item.id === button.dataset.productId; });
+            if (!product) return;
+            if (addButton && !productHasVisiblePrice(product)) return;
+            const item = {
+                id: product.id,
+                title: product.title,
+                brand: product.brand,
+                imageUrl: product.imageUrl,
+                oldPrice: product.oldPrice,
+                newPrice: product.newPrice,
+                price: product.newPriceValue,
+                url: "./productdetail.html?product=" + encodeURIComponent(product.id)
+            };
+            if (addButton) {
+                window.HeliomedCart.addItem(item, 1);
+                addButton.textContent = "Added";
+                window.setTimeout(function () { addButton.textContent = "Add"; }, 1000);
+            }
+            if (wishButton) {
+                const saved = window.HeliomedWishlist.toggleItem(item);
+                wishButton.querySelector("i").className = (saved ? "fas" : "far") + " fa-heart";
+            }
+        });
+        setupHero([]);
+        loadProducts();
+    </script>
+    <script type="module" src="./navbar-categories.js"></script>
+    <script src="./header.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "heliomed",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "generate:products": "node generate-product-pages.js",
+    "build": "node build-site.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.3.0"
+  }
+}

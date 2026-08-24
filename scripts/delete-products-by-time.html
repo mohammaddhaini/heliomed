@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Products by Timestamp | Heliomed Admin Utility</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --brand-blue: #1D5F73;
+            --brand-blue-hover: #164958;
+            --brand-gold: #C2A26B;
+            --brand-gold-hover: #AA8B56;
+            --brand-dark: #07111F;
+            --brand-line: #E2E8F0;
+            --brand-bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --danger: #EF4444;
+            --danger-hover: #DC2626;
+            --danger-light: #FEE2E2;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --warning-light: #FEF3C7;
+            --text-muted: #64748B;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 32px 20px;
+            background: var(--brand-bg);
+            color: var(--brand-dark);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        main {
+            width: min(1360px, 100%);
+            margin: 0 auto;
+            border: 1px solid var(--brand-line);
+            border-radius: 12px;
+            padding: 32px;
+            background: var(--card-bg);
+            box-shadow: 0 16px 40px rgba(7, 17, 31, 0.06);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--brand-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            margin: 6px 0 0;
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* AUTH CARD */
+        .auth-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #F1F5F9;
+            border: 1px solid var(--brand-line);
+            border-radius: 8px;
+            padding: 12px 18px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .auth-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .auth-status .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #94A3B8;
+        }
+
+        .auth-status.online .indicator { background: var(--success); }
+        .auth-status.offline .indicator { background: var(--danger); }
+
+        .auth-form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .auth-form input {
+            padding: 7px 12px;
+            border: 1px solid var(--brand-line);
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .auth-form input:focus { border-color: var(--brand-blue); }
+
+        /* SETTINGS GRID */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: #FAF8F5;
+            border: 1px solid #EADBCC;
+            border-radius: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px 12px;
+            border: 1px solid #CBD5E1;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #FFFFFF;
+            color: var(--brand-dark);
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--brand-gold);
+        }
+
+        .form-group .hint {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ACTIONS BAR */
+        .actions-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--brand-line);
+        }
+
+        .button-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed !important;
+        }
+
+        .btn-primary {
+            background: var(--brand-blue);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--brand-blue-hover);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #FFFFFF;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: var(--danger-hover);
+        }
+
+        .btn-secondary {
+            background: #E2E8F0;
+            color: #1E293B;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #CBD5E1;
+        }
+
+        /* STATS PILLS */
+        .stats-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: #FFFFFF;
+            border: 1px solid #CBD5E1;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .pill.accent {
+            background: var(--brand-blue);
+            color: #FFFFFF;
+            border-color: var(--brand-blue);
+        }
+
+        .pill.danger {
+            background: var(--danger-light);
+            color: var(--danger);
+            border-color: #FCA5A5;
+        }
+
+        /* PROGRESS BAR */
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: #E2E8F0;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--warning), var(--danger));
+            transition: width 0.2s ease;
+        }
+
+        /* TABLE */
+        .table-wrap {
+            max-height: 520px;
+            overflow: auto;
+            border: 1px solid var(--brand-line);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: #FFFFFF;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--brand-line);
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background: #0F172A;
+            color: #F8FAFC;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 2;
+        }
+
+        tbody tr:hover { background: #F8FAFC; }
+        tbody tr.selected-row { background: #FEF2F2; }
+
+        .product-thumb {
+            width: 44px;
+            height: 44px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #E2E8F0;
+            background: #F1F5F9;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .tag-match {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        /* LOG PANEL */
+        .log-panel {
+            background: #0F172A;
+            color: #E2E8F0;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            padding: 16px;
+            border-radius: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .log-panel .log-error { color: #F87171; }
+        .log-panel .log-success { color: #4ADE80; }
+        .log-panel .log-info { color: #38BDF8; }
+        .log-panel .log-warn { color: #FBBF24; }
+
+        /* WARNING BANNER */
+        .warning-banner {
+            background: #FEF3C7;
+            border-left: 4px solid var(--warning);
+            padding: 14px 18px;
+            border-radius: 6px;
+            color: #92400E;
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <div class="header-title">
+            <div>
+                <h1><i class="fa-solid fa-trash-can" style="color:var(--danger)"></i> Delete Products by Timestamp</h1>
+                <p class="subtitle">Search, inspect, and safely batch-delete products added/updated at a specific date and time from Firestore.</p>
+            </div>
+            <div>
+                <a href="../admin.html" class="pill" style="text-decoration:none;">
+                    <i class="fa-solid fa-arrow-left" style="margin-right:6px;"></i> Return to Admin Panel
+                </a>
+            </div>
+        </div>
+
+        <!-- AUTHENTICATION STATUS -->
+        <div class="auth-bar">
+            <div id="authStatusIndicator" class="auth-status offline">
+                <span class="indicator"></span>
+                <span id="authStatusText">Checking authentication...</span>
+            </div>
+
+            <div id="authActions" class="auth-form">
+                <input type="email" id="adminEmail" placeholder="Admin Email">
+                <input type="password" id="adminPassword" placeholder="Password">
+                <button type="button" id="loginBtn" class="btn-primary" style="padding:7px 14px;">Sign In</button>
+            </div>
+
+            <div id="userProfile" style="display:none; align-items:center; gap:12px;">
+                <span id="userEmailLabel" style="font-weight:600; color:var(--brand-blue);"></span>
+                <button type="button" id="logoutBtn" class="btn-secondary" style="padding:6px 12px; font-size:12px;">Sign Out</button>
+            </div>
+        </div>
+
+        <!-- SEARCH & TIME FILTER CONFIGURATION -->
+        <div class="settings-grid">
+            <div class="form-group">
+                <label><i class="fa-regular fa-calendar"></i> Target Date (UTC)</label>
+                <input type="date" id="targetDate" value="2026-08-15">
+                <span class="hint">Date when products were added/updated</span>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-regular fa-clock"></i> Target Time (UTC+3)</label>
+                <input type="time" id="targetTime" step="1" value="17:01:12">
+                <span class="hint">Set to 5:01:12 PM UTC+3 (14:01:12 UTC)</span>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-arrows-left-right"></i> Time Tolerance / Window</label>
+                <select id="timeTolerance">
+                    <option value="exact">Exact second (± 0 sec)</option>
+                    <option value="5sec" selected>± 5 seconds (Recommended for batch uploads)</option>
+                    <option value="30sec">± 30 seconds</option>
+                    <option value="2min">± 2 minutes</option>
+                    <option value="1hour">± 1 hour</option>
+                    <option value="day">Entire Day (August 15, 2026)</option>
+                    <option value="prefix_only">Ignore time - Match Document ID Prefix only</option>
+                </select>
+                <span class="hint">Catches batch records spanning a few seconds</span>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-filter"></i> Document ID Prefix (Optional)</label>
+                <input type="text" id="idPrefix" value="home-health-essentials" placeholder="e.g. home-health-essentials">
+                <span class="hint">Matches IDs like home-health-essentials-devices-...</span>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-tag"></i> Timestamp Field Name</label>
+                <select id="timestampField">
+                    <option value="any" selected>Any timestamp field (updatedAt, createdAt, etc.)</option>
+                    <option value="updatedAt">updatedAt only</option>
+                    <option value="createdAt">createdAt only</option>
+                </select>
+                <span class="hint">Field storing the Firestore Timestamp</span>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-regular fa-image"></i> Storage Cleanup</label>
+                <label style="display:flex; align-items:center; gap:8px; font-weight:normal; text-transform:none; margin-top:8px; cursor:pointer;">
+                    <input type="checkbox" id="deleteStorageImages" checked style="width:18px; height:18px; margin:0;">
+                    Also delete associated images in Storage
+                </label>
+                <span class="hint">Deletes images located at products/{id}/...</span>
+            </div>
+        </div>
+
+        <div class="warning-banner">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size:20px;"></i>
+            <div>
+                <strong>Safety First:</strong> Click <strong>"1. Scan Products (Dry Run)"</strong> to safely preview matching items before any deletion takes place. No data will be modified until you confirm step 2.
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="actions-bar">
+            <div class="button-group">
+                <button type="button" id="scanBtn" class="btn-primary">
+                    <i class="fa-solid fa-magnifying-glass"></i> 1. Scan Products (Dry Run)
+                </button>
+
+                <button type="button" id="deleteBtn" class="btn-danger" disabled>
+                    <i class="fa-solid fa-trash-can"></i> 2. Permanently Delete Selected (<span id="selectedCountBtn">0</span>)
+                </button>
+            </div>
+
+            <div class="button-group">
+                <input type="text" id="tableFilter" placeholder="Filter preview table..." style="padding:8px 12px; border:1px solid var(--brand-line); border-radius:6px; font-size:13px; outline:none; width:220px;">
+                <button type="button" id="selectAllBtn" class="btn-secondary" style="padding:8px 12px; font-size:12px;" disabled>
+                    Select All
+                </button>
+                <button type="button" id="deselectAllBtn" class="btn-secondary" style="padding:8px 12px; font-size:12px;" disabled>
+                    Deselect All
+                </button>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-bar">
+            <span class="pill" id="statScanned">Scanned: 0</span>
+            <span class="pill accent" id="statMatched">Matched Criteria: 0</span>
+            <span class="pill danger" id="statSelected">Selected for Deletion: 0</span>
+        </div>
+
+        <!-- PROGRESS BAR -->
+        <div class="progress-bar-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- PREVIEW TABLE -->
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:40px; text-align:center;">
+                            <input type="checkbox" id="masterCheckbox" disabled>
+                        </th>
+                        <th>#</th>
+                        <th>Photo</th>
+                        <th>Document ID</th>
+                        <th>Title</th>
+                        <th>Category / Section</th>
+                        <th>Document Timestamp</th>
+                        <th>Match Reason</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">
+                            No scan executed yet. Adjust time settings above and click <strong>"1. Scan Products (Dry Run)"</strong>.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- LOG WINDOW -->
+        <div style="margin-top:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <label style="font-weight:700; font-size:12px; text-transform:uppercase; color:var(--text-muted);">Execution Log</label>
+                <button type="button" id="clearLogBtn" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:12px;">Clear Log</button>
+            </div>
+            <div class="log-panel" id="logOutput">> Utility ready. Awaiting scan command...</div>
+        </div>
+    </main>
+
+    <!-- FIREBASE MODULE SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+        import {
+            getFirestore,
+            collection,
+            getDocs,
+            doc,
+            writeBatch,
+            deleteDoc,
+            Timestamp
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import {
+            getStorage,
+            ref,
+            deleteObject,
+            listAll
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFlrhhPDtVxFqkLA3kG-23m-BPflxU9nw",
+            authDomain: "heliomed-13855.firebaseapp.com",
+            projectId: "heliomed-13855",
+            storageBucket: "heliomed-13855.firebasestorage.app",
+            messagingSenderId: "375605550861",
+            appId: "1:375605550861:web:9d8b605cd24ee841df5a44",
+            measurementId: "G-ST63P01MF4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+
+        // UI Element References
+        const authStatusIndicator = document.getElementById("authStatusIndicator");
+        const authStatusText = document.getElementById("authStatusText");
+        const authActions = document.getElementById("authActions");
+        const userProfile = document.getElementById("userProfile");
+        const userEmailLabel = document.getElementById("userEmailLabel");
+        const adminEmail = document.getElementById("adminEmail");
+        const adminPassword = document.getElementById("adminPassword");
+        const loginBtn = document.getElementById("loginBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+
+        const targetDateInput = document.getElementById("targetDate");
+        const targetTimeInput = document.getElementById("targetTime");
+        const timeToleranceSelect = document.getElementById("timeTolerance");
+        const idPrefixInput = document.getElementById("idPrefix");
+        const timestampFieldSelect = document.getElementById("timestampField");
+        const deleteStorageImagesCheckbox = document.getElementById("deleteStorageImages");
+
+        const scanBtn = document.getElementById("scanBtn");
+        const deleteBtn = document.getElementById("deleteBtn");
+        const selectedCountBtn = document.getElementById("selectedCountBtn");
+        const masterCheckbox = document.getElementById("masterCheckbox");
+        const selectAllBtn = document.getElementById("selectAllBtn");
+        const deselectAllBtn = document.getElementById("deselectAllBtn");
+        const tableFilter = document.getElementById("tableFilter");
+
+        const statScanned = document.getElementById("statScanned");
+        const statMatched = document.getElementById("statMatched");
+        const statSelected = document.getElementById("statSelected");
+        const tableBody = document.getElementById("tableBody");
+        const progressContainer = document.getElementById("progressContainer");
+        const progressBar = document.getElementById("progressBar");
+        const logOutput = document.getElementById("logOutput");
+        const clearLogBtn = document.getElementById("clearLogBtn");
+
+        let matchedProducts = [];
+        let selectedProductIds = new Set();
+
+        // Logging helper
+        function log(msg, type = "normal") {
+            const timestamp = new Date().toLocaleTimeString();
+            let prefix = `[${timestamp}] `;
+            let formatted = prefix + msg;
+            
+            const div = document.createElement("div");
+            if (type === "error") div.className = "log-error";
+            else if (type === "success") div.className = "log-success";
+            else if (type === "warn") div.className = "log-warn";
+            else if (type === "info") div.className = "log-info";
+            
+            div.textContent = formatted;
+            logOutput.appendChild(div);
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        clearLogBtn.addEventListener("click", () => {
+            logOutput.innerHTML = "";
+        });
+
+        // Authentication State Listener
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authStatusIndicator.className = "auth-status online";
+                authStatusText.textContent = `Signed in as Admin (${user.email})`;
+                authActions.style.display = "none";
+                userProfile.style.display = "flex";
+                userEmailLabel.textContent = user.email;
+                log(`Authenticated as: ${user.email}`, "success");
+            } else {
+                authStatusIndicator.className = "auth-status offline";
+                authStatusText.textContent = "Not signed in (Admin login required for deletion)";
+                authActions.style.display = "flex";
+                userProfile.style.display = "none";
+                log("Auth state: Not signed in. (You can still scan, but login is required to delete)", "warn");
+            }
+        });
+
+        loginBtn.addEventListener("click", async () => {
+            const email = adminEmail.value.trim();
+            const password = adminPassword.value.trim();
+            if (!email || !password) {
+                alert("Please enter both email and password.");
+                return;
+            }
+            try {
+                loginBtn.disabled = true;
+                loginBtn.textContent = "Signing In...";
+                await signInWithEmailAndPassword(auth, email, password);
+                adminPassword.value = "";
+            } catch (err) {
+                log(`Login failed: ${err.message}`, "error");
+                alert(`Login failed: ${err.message}`);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Sign In";
+            }
+        });
+
+        logoutBtn.addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+            } catch (err) {
+                log(`Sign out failed: ${err.message}`, "error");
+            }
+        });
+
+        // Helper: Convert timestamp field to JavaScript Date
+        function extractDate(docData, fieldPreference) {
+            const fieldsToCheck = fieldPreference === "any" 
+                ? ["updatedAt", "createdAt", "timestamp", "dateAdded", "created_at", "updated_at"]
+                : [fieldPreference];
+
+            for (const field of fieldsToCheck) {
+                const val = docData[field];
+                if (!val) continue;
+                
+                // Firestore Timestamp object { seconds, nanoseconds }
+                if (typeof val.toDate === "function") {
+                    return { date: val.toDate(), fieldName: field, raw: val };
+                }
+                if (val.seconds !== undefined) {
+                    return { date: new Date(val.seconds * 1000 + (val.nanoseconds || 0) / 1000000), fieldName: field, raw: val };
+                }
+                // ISO String or Number ms
+                if (typeof val === "string" || typeof val === "number") {
+                    const parsed = new Date(val);
+                    if (!isNaN(parsed.getTime())) {
+                        return { date: parsed, fieldName: field, raw: val };
+                    }
+                }
+            }
+            return null;
+        }
+
+        // Helper: Format Date in UTC+3 and UTC
+        function formatDateWithOffsets(date) {
+            if (!date) return "No Timestamp";
+            
+            // Format in UTC+3 (Lebanon/Middle East time)
+            const utc3Date = new Date(date.getTime() + 3 * 3600 * 1000);
+            const utc3String = utc3Date.toISOString().replace("T", " ").replace("Z", "") + " UTC+3";
+            
+            // Format in exact Firestore Console display style: "Month Day, Year at H:MM:SS AM/PM UTC+3"
+            const options = {
+                year: 'numeric', month: 'long', day: 'numeric',
+                hour: 'numeric', minute: '2-digit', second: '2-digit',
+                hour12: true,
+                timeZone: 'UTC'
+            };
+            // Format UTC+3 string manually
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const m = months[utc3Date.getUTCMonth()];
+            const d = utc3Date.getUTCDate();
+            const y = utc3Date.getUTCFullYear();
+            let hours = utc3Date.getUTCHours();
+            const minutes = String(utc3Date.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(utc3Date.getUTCSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+
+            return `${m} ${d}, ${y} at ${hours}:${minutes}:${seconds} ${ampm} UTC+3`;
+        }
+
+        // Scan Function
+        scanBtn.addEventListener("click", async () => {
+            scanBtn.disabled = true;
+            matchedProducts = [];
+            selectedProductIds.clear();
+            updateStats();
+            renderTable();
+
+            log("====================================================");
+            log("Initiating scan on Firestore collection: 'medicines'...", "info");
+
+            const targetDateVal = targetDateInput.value; // e.g. "2026-08-15"
+            const targetTimeVal = targetTimeInput.value || "17:01:12"; // e.g. "17:01:12"
+            const tolerance = timeToleranceSelect.value;
+            const idPrefix = idPrefixInput.value.trim().toLowerCase();
+            const fieldPref = timestampFieldSelect.value;
+
+            // Compute Target Time in Epoch MS (Assuming target is in UTC+3)
+            // Input: 2026-08-15 17:01:12 UTC+3 => 2026-08-15T14:01:12.000Z
+            const [year, month, day] = targetDateVal.split("-").map(Number);
+            const [hour, minute, second] = targetTimeVal.split(":").map(Number);
+            
+            // Construct UTC timestamp by subtracting 3 hours
+            const targetUtcEpoch = Date.UTC(year, month - 1, day, hour - 3, minute, second || 0);
+            log(`Target Time: ${targetDateVal} ${targetTimeVal} (UTC+3) -> Epoch UTC: ${new Date(targetUtcEpoch).toISOString()}`);
+
+            let minEpoch = targetUtcEpoch;
+            let maxEpoch = targetUtcEpoch;
+
+            if (tolerance === "exact") {
+                minEpoch = targetUtcEpoch;
+                maxEpoch = targetUtcEpoch + 999;
+            } else if (tolerance === "5sec") {
+                minEpoch = targetUtcEpoch - 5000;
+                maxEpoch = targetUtcEpoch + 5000;
+            } else if (tolerance === "30sec") {
+                minEpoch = targetUtcEpoch - 30000;
+                maxEpoch = targetUtcEpoch + 30000;
+            } else if (tolerance === "2min") {
+                minEpoch = targetUtcEpoch - 120000;
+                maxEpoch = targetUtcEpoch + 120000;
+            } else if (tolerance === "1hour") {
+                minEpoch = targetUtcEpoch - 3600000;
+                maxEpoch = targetUtcEpoch + 3600000;
+            } else if (tolerance === "day") {
+                minEpoch = Date.UTC(year, month - 1, day, 0 - 3, 0, 0);
+                maxEpoch = Date.UTC(year, month - 1, day, 24 - 3, 0, 0) - 1;
+            }
+
+            try {
+                const medicinesCol = collection(db, "medicines");
+                const snapshot = await getDocs(medicinesCol);
+                const totalDocs = snapshot.docs.length;
+                log(`Fetched ${totalDocs} total documents from 'medicines' collection.`);
+
+                let scanned = 0;
+                let matched = 0;
+
+                snapshot.docs.forEach((docSnap) => {
+                    scanned++;
+                    const data = docSnap.data();
+                    const docId = docSnap.id;
+                    const timestampInfo = extractDate(data, fieldPref);
+
+                    let matchesTime = false;
+                    let matchesPrefix = true;
+                    let matchReason = [];
+
+                    if (idPrefix) {
+                        matchesPrefix = docId.toLowerCase().startsWith(idPrefix) ||
+                                       (data.section && data.section.toLowerCase().includes(idPrefix)) ||
+                                       (data.category && data.category.toLowerCase().includes(idPrefix));
+                    }
+
+                    if (tolerance === "prefix_only") {
+                        matchesTime = true;
+                        if (matchesPrefix) matchReason.push(`Matches ID prefix: "${idPrefix}"`);
+                    } else if (timestampInfo) {
+                        const docEpoch = timestampInfo.date.getTime();
+                        if (docEpoch >= minEpoch && docEpoch <= maxEpoch) {
+                            matchesTime = true;
+                            matchReason.push(`Timestamp ${timestampInfo.fieldName} matches target window`);
+                        }
+                    }
+
+                    // If both criteria match
+                    if (matchesTime && matchesPrefix) {
+                        matched++;
+                        matchedProducts.push({
+                            id: docId,
+                            title: data.title || "(Untitled)",
+                            brand: data.brand || "",
+                            category: data.category || "",
+                            section: data.section || "",
+                            imageUrl: data.imageUrl || (data.images && data.images[0]) || "",
+                            images: data.images || [],
+                            timestampInfo: timestampInfo,
+                            matchReason: matchReason.join(" + ") || "Matched filter"
+                        });
+                        selectedProductIds.add(docId);
+                    }
+                });
+
+                log(`Scan Complete! Found ${matched} matching products out of ${scanned} scanned documents.`, "success");
+
+                masterCheckbox.disabled = matchedProducts.length === 0;
+                selectAllBtn.disabled = matchedProducts.length === 0;
+                deselectAllBtn.disabled = matchedProducts.length === 0;
+                deleteBtn.disabled = matchedProducts.length === 0;
+                masterCheckbox.checked = matchedProducts.length > 0;
+
+                updateStats(scanned, matched, selectedProductIds.size);
+                renderTable();
+
+            } catch (error) {
+                log(`Scan Error: ${error.message}`, "error");
+                console.error(error);
+                alert(`Error during scan: ${error.message}`);
+            } finally {
+                scanBtn.disabled = false;
+            }
+        });
+
+        function updateStats(scanned = 0, matched = matchedProducts.length, selected = selectedProductIds.size) {
+            statScanned.textContent = `Scanned: ${scanned || matchedProducts.length}`;
+            statMatched.textContent = `Matched Criteria: ${matched}`;
+            statSelected.textContent = `Selected for Deletion: ${selected}`;
+            selectedCountBtn.textContent = selected;
+            deleteBtn.disabled = selected === 0;
+        }
+
+        function renderTable() {
+            const filterQuery = tableFilter.value.trim().toLowerCase();
+            if (matchedProducts.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">
+                            No matching products found with current criteria. Try widening the time tolerance or clearing the prefix filter.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = "";
+            let rowIndex = 1;
+
+            matchedProducts.forEach((item) => {
+                if (filterQuery && !item.title.toLowerCase().includes(filterQuery) && !item.id.toLowerCase().includes(filterQuery) && !item.category.toLowerCase().includes(filterQuery)) {
+                    return;
+                }
+
+                const isChecked = selectedProductIds.has(item.id);
+                const thumb = item.imageUrl 
+                    ? `<img src="${item.imageUrl}" class="product-thumb" alt="${item.title}">`
+                    : `<div class="product-thumb" style="display:flex; align-items:center; justify-content:center; color:#94A3B8;"><i class="fa-regular fa-image"></i></div>`;
+
+                const timeDisplay = item.timestampInfo
+                    ? formatDateWithOffsets(item.timestampInfo.date)
+                    : '<span style="color:#94A3B8;">No timestamp field</span>';
+
+                html += `
+                    <tr class="${isChecked ? 'selected-row' : ''}">
+                        <td style="text-align:center;">
+                            <input type="checkbox" class="row-checkbox" data-id="${item.id}" ${isChecked ? "checked" : ""}>
+                        </td>
+                        <td>${rowIndex++}</td>
+                        <td>${thumb}</td>
+                        <td>
+                            <strong><code>${item.id}</code></strong>
+                        </td>
+                        <td>${item.title}</td>
+                        <td><span class="pill" style="font-size:11px; padding:3px 8px;">${item.section || ''} > ${item.category || ''}</span></td>
+                        <td><strong>${timeDisplay}</strong></td>
+                        <td><span class="tag tag-match">${item.matchReason}</span></td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = html;
+
+            // Bind row checkboxes
+            document.querySelectorAll(".row-checkbox").forEach((cb) => {
+                cb.addEventListener("change", (e) => {
+                    const id = e.target.getAttribute("data-id");
+                    if (e.target.checked) {
+                        selectedProductIds.add(id);
+                    } else {
+                        selectedProductIds.delete(id);
+                    }
+                    masterCheckbox.checked = selectedProductIds.size === matchedProducts.length;
+                    updateStats();
+                    const tr = e.target.closest("tr");
+                    if (tr) tr.className = e.target.checked ? 'selected-row' : '';
+                });
+            });
+        }
+
+        tableFilter.addEventListener("input", renderTable);
+
+        masterCheckbox.addEventListener("change", (e) => {
+            if (e.target.checked) {
+                matchedProducts.forEach(p => selectedProductIds.add(p.id));
+            } else {
+                selectedProductIds.clear();
+            }
+            updateStats();
+            renderTable();
+        });
+
+        selectAllBtn.addEventListener("click", () => {
+            matchedProducts.forEach(p => selectedProductIds.add(p.id));
+            masterCheckbox.checked = true;
+            updateStats();
+            renderTable();
+        });
+
+        deselectAllBtn.addEventListener("click", () => {
+            selectedProductIds.clear();
+            masterCheckbox.checked = false;
+            updateStats();
+            renderTable();
+        });
+
+        // Helper: Delete Storage folder/files
+        async function deleteStorageFolder(productId) {
+            try {
+                const folderRef = ref(storage, `products/${productId}`);
+                const res = await listAll(folderRef);
+                
+                // Delete files in folder
+                const filePromises = res.items.map(item => deleteObject(item));
+                await Promise.all(filePromises);
+
+                // Recursively delete sub-folders (like gallery)
+                for (const subfolder of res.prefixes) {
+                    const subRes = await listAll(subfolder);
+                    await Promise.all(subRes.items.map(subItem => deleteObject(subItem)));
+                }
+                return true;
+            } catch (err) {
+                // Folder might not exist in storage, ignore not-found errors
+                if (err.code !== "storage/object-not-found") {
+                    console.warn(`Storage delete note for ${productId}:`, err.message);
+                }
+                return false;
+            }
+        }
+
+        // DELETION EXECUTION
+        deleteBtn.addEventListener("click", async () => {
+            const count = selectedProductIds.size;
+            if (count === 0) {
+                alert("No products selected for deletion.");
+                return;
+            }
+
+            if (!auth.currentUser) {
+                alert("Security notice: You must be signed in as an Admin above to delete documents from Firestore!");
+                return;
+            }
+
+            const confirmed = confirm(
+                `🚨 CRITICAL CONFIRMATION 🚨\n\n` +
+                `You are about to PERMANENTLY DELETE ${count} product document(s) from Firestore collection 'medicines'.\n\n` +
+                `This action cannot be undone.\n\n` +
+                `Are you sure you want to proceed?`
+            );
+
+            if (!confirmed) return;
+
+            // Second confirmation for extra safety
+            const doubleConfirm = confirm(`Please confirm a second time: Delete ${count} products now?`);
+            if (!doubleConfirm) return;
+
+            scanBtn.disabled = true;
+            deleteBtn.disabled = true;
+            selectAllBtn.disabled = true;
+            deselectAllBtn.disabled = true;
+            progressContainer.style.display = "block";
+            progressBar.style.width = "0%";
+
+            log("====================================================", "warn");
+            log(`STARTING BATCH DELETION OF ${count} PRODUCTS...`, "warn");
+
+            const toDeleteList = matchedProducts.filter(p => selectedProductIds.has(p.id));
+            const shouldDeleteStorage = deleteStorageImagesCheckbox.checked;
+
+            let deletedCount = 0;
+            let failedCount = 0;
+
+            try {
+                // Delete in chunks of 450 (Firestore batch limit is 500)
+                const chunkSize = 450;
+                for (let i = 0; i < toDeleteList.length; i += chunkSize) {
+                    const chunk = toDeleteList.slice(i, i + chunkSize);
+                    const batch = writeBatch(db);
+
+                    chunk.forEach((prod) => {
+                        const docRef = doc(db, "medicines", prod.id);
+                        batch.delete(docRef);
+                    });
+
+                    log(`Committing batch delete for items ${i + 1} to ${Math.min(i + chunk.length, toDeleteList.length)}...`);
+                    await batch.commit();
+
+                    // Storage image deletion
+                    if (shouldDeleteStorage) {
+                        for (const prod of chunk) {
+                            await deleteStorageFolder(prod.id);
+                        }
+                    }
+
+                    deletedCount += chunk.length;
+                    const percent = Math.round((deletedCount / count) * 100);
+                    progressBar.style.width = `${percent}%`;
+                    log(`✓ Successfully deleted batch of ${chunk.length} documents. (${deletedCount}/${count})`, "success");
+                }
+
+                log("====================================================", "success");
+                log(`SUCCESS! Permanently deleted ${deletedCount} products from Firestore.`, "success");
+                alert(`Successfully deleted ${deletedCount} products!`);
+
+                // Remove deleted items from local state
+                matchedProducts = matchedProducts.filter(p => !selectedProductIds.has(p.id));
+                selectedProductIds.clear();
+                updateStats(0, matchedProducts.length, 0);
+                renderTable();
+
+            } catch (err) {
+                log(`FATAL DELETION ERROR: ${err.message}`, "error");
+                console.error("Delete error:", err);
+                alert(`Deletion encountered an error: ${err.message}`);
+            } finally {
+                scanBtn.disabled = false;
+                deleteBtn.disabled = selectedProductIds.size === 0;
+                selectAllBtn.disabled = matchedProducts.length === 0;
+                deselectAllBtn.disabled = matchedProducts.length === 0;
+            }
+        });
+    </script>
+</body>
+</html>

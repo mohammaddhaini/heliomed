@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/ico" href="icon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Heliomed</title>
+    <meta name="description" content="Complete your Heliomed order.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --brand-blue: #1D5F73;
+            --brand-pink: #C2A26B;
+            --brand-dark: #07111F;
+            --brand-soft-blue: #FBF7F0;
+            --brand-soft-pink: #F8F2E8;
+            --brand-border: #E8DCC8;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #fff;
+            color: var(--brand-dark);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+        a { color: inherit; text-decoration: none; }
+        button, input, select, textarea { font: inherit; }
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 14px 28px;
+            background: #fff;
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .logo img { width: 132px; display: block; }
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 18px;
+        }
+        .cart-icon-wrapper {
+            position: relative;
+            color: inherit;
+            display: inline-flex;
+        }
+        .cart-count,
+        .wishlist-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--brand-pink);
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+        main {
+            width: min(1180px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 32px 0 76px;
+        }
+        .page-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+        h1 {
+            margin: 0;
+            font-size: clamp(32px, 5vw, 58px);
+            line-height: 0.95;
+            letter-spacing: 0;
+        }
+        .back-link {
+            color: var(--brand-pink);
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 360px;
+            gap: 28px;
+            align-items: start;
+        }
+        .checkout-form,
+        .summary-panel,
+        .empty-checkout {
+            border: 1px solid var(--brand-border);
+            background: #fff;
+        }
+        .checkout-form {
+            padding: 22px;
+        }
+        .form-section {
+            padding-bottom: 24px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #f0ebe3;
+        }
+        .form-section:last-of-type {
+            border-bottom: 0;
+            margin-bottom: 0;
+        }
+        h2 {
+            margin: 0 0 16px;
+            font-size: 20px;
+        }
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+        label {
+            display: grid;
+            gap: 7px;
+            font-size: 13px;
+            font-weight: 900;
+        }
+        .wide { grid-column: 1 / -1; }
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid #d8d2c9;
+            padding: 12px;
+            outline: none;
+            background: #fff;
+        }
+        textarea {
+            min-height: 92px;
+            resize: vertical;
+        }
+        input:focus,
+        textarea:focus {
+            border-color: var(--brand-pink);
+            box-shadow: 0 0 0 3px rgba(194, 162, 107, 0.16);
+        }
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--brand-border);
+            padding: 14px;
+            cursor: pointer;
+            font-weight: 900;
+            min-height: 58px;
+        }
+        .payment-option input {
+            width: auto;
+            accent-color: var(--brand-pink);
+        }
+        .summary-panel {
+            position: sticky;
+            top: 92px;
+            padding: 20px;
+        }
+        .summary-item {
+            display: grid;
+            grid-template-columns: 62px minmax(0, 1fr);
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0ebe3;
+        }
+        .summary-image {
+            height: 62px;
+            background: var(--brand-soft-blue);
+            overflow: hidden;
+        }
+        .summary-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        .summary-title {
+            margin: 0 0 5px;
+            font-size: 13px;
+            font-weight: 900;
+            line-height: 1.32;
+        }
+        .summary-meta {
+            color: #59635f;
+            font-size: 12px;
+            font-weight: 800;
+        }
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 11px 0;
+            border-bottom: 1px solid #f0ebe3;
+            font-size: 14px;
+        }
+        .summary-line.total {
+            border-bottom: 0;
+            font-size: 20px;
+            font-weight: 900;
+        }
+        .discount-control {
+            display: grid;
+            gap: 8px;
+            padding: 14px 0;
+            border-bottom: 1px solid #f0ebe3;
+        }
+        .discount-control label {
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        .discount-row {
+            display: grid;
+            grid-template-columns: 1fr 88px;
+            gap: 8px;
+        }
+        .apply-discount {
+            border: 1px solid var(--brand-pink);
+            background: var(--brand-pink);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        .summary-note {
+            min-height: 18px;
+            color: #31524e;
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1.45;
+        }
+        .summary-note.error {
+            color: #9c2d12;
+        }
+        .place-order {
+            width: 100%;
+            min-height: 48px;
+            border: 1px solid var(--brand-pink);
+            background: var(--brand-pink);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .form-note {
+            min-height: 22px;
+            margin-top: 12px;
+            color: #9c2d12;
+            font-size: 13px;
+            font-weight: 800;
+        }
+        .empty-checkout {
+            display: none;
+            padding: 54px 24px;
+            text-align: center;
+            background: var(--brand-soft-blue);
+        }
+        .empty-checkout.visible { display: block; }
+        .auth-required {
+            display: none;
+            padding: 34px;
+            background: var(--brand-soft-blue);
+            border: 1px solid var(--brand-border);
+            margin-bottom: 24px;
+        }
+        .auth-required.visible { display: block; }
+        .auth-required h2 {
+            margin: 0 0 10px;
+            font-size: 28px;
+        }
+        .auth-required p {
+            margin: 0 0 18px;
+            color: #53616c;
+            font-weight: 700;
+        }
+        .auth-link {
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 18px;
+            border: 1px solid var(--brand-pink);
+            background: var(--brand-pink);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        @media (max-width: 860px) {
+            .header { padding: 12px 16px; }
+            .checkout-layout,
+            .field-grid,
+            .payment-options {
+                grid-template-columns: 1fr;
+            }
+            .summary-panel { position: static; }
+        }
+    </style>
+    <link rel="stylesheet" href="./responsive.css">
+    <link rel="stylesheet" href="./header.css">
+</head>
+<body>
+    <!-- HEADER -->
+        <header class="header">
+            <div class="logo">
+                <a href="./index.html">
+                    <img src="heliomed-logo.png" alt="Heliomed logo">
+                </a>
+            </div>
+    
+            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-navigation" aria-expanded="false">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+    
+            <ul class="nav-links" id="primary-navigation">
+                <li class="nav-panel-header" aria-hidden="true">
+                    <span class="nav-panel-title">MENU</span>
+                    <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=parapharmacy" class="nav-trigger">PARAPHARMACY <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu">
+                        <div class="mega-grid">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=skin-care">Skin Care</a>
+                                <a href="./collection.html?collection=hair-care">Hair Care</a>
+                                <a href="./collection.html?collection=face-care">Face Care</a>
+                                <a href="./collection.html?collection=dental-care">Dental Care</a>
+                                <a href="./collection.html?collection=body-care">Body Care</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=nail-care">Nail Care</a>
+                                <a href="./collection.html?collection=foot-care">Foot Care</a>
+                                <a href="./collection.html?collection=baby-care">Baby Care</a>
+                                <a href="./collection.html?collection=mother-care">Mother Care</a>
+                                <a href="./collection.html?collection=kids-care">Kids Care</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=men-care">Men Care</a>
+                                <a href="./collection.html?collection=geriatric-care">Geriatric Care</a>
+                                <a href="./collection.html?collection=nutrition">Nutrition</a>
+                                <a href="./collection.html?collection=supplemnts">Supplements</a>
+                            </div>
+                            <div class="mega-column">
+                                <a class="category-view-all" style="border:0;padding:5px 0;margin:0;" href="./collection.html?collection=parapharmacy">View all Parapharmacy &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=medical-supplies" class="nav-trigger">MEDICAL SUPPLIES <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu">
+                        <div class="mega-grid three">
+                            <div class="mega-column">
+                                <strong>Supports</strong>
+                                <a href="./collection.html?collection=ankle-support">Ankle Support</a>
+                                <a href="./collection.html?collection=back-support">Back Support</a>
+                                <a href="./collection.html?collection=cervical-support">Cervical Support</a>
+                                <a href="./collection.html?collection=disk-trac">Disk Trac</a>
+                                <a href="./collection.html?collection=knee-support">Knee Support</a>
+                                <a href="./collection.html?collection=shoulder-and-elbow">Shoulder &amp; Elbow</a>
+                                <a href="./collection.html?collection=wrist-and-hand-braces">Wrist &amp; Hand Braces</a>
+                            </div>
+                            <div class="mega-column">
+                                <strong>Disposables</strong>
+                                <a href="./collection.html?collection=gloves">Gloves</a>
+                                <a href="./collection.html?collection=guaze">Gauze</a>
+                                <a href="./collection.html?collection=needles">Needles</a>
+                                <a href="./collection.html?collection=suture">Sutures</a>
+                                <a href="./collection.html?collection=blades">Blades</a>
+                                <a href="./collection.html?collection=wound-care">Wound Care</a>
+                                <a href="./collection.html?collection=drapes">Drapes / Apparel</a>
+                            </div>
+                            <div class="mega-column">
+                                <strong>Other</strong>
+                                <a href="./collection.html?collection=home-care">Home Care</a>
+                                <a href="./collection.html?collection=foot-care">Foot Care</a>
+                                <a href="./collection.html?collection=liposuction">Liposuction</a>
+                                <a href="./collection.html?collection=pediatric">Pediatric</a>
+                                <a href="./collection.html?collection=vascular">Vascular</a>
+                                <a href="./collection.html?collection=pillows">Pillows</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=organic" class="nav-trigger">ORGANIC <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu compact">
+                        <div class="mega-grid">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=organic">View All Organic</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=perfume" class="nav-trigger">PERFUME <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu compact">
+                        <div class="mega-grid">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=women">Women</a>
+                                <a href="./collection.html?collection=men">Men</a>
+                                <a href="./collection.html?collection=kids">Kids</a>
+                                <a href="./collection.html?collection=bundles">Bundles</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="./collection.html?collection=makeup" class="nav-trigger">MAKEUP <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-menu compact">
+                        <div class="mega-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));max-width:360px;">
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=face">Face</a>
+                                <a href="./collection.html?collection=eye">Eye</a>
+                                <a href="./collection.html?collection=lips">Lips</a>
+                                <a href="./collection.html?collection=nail">Nail</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="./collection.html?collection=tools-and-accessories">Tools &amp; Accessories</a>
+                                <a href="./collection.html?collection=makeup-remover">Makeup Remover</a>
+                                <a href="./collection.html?collection=medical-makeup">Medical Makeup</a>
+                                <a href="./collection.html?collection=palettes">Palettes</a>
+                                <a href="./collection.html?collection=korean-products">Korean Products</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                 <li class="nav-item">
+                    <a href="./collection.html?collection=offers" class="nav-trigger"><i class="fas fa-tags"></i> OFFERS</a>
+                </li>
+                <li class="nav-item"><a href="#blog" class="nav-trigger"><i class="fas fa-newspaper"></i> BLOG</a></li>
+                <li class="nav-item mobile-only-nav"><a href="./account.html" class="nav-trigger account-link"><i class="far fa-user"></i> LOGIN</a></li>
+                <li class="nav-item mobile-only-nav"><a href="./wishlist.html" class="nav-trigger"><i class="far fa-heart"></i> WISHLIST</a></li>
+                <li class="nav-item mobile-only-nav"><a href="./cart.html" class="nav-trigger"><i class="fas fa-shopping-bag"></i> CART</a></li>
+            </ul>
+    
+            <div class="header-actions">
+                <div class="search-box">
+                    <input type="text" placeholder="Search for products">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="header-icons">
+                    <a href="./account.html" aria-label="Open account"><i class="far fa-user"></i></a>
+                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist">
+                        <i class="far fa-heart"></i>
+                        <span class="wishlist-count">0</span>
+                    </a>
+                    <a class="cart-icon-wrapper" href="./cart.html" aria-label="Open cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+    <main>
+        <div class="page-title">
+            <h1>Checkout</h1>
+            <a class="back-link" href="./cart.html">Back to cart</a>
+        </div>
+
+        <div class="empty-checkout" id="emptyCheckout">
+            <h2>Your cart is empty</h2>
+            <p>Add products before checkout.</p>
+            <a class="back-link" href="./search.html">Browse products</a>
+        </div>
+
+        <div class="auth-required" id="authRequired">
+            <h2>Email account required</h2>
+            <p>Log in or create an account with email and password before checkout.</p>
+            <a class="auth-link" href="./account.html?next=checkout.html">Make / log in with email</a>
+        </div>
+
+        <section class="checkout-layout" id="checkoutLayout">
+            <form class="checkout-form" id="checkoutForm">
+                <section class="form-section">
+                    <h2>Contact</h2>
+                    <div class="field-grid">
+                        <label>
+                            Full name
+                            <input name="name" autocomplete="name" required>
+                        </label>
+                        <label>
+                            Phone number
+                            <input name="phone" autocomplete="tel" required>
+                        </label>
+                        <label class="wide">
+                            Email
+                            <input name="email" type="email" autocomplete="email" required readonly>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <h2>Delivery Address</h2>
+                    <div class="field-grid">
+                        <label class="wide">
+                            Country
+                            <select name="country">
+                                <option value="Lebanon">Lebanon</option>
+                            </select>
+                        </label>
+                        <label>
+                            State/Province
+                            <select name="area" id="areaSelect" required></select>
+                        </label>
+                        <label>
+                            City
+                            <input name="city" autocomplete="address-level2" required>
+                        </label>
+                        <label class="wide">
+                            Address
+                            <input name="address" autocomplete="street-address" required>
+                        </label>
+                        <label class="wide">
+                            Apartment/Suite/Building
+                            <input name="building">
+                        </label>
+                        <label class="wide">
+                            Floor (الطابق)
+                            <input name="floor">
+                        </label>
+                        <label class="wide">
+                            Address Line (مزيد من المعلومات حول العنوان)
+                            <textarea name="notes"></textarea>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <h2>Payment Method</h2>
+                    <div class="payment-options">
+                        <label class="payment-option">
+                            <input type="radio" name="payment" value="Cash on Delivery" checked>
+                            Cash on Delivery
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="payment" value="Whish">
+                            Whish
+                        </label>
+                    </div>
+                </section>
+
+                <button class="place-order" type="submit">Place order</button>
+                <div class="form-note" id="formNote" aria-live="polite"></div>
+            </form>
+
+            <aside class="summary-panel" aria-label="Order summary">
+                <h2>Order Summary</h2>
+                <div id="summaryItems"></div>
+                <div class="summary-line">
+                    <span>Items</span>
+                    <strong id="summaryCount">0</strong>
+                </div>
+                <div class="summary-line">
+                    <span>Subtotal</span>
+                    <strong id="summarySubtotal">$0.00</strong>
+                </div>
+                <form class="discount-control" id="discountForm">
+                    <label for="discountCode">Gift / discount code</label>
+                    <div class="discount-row">
+                        <input id="discountCode" type="text" autocomplete="off" placeholder="Code">
+                        <button class="apply-discount" type="submit">Apply</button>
+                    </div>
+                    <div class="summary-note" id="discountNote" aria-live="polite"></div>
+                </form>
+                <div class="summary-line" id="discountLine" hidden>
+                    <span>Discount</span>
+                    <strong id="summaryDiscount">-$0.00</strong>
+                </div>
+                <div class="summary-line">
+                    <span>Delivery</span>
+                    <strong id="summaryDelivery">$0.00</strong>
+                </div>
+                <div class="summary-line total">
+                    <span>Total</span>
+                    <span id="summaryTotal">$0.00</span>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    <script src="./cart.js"></script>
+    <script src="./wishlist.js"></script>
+    <script type="module">
+        import { auth, db, functions } from "./firebase-init.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+        import { collection, doc, getDoc, getDocs, limit, query, setDoc, where } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { httpsCallable } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-functions.js";
+
+        const checkoutLayout = document.getElementById("checkoutLayout");
+        const emptyCheckout = document.getElementById("emptyCheckout");
+        const authRequired = document.getElementById("authRequired");
+        const summaryItems = document.getElementById("summaryItems");
+        const summaryCount = document.getElementById("summaryCount");
+        const summarySubtotal = document.getElementById("summarySubtotal");
+        const summaryDiscount = document.getElementById("summaryDiscount");
+        const discountLine = document.getElementById("discountLine");
+        const summaryDelivery = document.getElementById("summaryDelivery");
+        const summaryTotal = document.getElementById("summaryTotal");
+        const discountForm = document.getElementById("discountForm");
+        const discountCode = document.getElementById("discountCode");
+        const discountNote = document.getElementById("discountNote");
+        const formNote = document.getElementById("formNote");
+        const areaSelect = document.getElementById("areaSelect");
+        const PROFILE_KEY = "heliomedProfile";
+        const IDEMPOTENCY_KEY = "heliomedCheckoutIdempotency";
+        const createOrder = httpsCallable(functions, "createOrder");
+        let currentUser = null;
+
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, function (char) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char];
+            });
+        }
+
+        function saveOrder(order) {
+            const orders = JSON.parse(localStorage.getItem("heliomedOrders") || "[]");
+            orders.unshift(order);
+            localStorage.setItem("heliomedOrders", JSON.stringify(orders.slice(0, 20)));
+            localStorage.setItem("heliomedLastOrder", JSON.stringify(order));
+        }
+
+        function idempotencyKeyFor(payload) {
+            const payloadText = JSON.stringify(payload);
+            try {
+                const stored = JSON.parse(sessionStorage.getItem(IDEMPOTENCY_KEY) || "null");
+                if (stored?.payload === payloadText && stored.key) return stored.key;
+            } catch (error) {
+                sessionStorage.removeItem(IDEMPOTENCY_KEY);
+            }
+            const key = crypto.randomUUID();
+            sessionStorage.setItem(IDEMPOTENCY_KEY, JSON.stringify({ key, payload: payloadText }));
+            return key;
+        }
+
+        function readProfile() {
+            try {
+                return JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
+            } catch (error) {
+                return {};
+            }
+        }
+
+        async function readRemoteProfile(user) {
+            if (!user) return {};
+            const snapshot = await getDoc(doc(db, "userProfiles", user.uid));
+            return snapshot.exists() ? snapshot.data() : {};
+        }
+
+        function fillAreas() {
+            const current = window.HeliomedCart.getDeliveryArea();
+            areaSelect.innerHTML = window.HeliomedCart.getDeliveryAreas().map(function (area) {
+                return '<option value="' + escapeHtml(area.value) + '"' + (area.value === current.value ? " selected" : "") + '>' + escapeHtml(area.label) + '</option>';
+            }).join("");
+        }
+
+        function fillProfile() {
+            const profile = readProfile();
+            Array.from(document.getElementById("checkoutForm").elements).forEach(function (field) {
+                if (!field.name || profile[field.name] === undefined) return;
+                field.value = profile[field.name];
+            });
+            if (currentUser?.email) document.getElementById("checkoutForm").elements.email.value = currentUser.email;
+            if (profile.area) {
+                areaSelect.value = profile.area;
+                window.HeliomedCart.setDeliveryArea(profile.area);
+            }
+        }
+
+        async function findDiscount(code) {
+            const normalized = code.trim().toUpperCase();
+            const lower = code.trim().toLowerCase();
+            if (!normalized) return null;
+            const direct = await getDoc(doc(db, "discountCodes", normalized));
+            if (direct.exists()) return { code: normalized, ...direct.data() };
+            const attempts = [
+                query(collection(db, "discountCodes"), where("code", "==", normalized), limit(1)),
+                query(collection(db, "discountCodes"), where("code", "==", code.trim()), limit(1)),
+                query(collection(db, "discountCodes"), where("codeLower", "==", lower), limit(1)),
+                query(collection(db, "discountCodes"), where("discountCode", "==", normalized), limit(1))
+            ];
+            for (const lookup of attempts) {
+                const snapshot = await getDocs(lookup);
+                if (!snapshot.empty) return { code: normalized, ...snapshot.docs[0].data() };
+            }
+            return null;
+        }
+
+        function renderSummary() {
+            const items = window.HeliomedCart.getItems();
+            const summary = window.HeliomedCart.getSummary();
+            const hasItems = items.length > 0;
+            const canCheckout = hasItems && currentUser && currentUser.email;
+            checkoutLayout.hidden = !canCheckout;
+            emptyCheckout.classList.toggle("visible", !hasItems);
+            authRequired.classList.toggle("visible", hasItems && !(currentUser && currentUser.email));
+            summaryCount.textContent = window.HeliomedCart.getCount();
+            summarySubtotal.textContent = window.HeliomedCart.formatMoney(summary.subtotal);
+            summaryDiscount.textContent = "-" + window.HeliomedCart.formatMoney(summary.discountAmount);
+            discountLine.hidden = summary.discountAmount <= 0;
+            summaryDelivery.textContent = summary.delivery === 0 ? "Free" : window.HeliomedCart.formatMoney(summary.delivery);
+            summaryTotal.textContent = window.HeliomedCart.formatMoney(summary.total);
+            discountCode.value = summary.discount?.code || "";
+            summaryItems.innerHTML = items.map(function (item) {
+                const image = item.imageUrl
+                    ? '<img src="' + escapeHtml(item.imageUrl) + '" alt="' + escapeHtml(item.title) + '">'
+                    : "";
+                return '<article class="summary-item">' +
+                    '<div class="summary-image">' + image + '</div>' +
+                    '<div>' +
+                        '<p class="summary-title">' + escapeHtml(item.title) + '</p>' +
+                        '<div class="summary-meta">Qty ' + escapeHtml(item.quantity) + ' · ' + escapeHtml(item.newPrice || window.HeliomedCart.formatMoney(item.price)) + '</div>' +
+                    '</div>' +
+                '</article>';
+            }).join("");
+        }
+
+        discountForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            discountNote.classList.remove("error");
+            discountNote.textContent = "Checking code...";
+            try {
+                const discount = await findDiscount(discountCode.value);
+                const subtotal = window.HeliomedCart.getSubtotal();
+                if (!discount || discount.active === false) {
+                    window.HeliomedCart.clearDiscount();
+                    discountNote.classList.add("error");
+                    discountNote.textContent = "Code not found or inactive.";
+                    renderSummary();
+                    return;
+                }
+                const minSubtotal = Number(discount.minSubtotal || discount.minimumSubtotal || 0);
+                if (subtotal < minSubtotal) {
+                    window.HeliomedCart.clearDiscount();
+                    discountNote.classList.add("error");
+                    discountNote.textContent = "This code needs a minimum subtotal of " + window.HeliomedCart.formatMoney(minSubtotal) + ".";
+                    renderSummary();
+                    return;
+                }
+                window.HeliomedCart.setDiscount(discount);
+                discountNote.textContent = "Code applied.";
+                renderSummary();
+            } catch (error) {
+                console.error(error);
+                discountNote.classList.add("error");
+                discountNote.textContent = "Could not check this code right now.";
+            }
+        });
+
+        document.getElementById("checkoutForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const submitButton = event.currentTarget.querySelector('[type="submit"]');
+            const items = window.HeliomedCart.getItems();
+            if (!items.length) {
+                formNote.textContent = "Add products before checkout.";
+                return;
+            }
+            if (!currentUser || !currentUser.email) {
+                authRequired.classList.add("visible");
+                checkoutLayout.hidden = true;
+                return;
+            }
+            if (!event.currentTarget.reportValidity()) return;
+            const form = new FormData(event.currentTarget);
+            window.HeliomedCart.setDeliveryArea(form.get("area"));
+            const profile = Object.fromEntries(form.entries());
+            profile.email = currentUser.email;
+            localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+            const payload = {
+                items: items.map(function (item) {
+                    return { id: item.id, quantity: item.quantity };
+                }),
+                discountCode: window.HeliomedCart.getDiscount()?.code || "",
+                deliveryArea: form.get("area"),
+                payment: form.get("payment"),
+                customer: {
+                    name: form.get("name"),
+                    phone: form.get("phone")
+                },
+                address: {
+                    city: form.get("city"),
+                    country: form.get("country"),
+                    area: form.get("area"),
+                    building: form.get("building"),
+                    floor: form.get("floor"),
+                    street: form.get("address"),
+                    notes: form.get("notes")
+                }
+            };
+            payload.idempotencyKey = idempotencyKeyFor(payload);
+            formNote.textContent = "Placing your order...";
+            submitButton.disabled = true;
+            try {
+                await setDoc(doc(db, "userProfiles", currentUser.uid), profile, { merge: true });
+                const result = await createOrder(payload);
+                const order = result.data;
+                saveOrder(order);
+                sessionStorage.removeItem(IDEMPOTENCY_KEY);
+                window.HeliomedCart.clearCart();
+                window.HeliomedCart.clearDiscount();
+                window.location.href = "./order-confirmation.html?order=" + encodeURIComponent(order.id);
+            } catch (error) {
+                console.error(error);
+                formNote.textContent = error?.message || "Could not place the order. Please try again.";
+                submitButton.disabled = false;
+            }
+        });
+
+        fillAreas();
+        areaSelect.addEventListener("change", function () {
+            window.HeliomedCart.setDeliveryArea(areaSelect.value);
+            renderSummary();
+        });
+        onAuthStateChanged(auth, async function (user) {
+            currentUser = user;
+            if (user?.email) {
+                const remoteProfile = await readRemoteProfile(user);
+                const mergedProfile = { ...readProfile(), ...remoteProfile, email: user.email };
+                localStorage.setItem(PROFILE_KEY, JSON.stringify(mergedProfile));
+                fillProfile();
+            }
+            renderSummary();
+        });
+    </script>
+    <script type="module" src="./navbar-categories.js"></script>
+    <script src="./header.js"></script>
+</body>
+</html>

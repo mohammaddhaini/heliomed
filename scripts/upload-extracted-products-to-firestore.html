@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Extracted Products & Photos to Firebase</title>
+    <style>
+        :root {
+            --aqua: #BFE7E1;
+            --aqua-dark: #2F7C73;
+            --aqua-light: #EBF8F6;
+            --gold: #C2A26B;
+            --gold-hover: #AA8B56;
+            --ink: #07111F;
+            --line: #E2E8F0;
+            --muted: #64748B;
+            --bg: #F8FAFC;
+            --card: #FFFFFF;
+            --success: #10B981;
+            --danger: #EF4444;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 32px 20px;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        main {
+            width: min(1360px, 100%);
+            margin: 0 auto;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 32px;
+            background: var(--card);
+            box-shadow: 0 20px 45px rgba(7, 17, 31, 0.08);
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        p.subtitle {
+            margin: 0 0 20px;
+            color: var(--muted);
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .summary-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: var(--aqua-light);
+            border: 1px solid var(--aqua);
+            border-radius: 8px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #FFFFFF;
+            border: 1px solid rgba(47, 124, 115, 0.25);
+            color: var(--aqua-dark);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .pill.accent {
+            background: var(--aqua-dark);
+            color: #FFFFFF;
+            border-color: transparent;
+        }
+
+        .pipeline-info {
+            background: #F1F5F9;
+            border-left: 4px solid var(--gold);
+            padding: 14px 18px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #334155;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .pipeline-info ol {
+            margin: 6px 0 0;
+            padding-left: 20px;
+        }
+
+        .pipeline-info code {
+            background: #E2E8F0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+            color: #0F172A;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: #E2E8F0;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--aqua-dark), var(--gold));
+            transition: width 0.3s ease;
+        }
+
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 240px;
+            max-width: 380px;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 44px;
+            padding: 0 14px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--gold);
+        }
+
+        .table-wrap {
+            max-height: 560px;
+            overflow: auto;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            margin-bottom: 24px;
+            background: #FFFFFF;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background: #0F172A;
+            color: #F8FAFC;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 1;
+        }
+
+        tbody tr:hover {
+            background: #F8FAFC;
+        }
+
+        .product-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--line);
+            background: #F1F5F9;
+            display: block;
+        }
+
+        .product-thumb-placeholder {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            background: #E2E8F0;
+            display: grid;
+            place-items: center;
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .badge-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .in-stock {
+            background: #DCFCE7;
+            color: #15803D;
+        }
+
+        .out-of-stock {
+            background: #FEE2E2;
+            color: #B91C1C;
+        }
+
+        .btn-upload {
+            min-height: 48px;
+            border: 0;
+            border-radius: 8px;
+            padding: 0 28px;
+            background: var(--gold);
+            color: #FFFFFF;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 12px rgba(194, 162, 107, 0.35);
+        }
+
+        .btn-upload:hover {
+            background: var(--gold-hover);
+        }
+
+        .btn-upload:disabled {
+            cursor: wait;
+            opacity: 0.6;
+            box-shadow: none;
+        }
+
+        pre#log {
+            min-height: 180px;
+            max-height: 320px;
+            margin: 20px 0 0;
+            padding: 16px 20px;
+            overflow: auto;
+            white-space: pre-wrap;
+            background: #0F172A;
+            border-left: 4px solid var(--gold);
+            border-radius: 0 8px 8px 0;
+            color: #E2E8F0;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Upload Extracted Products & Photos to Firebase</h1>
+        <p class="subtitle">
+            Uploads product photos to <strong>Firebase Storage</strong> and saves product metadata to Firestore's <strong>medicines</strong> collection.
+        </p>
+
+        <div class="pipeline-info">
+            <strong>Full Firebase Pipeline:</strong>
+            <ol>
+                <li><strong>Firebase Storage Upload:</strong> Reads each local photo file, uploads it to <code>products/{docId}/{docId}.jpeg</code> in Firebase Storage bucket <code>heliomed-13855.firebasestorage.app</code>, and obtains its public <code>getDownloadURL()</code>.</li>
+                <li><strong>Firestore Document Write:</strong> Merges the document with the resulting Firebase Storage <code>imageUrl</code> into the <code>medicines</code> collection using exact Admin Panel fields.</li>
+            </ol>
+        </div>
+
+        <div class="summary-bar">
+            <span class="pill accent" id="productCount">14 products</span>
+            <span class="pill" id="photoCount">11 photos to upload</span>
+            <span class="pill" id="inStockCount">7 in stock</span>
+            <span class="pill" id="outOfStockCount">7 out of stock</span>
+            <span class="pill">Storage: <strong>heliomed-13855.firebasestorage.app</strong></span>
+            <span class="pill">Firestore: <strong>medicines</strong></span>
+        </div>
+
+        <div class="progress-bar-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="controls-bar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by title, brand, category...">
+            </div>
+            <button id="uploadButton" class="btn-upload" type="button">Upload to Firebase Storage & Firestore</button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Photo</th>
+                        <th>Title & Doc ID</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                        <th>Section</th>
+                        <th>New Price</th>
+                        <th>Inventory</th>
+                        <th>Available</th>
+                        <th>Firebase Storage Target</th>
+                    </tr>
+                </thead>
+                <tbody id="productRows"></tbody>
+            </table>
+        </div>
+
+        <pre id="log">Ready. Review the products and matched photos above, then click "Upload to Firebase Storage & Firestore".</pre>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import {
+            getFirestore,
+            doc,
+            setDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import {
+            getStorage,
+            ref,
+            uploadBytes,
+            getDownloadURL
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFlrhhPDtVxFqkLA3kG-23m-BPflxU9nw",
+            authDomain: "heliomed-13855.firebaseapp.com",
+            projectId: "heliomed-13855",
+            storageBucket: "heliomed-13855.firebasestorage.app",
+            messagingSenderId: "375605550861",
+            appId: "1:375605550861:web:9d8b605cd24ee841df5a44",
+            measurementId: "G-ST63P01MF4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        const uploadButton = document.getElementById("uploadButton");
+        const logOutput = document.getElementById("log");
+        const productRows = document.getElementById("productRows");
+        const searchInput = document.getElementById("searchInput");
+        const inStockCountEl = document.getElementById("inStockCount");
+        const outOfStockCountEl = document.getElementById("outOfStockCount");
+        const progressBar = document.getElementById("progressBar");
+        const progressContainer = document.getElementById("progressContainer");
+
+        function slug(value) {
+            return String(value || "product")
+                .toLowerCase()
+                .replace(/&/g, " and ")
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "")
+                .slice(0, 120) || "product";
+        }
+
+        // Extracted products with local file references for Firebase Storage upload
+        const productsData = [
+            {
+                title: "GINKO OMEGA 30CAPS",
+                brand: "Dietpharm",
+                category: "Supplements",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$21.98",
+                oldPriceValue: null,
+                newPriceValue: 21.978,
+                inventory: 10,
+                available: true,
+                localImageFile: "../WhatsApp Image 2026-08-20 at 12.35.43 PM (2).jpeg",
+                description: "Ginko Omega with Ginkgo leaf extract (60mg), DHA Omega-3 fatty acid (250mg), and B-group vitamins. Improves memory, cognitive performance, and blood circulation. Expiry date: 30/4/2027.",
+                usage: "1 capsule daily with water.",
+                warnings: "Consult a healthcare professional before use if taking blood-thinning medications."
+            },
+            {
+                title: "NERVA-Q10 30CAPS",
+                brand: "Pro-Bio Pharma",
+                category: "Supplements",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$17.21",
+                oldPriceValue: null,
+                newPriceValue: 17.205,
+                inventory: 0,
+                available: false,
+                localImageFile: "../WhatsApp Image 2026-08-20 at 12.35.44 PM.jpeg",
+                description: "Nerva-Q10 Trio-Blend for flexibility and daily energy. Formulated with Magnesium blend (250mg), Coenzyme Q10 (10mg), and Vitamin B6 (6mg).",
+                usage: "1 capsule daily after the main meal.",
+                warnings: ""
+            },
+            {
+                title: "OVABESTFORWOMEN 60TAB",
+                brand: "Pro-Bio Pharma",
+                category: "Supplements",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$36.08",
+                oldPriceValue: null,
+                newPriceValue: 36.075,
+                inventory: 5,
+                available: true,
+                localImageFile: "../WhatsApp Image 2026-08-20 at 12.35.44 PM (3).jpeg",
+                description: "OvaBest for women Female Fertility Supplement. Contains Myo-Inositol (2,000mg), D-Chiro-Inositol (50mg), and 5-MTHF Folate (0.60mg). Supports ovarian function and regular ovulatory cycle. Expiry date: 30/06/2029.",
+                usage: "2 tablets daily or as directed by your physician.",
+                warnings: "Do not exceed the recommended daily dose."
+            },
+            {
+                title: "RINOPANTENA NASAL OINTMENT 10 G",
+                brand: "RINOPANTENA",
+                category: "Face Care",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$12.54",
+                oldPriceValue: null,
+                newPriceValue: 12.543,
+                inventory: 0,
+                available: false,
+                localImageFile: "",
+                description: "Rinopantena Nasal Ointment 10g. Lubricates and maintains hydration of the nasal mucosa, aiding re-epithelialization.",
+                usage: "Apply a small quantity 1-3 times daily.",
+                warnings: ""
+            },
+            {
+                title: "REVAGINAL OVULI-OVULES",
+                brand: "REVAGINAL",
+                category: "Mother Care",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$16.65",
+                oldPriceValue: null,
+                newPriceValue: 16.65,
+                inventory: 5,
+                available: true,
+                localImageFile: "",
+                description: "Revaginal Ovules for intimate vaginal mucosa protection, hydration, and restoring physiological balance. Expiry date: 30/04/2028.",
+                usage: "Insert one ovule in the evening before bedtime.",
+                warnings: ""
+            },
+            {
+                title: "SILVER PLUS 30 CAPSULES",
+                brand: "Pro-Bio Pharma",
+                category: "Supplements",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$17.21",
+                oldPriceValue: null,
+                newPriceValue: 17.205,
+                inventory: 0,
+                available: false,
+                localImageFile: "../WhatsApp Image 2026-08-20 at 12.35.43 PM.jpeg",
+                description: "Silver Plus Liver Health & Detox dietary supplement. Formulated with Milk Thistle, Artichoke extract, and Vitamins. Non-GMO, soy-free, gluten-free.",
+                usage: "1 vegetable capsule daily with a meal.",
+                warnings: ""
+            },
+            {
+                title: "FLAXAVIT-K2 PLUS 30 CAPSULES",
+                brand: "FLAXAVIT",
+                category: "Supplements",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$32.19",
+                oldPriceValue: null,
+                newPriceValue: 32.19,
+                inventory: 5,
+                available: true,
+                localImageFile: "",
+                description: "Flaxavit-K2 Plus 30 Capsules. Synergistic formula supporting bone mineralization and cardiovascular function. Expiry date: 31/07/2028.",
+                usage: "1 capsule daily with food.",
+                warnings: ""
+            },
+            {
+                title: "ACTIZIM WITH MELATONIN",
+                brand: "Pro-Bio Pharma",
+                category: "Supplements",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$14.99",
+                oldPriceValue: null,
+                newPriceValue: 14.985,
+                inventory: 10,
+                available: true,
+                localImageFile: "../WhatsApp Image 2026-08-20 at 12.35.45 PM.jpeg",
+                description: "Actizim with Melatonin 30 mL Drops. Gentle care for children's tummy and restful sleep with Lemon Balm, Chamomile, Fennel, and Anise. Alcohol-free and sugar-free. Expiry date: 31/05/2028.",
+                usage: "Use the included dropper as directed on package.",
+                warnings: "Keep out of reach of children."
+            },
+            {
+                title: "NEUROQ10 64Cmg n",
+                brand: "Pro-Bio Pharma",
+                category: "Supplements",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$39.07",
+                oldPriceValue: null,
+                newPriceValue: 39.072,
+                inventory: 0,
+                available: false,
+                localImageFile: "../WhatsApp Image 2026-08-20 at 12.35.43 PM (1).jpeg",
+                description: "NeuroQ10 640 mg Coenzyme Q10 30 Tablets. Targets heart function, nervous system, cell formation, blood vessels, and overall fertility.",
+                usage: "1 tablet daily after the main meal.",
+                warnings: ""
+            },
+            {
+                title: "ARTOGENE 30CAPS",
+                brand: "Pro-Bio Pharma",
+                category: "Supplements",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$19.98",
+                oldPriceValue: null,
+                newPriceValue: 19.98,
+                inventory: 10,
+                available: true,
+                localImageFile: "../WhatsApp Image 2026-08-20 at 12.35.44 PM (2).jpeg",
+                description: "Artogene with ARTO® (30 tablets). Joint and articulation support with Ginger root, Hyaluronic Acid, Turmeric, Calcium & Copper. Expiry date: 31/08/2027.",
+                usage: "1 or 2 tablets daily after the main meal.",
+                warnings: ""
+            },
+            {
+                title: "ARTOGENE 60CAPS",
+                brand: "Pro-Bio Pharma",
+                category: "Supplements",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$32.19",
+                oldPriceValue: null,
+                newPriceValue: 32.19,
+                inventory: 0,
+                available: false,
+                localImageFile: "../WhatsApp Image 2026-08-20 at 12.35.44 PM (2).jpeg",
+                description: "Artogene with ARTO® (60 tablets). High-strength joint care formula aiding mobility, flexibility, and joint cartilage integrity.",
+                usage: "1 or 2 tablets daily after the main meal.",
+                warnings: ""
+            },
+            {
+                title: "ENER B 30CAPS",
+                brand: "Pro-Bio Pharma",
+                category: "Supplements",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$17.21",
+                oldPriceValue: null,
+                newPriceValue: 17.205,
+                inventory: 10,
+                available: true,
+                localImageFile: "../WhatsApp Image 2026-08-20 at 12.35.44 PM (1).jpeg",
+                description: "Ener B 30 Veggie Capsules. High-potency Vitamin B Complex (B1, B2, B3, B5, B6, B12, Folic Acid, Biotin) with Taurine. Promotes energy production and cardiovascular health. Expiry date: 06/2028.",
+                usage: "1 capsule daily.",
+                warnings: ""
+            },
+            {
+                title: "FERTIBEST 30TAB",
+                brand: "Pro-Bio Pharma",
+                category: "Supplements",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$29.97",
+                oldPriceValue: null,
+                newPriceValue: 29.97,
+                inventory: 0,
+                available: false,
+                localImageFile: "../WhatsApp Image 2026-08-20 at 12.35.43 PM (3).jpeg",
+                description: "FertiBest Male Fertility Supplement 30 Tablets. Formulated with Zinc, Glutathione, L-Carnitine, Lycopene, CoQ10, and Selenium to enhance sperm count, motility, and morphology.",
+                usage: "1 tablet daily after the main meal.",
+                warnings: ""
+            },
+            {
+                title: "HEMOBEST PLUS 30TAB",
+                brand: "Pro-Bio Pharma",
+                category: "Supplements",
+                section: "Parapharmacy",
+                badge: "",
+                oldPrice: "",
+                newPrice: "$19.98",
+                oldPriceValue: null,
+                newPriceValue: 19.98,
+                inventory: 16,
+                available: true,
+                localImageFile: "../WhatsApp Image 2026-08-20 at 12.35.42 PM.jpeg",
+                description: "HemoBest Plus with DHA 30 Tablets. Improves healthy blood cell growth and vital red blood cell formation with Ferrous Bisglycinate (45mg), DHA (25mg), Vitamin C (60mg), B12, B6, B5, and Folic Acid. Expiry date: 01/2029.",
+                usage: "1 tablet daily after the main meal.",
+                warnings: ""
+            }
+        ];
+
+        function escapeHtml(value) {
+            return String(value ?? "")
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        function log(message) {
+            logOutput.textContent += "\n" + message;
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        function renderTable(filterText = "") {
+            const term = filterText.trim().toLowerCase();
+            const filtered = productsData.filter(p => 
+                !term || 
+                p.title.toLowerCase().includes(term) || 
+                p.brand.toLowerCase().includes(term) || 
+                p.category.toLowerCase().includes(term) ||
+                p.description.toLowerCase().includes(term)
+            );
+
+            let inStockCount = 0;
+            let outOfStockCount = 0;
+
+            productRows.innerHTML = filtered.map((p, i) => {
+                if (p.available) inStockCount++; else outOfStockCount++;
+                const docId = slug(p.title);
+
+                return `
+                    <tr>
+                        <td><strong>${i + 1}</strong></td>
+                        <td>
+                            ${p.localImageFile ? `<img class="product-thumb" src="${escapeHtml(p.localImageFile)}" alt="${escapeHtml(p.title)}" loading="lazy">` : '<div class="product-thumb-placeholder">No Photo</div>'}
+                        </td>
+                        <td>
+                            <strong>${escapeHtml(p.title)}</strong>
+                            <div style="font-size:11px; color:var(--muted);">${escapeHtml(docId)}</div>
+                        </td>
+                        <td>${escapeHtml(p.brand)}</td>
+                        <td>${escapeHtml(p.category)}</td>
+                        <td>${escapeHtml(p.section)}</td>
+                        <td><strong>${escapeHtml(p.newPrice)}</strong></td>
+                        <td><strong>${p.inventory}</strong></td>
+                        <td>
+                            <span class="badge-status ${p.available ? 'in-stock' : 'out-of-stock'}">
+                                ${p.available ? 'Yes (In Stock)' : 'No (Out of Stock)'}
+                            </span>
+                        </td>
+                        <td>
+                            ${p.localImageFile ? `<span style="font-family:monospace; font-size:11px;">products/${escapeHtml(docId)}/${escapeHtml(docId)}.jpeg</span>` : '<span style="color:var(--muted); font-size:12px;">(No photo to upload)</span>'}
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+
+            inStockCountEl.textContent = inStockCount + " in stock";
+            outOfStockCountEl.textContent = outOfStockCount + " out of stock";
+        }
+
+        renderTable();
+
+        searchInput.addEventListener("input", (e) => {
+            renderTable(e.target.value);
+        });
+
+        async function fetchImageBlob(localPath) {
+            const response = await fetch(localPath);
+            if (!response.ok) {
+                throw new Error(`Failed to load local image: ${localPath} (Status ${response.status})`);
+            }
+            return await response.blob();
+        }
+
+        async function uploadProducts() {
+            uploadButton.disabled = true;
+            progressContainer.style.display = "block";
+            progressBar.style.width = "0%";
+            logOutput.textContent = "Initiating Firebase Storage + Firestore upload pipeline...";
+
+            const total = productsData.length;
+            let successCount = 0;
+
+            try {
+                for (let i = 0; i < total; i++) {
+                    const item = productsData[i];
+                    const id = slug(item.title);
+                    let uploadedImageUrl = "";
+
+                    log(`\n[${i + 1}/${total}] Processing "${item.title}"...`);
+
+                    // 1. Upload to Firebase Storage if an image file exists
+                    if (item.localImageFile) {
+                        try {
+                            log(`  -> Fetching image: ${item.localImageFile}`);
+                            const blob = await fetchImageBlob(item.localImageFile);
+
+                            const storagePath = `products/${id}/${id}.jpeg`;
+                            const storageRef = ref(storage, storagePath);
+
+                            log(`  -> Uploading to Firebase Storage: "${storagePath}"...`);
+                            await uploadBytes(storageRef, blob, {
+                                contentType: "image/jpeg",
+                                customMetadata: {
+                                    productId: id,
+                                    productTitle: item.title
+                                }
+                            });
+
+                            uploadedImageUrl = await getDownloadURL(storageRef);
+                            log(`  -> SUCCESS: Firebase Storage Download URL generated!`);
+                        } catch (storageErr) {
+                            console.error("Storage upload failed for " + item.title, storageErr);
+                            log(`  -> [STORAGE WARNING]: ${storageErr.message}. Proceeding without photo URL.`);
+                        }
+                    } else {
+                        log(`  -> No local image file specified. Leaving imageUrl blank.`);
+                    }
+
+                    // 2. Prepare Firestore document with exact Firebase Admin Schema
+                    const docData = {
+                        title: item.title,
+                        brand: item.brand,
+                        category: item.category,
+                        section: item.section,
+                        badge: item.badge,
+                        oldPrice: item.oldPrice,
+                        newPrice: item.newPrice,
+                        oldPriceValue: item.oldPriceValue,
+                        newPriceValue: item.newPriceValue,
+                        inventory: Number(item.inventory || 0),
+                        available: Boolean(item.available),
+                        imageUrl: uploadedImageUrl,
+                        description: item.description,
+                        usage: item.usage,
+                        warnings: item.warnings,
+                        searchText: [item.title, item.brand, item.category, item.section, item.badge].filter(Boolean).join(" ").toLowerCase(),
+                        updatedAt: serverTimestamp()
+                    };
+
+                    // 3. Write/Merge to Firestore
+                    const docRef = doc(db, "medicines", id);
+                    await setDoc(docRef, docData, { merge: true });
+                    log(`  -> Saved document to Firestore collection("medicines").doc("${id}")`);
+
+                    successCount++;
+                    const percent = Math.round(((i + 1) / total) * 100);
+                    progressBar.style.width = percent + "%";
+                }
+
+                log(`\n======================================================`);
+                log(`ALL DONE! Successfully uploaded ${successCount} / ${total} products & photos to Firebase!`);
+                log(`- Photos are stored in Firebase Storage (products/...)`);
+                log(`- Documents are live in Firestore (medicines/...)`);
+                log(`======================================================`);
+            } catch (error) {
+                console.error("Upload process error:", error);
+                log(`\nFATAL ERROR: ${error.message}`);
+            } finally {
+                uploadButton.disabled = false;
+            }
+        }
+
+        uploadButton.addEventListener("click", uploadProducts);
+    </script>
+</body>
+</html>

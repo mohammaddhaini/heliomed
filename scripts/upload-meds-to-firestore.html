@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Heliomed Products</title>
+    <style>
+        :root {
+            --aqua: #BFE7E1;
+            --gold: #C2A26B;
+            --ink: #07111F;
+            --line: #E8DCC8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: #FFFFFF;
+            color: var(--ink);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        main {
+            width: min(720px, calc(100% - 28px));
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 28px;
+            box-shadow: 0 18px 50px rgba(7, 17, 31, 0.10);
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: 28px;
+            line-height: 1.15;
+        }
+
+        p {
+            margin: 0 0 18px;
+            color: #4d5b66;
+            line-height: 1.55;
+        }
+
+        button {
+            min-height: 46px;
+            border: 0;
+            border-radius: 7px;
+            padding: 0 20px;
+            background: var(--gold);
+            color: #FFFFFF;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            cursor: wait;
+            opacity: 0.66;
+        }
+
+        pre {
+            min-height: 170px;
+            margin: 20px 0 0;
+            padding: 16px;
+            overflow: auto;
+            white-space: pre-wrap;
+            background: var(--aqua);
+            border-left: 4px solid var(--gold);
+            color: var(--ink);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Upload product catalog</h1>
+        <p>This imports the current catalog embedded in <strong>index.html</strong> into the product database. Existing matching products are updated.</p>
+        <button id="uploadButton" type="button">Upload products</button>
+        <pre id="log">Ready.</pre>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import {
+            getFirestore,
+            writeBatch,
+            doc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFlrhhPDtVxFqkLA3kG-23m-BPflxU9nw",
+            authDomain: "heliomed-13855.firebaseapp.com",
+            projectId: "heliomed-13855",
+            storageBucket: "heliomed-13855.firebasestorage.app",
+            messagingSenderId: "375605550861",
+            appId: "1:375605550861:web:9d8b605cd24ee841df5a44",
+            measurementId: "G-ST63P01MF4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const uploadButton = document.getElementById("uploadButton");
+        const logOutput = document.getElementById("log");
+
+        function log(message) {
+            logOutput.textContent += "\n" + message;
+        }
+
+        function slugify(value) {
+            return value
+                .toLowerCase()
+                .replace(/&/g, " and ")
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "")
+                .slice(0, 120);
+        }
+
+        function parseMoney(value) {
+            const match = String(value || "").match(/[0-9]+(?:\.[0-9]+)?/);
+            const amount = match ? Number(match[0]) : null;
+            return Number.isFinite(amount) ? amount : null;
+        }
+
+        function getBrand(title) {
+            const clean = String(title || "").trim();
+            if (!clean) return "Other";
+            if (clean.includes(" - ")) return clean.split(" - ")[0].trim();
+            return clean.split(/\s+/)[0];
+        }
+
+        function extractVariableLiteral(source, variableName) {
+            const marker = "var " + variableName + " = ";
+            const start = source.indexOf(marker);
+            if (start === -1) throw new Error("Could not find " + variableName + " in index.html.");
+
+            let index = start + marker.length;
+            while (source[index] && /\s/.test(source[index])) index += 1;
+            const opener = source[index];
+            const closer = opener === "{" ? "}" : opener === "[" ? "]" : "";
+            if (!closer) throw new Error(variableName + " does not start with an object or array literal.");
+
+            let depth = 0;
+            let quote = "";
+            let escaping = false;
+            for (let i = index; i < source.length; i += 1) {
+                const char = source[i];
+                if (quote) {
+                    if (escaping) {
+                        escaping = false;
+                    } else if (char === "\\") {
+                        escaping = true;
+                    } else if (char === quote) {
+                        quote = "";
+                    }
+                    continue;
+                }
+                if (char === "'" || char === '"' || char === "`") {
+                    quote = char;
+                    continue;
+                }
+                if (char === opener) depth += 1;
+                if (char === closer) depth -= 1;
+                if (depth === 0) return source.slice(index, i + 1);
+            }
+
+            throw new Error("Could not parse " + variableName + ".");
+        }
+
+        async function loadCurrentProducts() {
+            const response = await fetch("../index.html", { cache: "no-store" });
+            if (!response.ok) throw new Error("Could not load index.html. Run this page from a local web server.");
+
+            const source = await response.text();
+            const medPhotosLiteral = extractVariableLiteral(source, "medPhotos");
+            const literal = extractVariableLiteral(source, "tabProducts");
+            const medPhotos = Function('"use strict"; return (' + medPhotosLiteral + ");")();
+            const tabProducts = Function('"use strict"; return (' + literal + ");")();
+            const meds = [];
+            const seen = new Set();
+            let globalIndex = 0;
+
+            function addProduct(product) {
+                const docId = slugify(product.section + "-" + product.category + "-" + product.title);
+                if (!docId || seen.has(docId)) return;
+                seen.add(docId);
+                meds.push({
+                    id: docId,
+                    ...product,
+                    brand: getBrand(product.title),
+                    oldPriceValue: parseMoney(product.oldPrice),
+                    newPriceValue: parseMoney(product.newPrice),
+                    searchText: [product.title, product.section, product.category, product.badge, getBrand(product.title)].join(" ").toLowerCase(),
+                    source: "index.html catalog",
+                    updatedAt: serverTimestamp()
+                });
+            }
+
+            Object.entries(tabProducts).forEach(function ([section, tabs]) {
+                Object.entries(tabs).forEach(function ([category, products]) {
+                    products.forEach(function (product, index) {
+                        const badge = product[0];
+                        const title = product[1];
+                        const oldPrice = product[2];
+                        const newPrice = product[3];
+                        const imageQuery = product[4];
+                        const imageUrl = medPhotos[globalIndex % medPhotos.length];
+
+                        addProduct({
+                            title,
+                            section,
+                            category,
+                            badge,
+                            oldPrice,
+                            newPrice,
+                            imageQuery,
+                            imageUrl,
+                            sortOrder: index
+                        });
+                        globalIndex += 1;
+                    });
+                });
+            });
+
+            const documentHtml = new DOMParser().parseFromString(source, "text/html");
+            documentHtml.querySelectorAll(".cc-container").forEach(function (sectionElement) {
+                const section = sectionElement.querySelector(".cc-cat-header h2")?.textContent.trim() ||
+                    sectionElement.id ||
+                    "Products";
+                const activeTab = sectionElement.querySelector(".cc-cat-tabs li.active")?.textContent.trim();
+                const category = activeTab || section;
+
+                sectionElement.querySelectorAll(".cc-product-card").forEach(function (card, index) {
+                    const title = card.querySelector(".cc-pc-title")?.textContent.trim();
+                    if (!title) return;
+                    const badge = card.querySelector(".cc-pc-badge")?.textContent.trim() || "";
+                    const oldPrice = card.querySelector(".cc-pc-price .old")?.textContent.trim() || "";
+                    const newPrice = card.querySelector(".cc-pc-price .new")?.textContent.trim() ||
+                        card.querySelector(".cc-pc-price")?.textContent.trim() ||
+                        "";
+                    const imageUrl = card.querySelector(".cc-pc-img-wrapper img")?.getAttribute("src") ||
+                        medPhotos[globalIndex % medPhotos.length];
+
+                    addProduct({
+                        title,
+                        section,
+                        category,
+                        badge,
+                        oldPrice,
+                        newPrice,
+                        imageQuery: title,
+                        imageUrl,
+                        sortOrder: index
+                    });
+                    globalIndex += 1;
+                });
+            });
+
+            return meds;
+        }
+
+        async function uploadProducts() {
+            uploadButton.disabled = true;
+            logOutput.textContent = "Reading current products from index.html...";
+
+            try {
+                const meds = await loadCurrentProducts();
+                log("Found " + meds.length + " products.");
+
+                for (let i = 0; i < meds.length; i += 450) {
+                    const chunk = meds.slice(i, i + 450);
+                    const batch = writeBatch(db);
+                    chunk.forEach(function (medicine) {
+                        const { id, ...data } = medicine;
+                        batch.set(doc(db, "medicines", id), data, { merge: true });
+                    });
+                    await batch.commit();
+                    log("Uploaded " + Math.min(i + chunk.length, meds.length) + " / " + meds.length + " products.");
+                }
+
+                log("Done. Product catalog updated.");
+            } catch (error) {
+                log("Error: " + error.message);
+                console.error(error);
+            } finally {
+                uploadButton.disabled = false;
+            }
+        }
+
+        uploadButton.addEventListener("click", uploadProducts);
+    </script>
+</body>
+</html>
