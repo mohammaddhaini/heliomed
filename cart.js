@@ -34,6 +34,16 @@
         { value: "zgharta", label: "Zgharta - زغرتا", cost: 5 }
     ];
 
+    function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function (char) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char];
+        });
+    }
+
+    function escapeAttr(value) {
+        return escapeHtml(value);
+    }
+
     function parseMoney(value) {
         var match = String(value || "").match(/[0-9]+(?:\.[0-9]+)?/);
         var amount = match ? Number(match[0]) : 0;
@@ -84,7 +94,7 @@
         };
     }
 
-    function addItem(item, quantity) {
+    function addItem(item, quantity, options) {
         var normalized = normalizeItem(item);
         var addQuantity = Math.max(1, Number(quantity || normalized.quantity || 1));
         var items = readCart();
@@ -103,6 +113,9 @@
             items.push(normalized);
         }
         writeCart(items);
+        if (!options || options.openDrawer !== false) {
+            openDrawer();
+        }
         return readCart();
     }
 
@@ -217,6 +230,206 @@
         document.querySelectorAll(".cart-count").forEach(function (counter) {
             counter.textContent = count;
         });
+        var drawer = document.getElementById("cart-drawer");
+        if (drawer && drawer.classList.contains("is-open")) {
+            renderCartDrawer();
+        }
+    }
+
+    function initCartDrawer() {
+        var drawer = document.getElementById("cart-drawer");
+        if (drawer) return drawer;
+
+        drawer = document.createElement("div");
+        drawer.id = "cart-drawer";
+        drawer.className = "cart-drawer";
+        drawer.setAttribute("aria-hidden", "true");
+        drawer.innerHTML = [
+            '<div class="cart-drawer-overlay" data-cart-drawer-close></div>',
+            '<aside class="cart-drawer-panel" role="dialog" aria-modal="true" aria-label="Shopping Cart">',
+            '    <div class="cart-drawer-header">',
+            '        <div class="cart-drawer-title-wrap">',
+            '            <h2 class="cart-drawer-title">Your Cart</h2>',
+            '            <span class="cart-drawer-badge" id="cart-drawer-count">0</span>',
+            '        </div>',
+            '        <button type="button" class="cart-drawer-close-btn" data-cart-drawer-close aria-label="Close cart panel">',
+            '            <i class="fas fa-times"></i>',
+            '        </button>',
+            '    </div>',
+            '    <div class="cart-drawer-shipping" id="cart-drawer-shipping"></div>',
+            '    <div class="cart-drawer-body" id="cart-drawer-body"></div>',
+            '    <div class="cart-drawer-footer" id="cart-drawer-footer">',
+            '        <div class="cart-drawer-subtotal-row">',
+            '            <span class="cart-drawer-subtotal-label">Subtotal</span>',
+            '            <span class="cart-drawer-subtotal-val" id="cart-drawer-subtotal">$0.00</span>',
+            '        </div>',
+            '        <p class="cart-drawer-note">Taxes and shipping calculated at checkout.</p>',
+            '        <div class="cart-drawer-actions">',
+            '            <a href="./cart.html" class="cart-drawer-btn cart-drawer-btn-secondary">Go to cart</a>',
+            '            <a href="./checkout.html" class="cart-drawer-btn cart-drawer-btn-primary">Proceed to checkout <i class="fas fa-arrow-right"></i></a>',
+            '        </div>',
+            '    </div>',
+            '</aside>'
+        ].join("\n");
+
+        document.body.appendChild(drawer);
+
+        drawer.addEventListener("click", function (event) {
+            if (event.target.closest("[data-cart-drawer-close]")) {
+                event.preventDefault();
+                closeDrawer();
+                return;
+            }
+
+            var qtyBtn = event.target.closest("[data-qty-action]");
+            if (qtyBtn) {
+                event.preventDefault();
+                var action = qtyBtn.dataset.qtyAction;
+                var id = qtyBtn.dataset.id;
+                var item = readCart().find(function (it) { return it.id === id; });
+                if (item) {
+                    var current = Number(item.quantity || 1);
+                    if (action === "plus") {
+                        updateQuantity(id, current + 1);
+                    } else if (action === "minus") {
+                        updateQuantity(id, current - 1);
+                    }
+                }
+                return;
+            }
+
+            var removeBtn = event.target.closest("[data-remove-id]");
+            if (removeBtn) {
+                event.preventDefault();
+                var removeId = removeBtn.dataset.removeId;
+                if (removeId) {
+                    removeItem(removeId);
+                }
+                return;
+            }
+
+            var directLink = event.target.closest("a");
+            if (directLink && directLink.href && !directLink.classList.contains("cart-drawer-btn-secondary") && !directLink.classList.contains("cart-drawer-btn-primary")) {
+                closeDrawer();
+            }
+        });
+
+        return drawer;
+    }
+
+    function renderCartDrawer() {
+        var drawer = initCartDrawer();
+        if (!drawer) return;
+
+        var items = readCart();
+        var count = getCount();
+        var subtotal = getSubtotal();
+
+        var countElem = document.getElementById("cart-drawer-count");
+        if (countElem) countElem.textContent = count;
+
+        var shippingElem = document.getElementById("cart-drawer-shipping");
+        if (shippingElem) {
+            if (items.length === 0) {
+                shippingElem.innerHTML = '<div class="cart-drawer-shipping-text">Free delivery on orders over <strong>$' + FREE_SHIPPING_THRESHOLD.toFixed(2) + '</strong></div>';
+            } else if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+                shippingElem.innerHTML = [
+                    '<div class="cart-drawer-shipping-text unlocked"><i class="fas fa-check-circle"></i> You have unlocked <strong>FREE Delivery</strong>!</div>',
+                    '<div class="cart-drawer-progress-track"><div class="cart-drawer-progress-fill unlocked" style="width: 100%;"></div></div>'
+                ].join("");
+            } else {
+                var remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+                var percent = Math.min(100, Math.max(0, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100)));
+                shippingElem.innerHTML = [
+                    '<div class="cart-drawer-shipping-text">Add <strong>' + formatMoney(remaining) + '</strong> more for <strong>FREE Delivery</strong>!</div>',
+                    '<div class="cart-drawer-progress-track"><div class="cart-drawer-progress-fill" style="width: ' + percent + '%;"></div></div>'
+                ].join("");
+            }
+        }
+
+        var bodyElem = document.getElementById("cart-drawer-body");
+        var footerElem = document.getElementById("cart-drawer-footer");
+        var subtotalElem = document.getElementById("cart-drawer-subtotal");
+
+        if (subtotalElem) subtotalElem.textContent = formatMoney(subtotal);
+
+        if (bodyElem) {
+            if (items.length === 0) {
+                if (footerElem) footerElem.style.display = "none";
+                bodyElem.innerHTML = [
+                    '<div class="cart-drawer-empty">',
+                    '    <div class="cart-drawer-empty-icon"><i class="fas fa-shopping-bag"></i></div>',
+                    '    <h3 class="cart-drawer-empty-title">Your cart is empty</h3>',
+                    '    <p class="cart-drawer-empty-desc">Discover our range of parapharmacy, skincare, and wellness essentials.</p>',
+                    '    <a href="./collection.html" class="cart-drawer-empty-btn" data-cart-drawer-close>Start Shopping</a>',
+                    '</div>'
+                ].join("\n");
+            } else {
+                if (footerElem) footerElem.style.display = "block";
+                var itemsHtml = items.map(function (item) {
+                    var brandHtml = item.brand ? '<span class="cart-drawer-item-brand">' + escapeHtml(item.brand) + '</span>' : '';
+                    var oldPriceHtml = item.oldPrice ? '<span class="cart-drawer-item-old-price">' + escapeHtml(item.oldPrice) + '</span>' : '';
+                    var itemUrl = escapeAttr(item.url || './cart.html');
+
+                    return [
+                        '<div class="cart-drawer-item" data-id="' + escapeAttr(item.id) + '">',
+                        '    <a href="' + itemUrl + '" class="cart-drawer-item-img-link">',
+                        '        <img src="' + escapeAttr(item.imageUrl || './heliomed-logo.png') + '" alt="' + escapeAttr(item.title) + '" loading="lazy" />',
+                        '    </a>',
+                        '    <div class="cart-drawer-item-details">',
+                        '        ' + brandHtml,
+                        '        <a href="' + itemUrl + '" class="cart-drawer-item-name">' + escapeHtml(item.title) + '</a>',
+                        '        <div class="cart-drawer-item-pricing">',
+                        '            <span class="cart-drawer-item-price">' + formatMoney(item.price) + '</span>',
+                        '            ' + oldPriceHtml,
+                        '        </div>',
+                        '        <div class="cart-drawer-item-bottom">',
+                        '            <div class="cart-drawer-qty-control">',
+                        '                <button type="button" class="cart-drawer-qty-btn" data-qty-action="minus" data-id="' + escapeAttr(item.id) + '" aria-label="Decrease quantity"><i class="fas fa-minus"></i></button>',
+                        '                <span class="cart-drawer-qty-num">' + Number(item.quantity || 1) + '</span>',
+                        '                <button type="button" class="cart-drawer-qty-btn" data-qty-action="plus" data-id="' + escapeAttr(item.id) + '" aria-label="Increase quantity"><i class="fas fa-plus"></i></button>',
+                        '            </div>',
+                        '            <button type="button" class="cart-drawer-remove-btn" data-remove-id="' + escapeAttr(item.id) + '" aria-label="Remove ' + escapeAttr(item.title) + '">',
+                        '                <i class="far fa-trash-alt"></i> Remove',
+                        '            </button>',
+                        '        </div>',
+                        '    </div>',
+                        '</div>'
+                    ].join("\n");
+                }).join("\n");
+
+                bodyElem.innerHTML = '<div class="cart-drawer-item-list">' + itemsHtml + '</div>';
+            }
+        }
+    }
+
+    function openDrawer() {
+        var drawer = initCartDrawer();
+        renderCartDrawer();
+        requestAnimationFrame(function () {
+            drawer.classList.add("is-open");
+            document.documentElement.classList.add("cart-drawer-lock");
+            document.body.classList.add("cart-drawer-lock");
+            drawer.setAttribute("aria-hidden", "false");
+        });
+    }
+
+    function closeDrawer() {
+        var drawer = document.getElementById("cart-drawer");
+        if (!drawer) return;
+        drawer.classList.remove("is-open");
+        document.documentElement.classList.remove("cart-drawer-lock");
+        document.body.classList.remove("cart-drawer-lock");
+        drawer.setAttribute("aria-hidden", "true");
+    }
+
+    function toggleDrawer() {
+        var drawer = document.getElementById("cart-drawer");
+        if (drawer && drawer.classList.contains("is-open")) {
+            closeDrawer();
+        } else {
+            openDrawer();
+        }
     }
 
     function itemFromCard(card) {
@@ -240,6 +453,7 @@
         addItem: addItem,
         clearCart: clearCart,
         clearDiscount: clearDiscount,
+        closeDrawer: closeDrawer,
         formatMoney: formatMoney,
         getCount: getCount,
         getDeliveryArea: getDeliveryArea,
@@ -248,21 +462,47 @@
         getItems: readCart,
         getSummary: getSummary,
         getSubtotal: getSubtotal,
+        initCartDrawer: initCartDrawer,
         itemFromCard: itemFromCard,
+        openDrawer: openDrawer,
         parseMoney: parseMoney,
+        renderCartDrawer: renderCartDrawer,
         removeItem: removeItem,
         setDeliveryArea: setDeliveryArea,
         setDiscount: setDiscount,
         slug: slug,
+        toggleDrawer: toggleDrawer,
         updateCounters: updateCounters,
         updateQuantity: updateQuantity
     };
 
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", updateCounters);
+        document.addEventListener("DOMContentLoaded", function () {
+            updateCounters();
+            initCartDrawer();
+        });
     } else {
         updateCounters();
+        initCartDrawer();
     }
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            var drawer = document.getElementById("cart-drawer");
+            if (drawer && drawer.classList.contains("is-open")) {
+                closeDrawer();
+            }
+        }
+    });
+
+    document.addEventListener("click", function (event) {
+        var cartTrigger = event.target.closest(".cart-icon-wrapper[href*='cart.html'], a.header-cart-btn, [data-open-cart]");
+        if (cartTrigger && !cartTrigger.closest("#cart-drawer")) {
+            event.preventDefault();
+            toggleDrawer();
+        }
+    });
+
     window.addEventListener("storage", function (event) {
         if (event.key === STORAGE_KEY) updateCounters();
     });

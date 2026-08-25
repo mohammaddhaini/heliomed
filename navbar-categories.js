@@ -32,7 +32,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 function renderNavbar(navLinks, categories) {
-    const mobileItems = Array.from(navLinks.querySelectorAll(".mobile-only-nav"));
+    const mobileItems = Array.from(navLinks.querySelectorAll(".mobile-only-nav")).filter(function (item) {
+        return !item.querySelector("a[href*='cart.html']");
+    });
     const panelHeader = navLinks.querySelector(".nav-panel-header");
     const panelHeaderHtml = panelHeader ? panelHeader.outerHTML : `
         <li class="nav-panel-header" aria-hidden="true">

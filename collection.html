@@ -536,7 +536,6 @@
                 <li class="nav-item"><a href="#blog" class="nav-trigger"><i class="fas fa-newspaper"></i> BLOG</a></li>
                 <li class="nav-item mobile-only-nav"><a href="./account.html" class="nav-trigger account-link"><i class="far fa-user"></i> LOGIN</a></li>
                 <li class="nav-item mobile-only-nav"><a href="./wishlist.html" class="nav-trigger"><i class="far fa-heart"></i> WISHLIST</a></li>
-                <li class="nav-item mobile-only-nav"><a href="./cart.html" class="nav-trigger"><i class="fas fa-shopping-bag"></i> CART</a></li>
             </ul>
     
             <div class="header-actions">
@@ -550,7 +549,7 @@
                         <i class="far fa-heart"></i>
                         <span class="wishlist-count">0</span>
                     </a>
-                    <a class="cart-icon-wrapper" href="./cart.html" aria-label="Open cart">
+                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
                     </a>
@@ -639,7 +638,7 @@
         import { fetchQueryLazy } from "./products-cache.js";
 
         const params = new URLSearchParams(window.location.search);
-        const slug = params.get("collection") || params.get("category") || "best-sellers";
+        const slug = params.get("collection") || params.get("category") || params.get("brand") || "best-sellers";
         const titleEl = document.getElementById("collectionTitle");
         const descriptionEl = document.getElementById("collectionDescription");
         const breadcrumbName = document.getElementById("breadcrumbName");
@@ -713,6 +712,154 @@
             "wellness-essentials": { title: "Wellness Essentials", description: "Vitamins, supplements, and daily wellness support.", subs: ["vitamins", "immunity", "energy"] },
             "featured-collection": { title: "Featured Collection", description: "Highlighted care picks from Heliomed.", subs: ["best-sellers", "new-arrivals"] }
         };
+
+        const BASE_CATEGORY_TREE = [
+            {
+                title: "Parapharmacy",
+                slug: "parapharmacy",
+                children: [
+                    { title: "Skin Care", slug: "skin-care", children: [{ title: "Face Care", slug: "face-care" }, { title: "Body Care", slug: "body-care" }] },
+                    { title: "Hair Care", slug: "hair-care" },
+                    { title: "Face Care", slug: "face-care" },
+                    { title: "Dental Care", slug: "dental-care" },
+                    { title: "Body Care", slug: "body-care" },
+                    { title: "Nail Care", slug: "nail-care" },
+                    { title: "Foot Care", slug: "foot-care" },
+                    { title: "Baby Care", slug: "baby-care" },
+                    { title: "Mother Care", slug: "mother-care" },
+                    { title: "Kids Care", slug: "kids-care" },
+                    { title: "Men Care", slug: "men-care" },
+                    { title: "Geriatric Care", slug: "geriatric-care" },
+                    { title: "Nutrition", slug: "nutrition" },
+                    { title: "Supplements", slug: "supplements" },
+                    { title: "Supplements", slug: "supplemnts" }
+                ]
+            },
+            {
+                title: "Medical Supplies",
+                slug: "medical-supplies",
+                children: [
+                    { title: "Home Care", slug: "home-care" },
+                    { title: "Foot Care", slug: "foot-care" },
+                    { title: "Liposuction", slug: "liposuction" },
+                    {
+                        title: "Orthopedic",
+                        slug: "orthopedic",
+                        children: [
+                            { title: "Ankle Support", slug: "ankle-support" },
+                            { title: "Back Support", slug: "back-support" },
+                            { title: "Cervical Support", slug: "cervical-support" },
+                            { title: "Disk Trac", slug: "disk-trac" },
+                            { title: "Knee Support", slug: "knee-support" },
+                            { title: "Shoulder and Elbow", slug: "shoulder-and-elbow" },
+                            { title: "Wrist and Hand Braces", slug: "wrist-and-hand-braces" }
+                        ]
+                    },
+                    { title: "Pediatric", slug: "pediatric" },
+                    { title: "Vascular", slug: "vascular" },
+                    { title: "Pillows", slug: "pillows" },
+                    {
+                        title: "Disposable Materials",
+                        slug: "disposable-materials",
+                        children: [
+                            { title: "Gloves", slug: "gloves" },
+                            { title: "Guaze", slug: "guaze" },
+                            { title: "Needles", slug: "needles" },
+                            { title: "Suture", slug: "suture" },
+                            { title: "Blades", slug: "blades" },
+                            { title: "Medical Protective Apparel", slug: "medical-protective-apparel" },
+                            { title: "Wound Care", slug: "wound-care" },
+                            { title: "Drapes", slug: "drapes" }
+                        ]
+                    },
+                    { title: "First Aid", slug: "first-aid" },
+                    { title: "Diagnostics", slug: "diagnostics" },
+                    { title: "Supports", slug: "supports" },
+                    { title: "Surgical", slug: "surgical" }
+                ]
+            },
+            {
+                title: "Organic",
+                slug: "organic",
+                children: []
+            },
+            {
+                title: "Perfume",
+                slug: "perfume",
+                children: [
+                    { title: "Women", slug: "women" },
+                    { title: "Men", slug: "men" },
+                    { title: "Kids", slug: "kids" },
+                    { title: "Bundles", slug: "bundles" }
+                ]
+            },
+            {
+                title: "Makeup",
+                slug: "makeup",
+                children: [
+                    { title: "Face", slug: "face" },
+                    { title: "Face Makeup", slug: "face-makeup" },
+                    { title: "Eye", slug: "eye" },
+                    { title: "Eyes", slug: "eyes" },
+                    { title: "Lips", slug: "lips" },
+                    { title: "Nail", slug: "nail" },
+                    { title: "Nails", slug: "nails" },
+                    { title: "Tools and Accessories", slug: "tools-and-accessories" },
+                    { title: "Makeup Remover", slug: "makeup-remover" },
+                    { title: "Medical Makeup", slug: "medical-makeup" },
+                    { title: "Palettes", slug: "palettes" },
+                    { title: "Korean Products", slug: "korean-products" }
+                ]
+            }
+        ];
+
+        const categoryMap = new Map();
+
+        function registerCategoryNode(node) {
+            if (!node) return;
+            const title = String(node.title || node.id || "").trim();
+            const slug = slugifyText(node.slug || title);
+            const norm = normalizeText(title);
+
+            let entry = categoryMap.get(slug);
+            if (!entry) {
+                entry = {
+                    title: title || titleFromSlug(slug),
+                    slug: slug,
+                    children: [],
+                    allDescendants: new Set([slug, norm, slugifyText(title)])
+                };
+                categoryMap.set(slug, entry);
+                if (norm) categoryMap.set(norm, entry);
+            } else if (title && !entry.title) {
+                entry.title = title;
+            }
+
+            const children = Array.isArray(node.children) ? node.children : [];
+            children.forEach(function (childNode) {
+                registerCategoryNode(childNode);
+                const childSlug = slugifyText(childNode.slug || childNode.title);
+                const childNorm = normalizeText(childNode.title || childNode.slug);
+                const childEntry = categoryMap.get(childSlug) || categoryMap.get(childNorm);
+
+                if (childEntry) {
+                    if (!entry.children.some(function (c) { return c.slug === childEntry.slug; })) {
+                        entry.children.push(childEntry);
+                    }
+                    childEntry.allDescendants.forEach(function (desc) {
+                        entry.allDescendants.add(desc);
+                    });
+                }
+            });
+        }
+
+        function populateCategoryTree(tree) {
+            if (Array.isArray(tree)) {
+                tree.forEach(function (rootNode) {
+                    registerCategoryNode(rootNode);
+                });
+            }
+        }
 
         function titleFromSlug(value) {
             return String(value || "").split("-").map(function (part) {
@@ -792,11 +939,15 @@
 
         function baseMatches(product) {
             const cleanSlug = slugifyText(slug);
-            const catSlug = slugifyText(product.category);
-            const secSlug = slugifyText(product.section);
+            const slugNorm = normalizeText(slug || "");
+            const brandSlug = slugifyText(product.brand);
+            const brandNorm = normalizeText(product.brand || "");
 
-            if (cleanSlug && (catSlug === cleanSlug || secSlug === cleanSlug)) return true;
+            // Brand match: exact slug, normalized string, or substring
+            if (cleanSlug && (brandSlug === cleanSlug || brandNorm === slugNorm)) return true;
+            if (slugNorm && slugNorm.length > 2 && (brandNorm.includes(slugNorm) || slugNorm.includes(brandNorm))) return true;
 
+            // Global virtual collections
             if (cleanSlug === "all" || cleanSlug === "all-products") return true;
             if (cleanSlug === "best-sellers") return Number(product.inventory || 0) > 0;
             if (cleanSlug === "new-arrivals") return isNew(product);
@@ -804,39 +955,113 @@
             if (cleanSlug === "under-20") return Number(product.newPriceValue) > 0 && Number(product.newPriceValue) < 20;
             if (cleanSlug === "under-50") return Number(product.newPriceValue) > 0 && Number(product.newPriceValue) < 50;
 
+            // Check if slug matches category hierarchy (including subcategories and sub-subcategories)
+            const catEntry = categoryMap.get(cleanSlug) || categoryMap.get(slugNorm);
+            if (catEntry && catEntry.allDescendants) {
+                const prodCategorySlug = slugifyText(product.category);
+                const prodSectionSlug = slugifyText(product.section);
+                const prodSubcategorySlug = slugifyText(product.subcategory || product.subCategory);
+                const prodCategoryNorm = normalizeText(product.category || "");
+                const prodSectionNorm = normalizeText(product.section || "");
+                const prodSubcategoryNorm = normalizeText(product.subcategory || product.subCategory || "");
+
+                if (catEntry.allDescendants.has(prodCategorySlug) ||
+                    catEntry.allDescendants.has(prodSectionSlug) ||
+                    catEntry.allDescendants.has(prodSubcategorySlug) ||
+                    catEntry.allDescendants.has(prodCategoryNorm) ||
+                    catEntry.allDescendants.has(prodSectionNorm) ||
+                    catEntry.allDescendants.has(prodSubcategoryNorm)) {
+                    return true;
+                }
+            }
+
+            const catSlug = slugifyText(product.category);
+            const secSlug = slugifyText(product.section);
+            const subSlug = slugifyText(product.subcategory || product.subCategory);
+            if (cleanSlug && (catSlug === cleanSlug || secSlug === cleanSlug || subSlug === cleanSlug)) return true;
+
             const catNorm = normalizeText(product.category || "");
             const secNorm = normalizeText(product.section || "");
-            const slugNorm = normalizeText(slug || "");
-            if (slugNorm && (catNorm.includes(slugNorm) || secNorm.includes(slugNorm))) return true;
+            const subNorm = normalizeText(product.subcategory || product.subCategory || "");
+            if (slugNorm && (catNorm.includes(slugNorm) || secNorm.includes(slugNorm) || subNorm.includes(slugNorm))) return true;
 
             return false;
         }
+
         function setupHero(items) {
-            const meta = collectionMeta[slug] || { title: titleFromSlug(slug), description: "Browse products selected for this Heliomed collection.", subs: ["best-sellers", "offers", "new-arrivals"] };
+            let meta = collectionMeta[slug];
+            const cleanSlug = slugifyText(slug);
+            const slugNorm = normalizeText(slug || "");
+            const catEntry = categoryMap.get(cleanSlug) || categoryMap.get(slugNorm);
+
+            if (!meta) {
+                const matchedBrandProduct = items.find(function (p) {
+                    return slugifyText(p.brand) === cleanSlug || normalizeText(p.brand) === slugNorm;
+                });
+                const brandName = matchedBrandProduct ? matchedBrandProduct.brand : (catEntry ? catEntry.title : titleFromSlug(slug));
+                const childSubSlugs = catEntry && catEntry.children && catEntry.children.length > 0
+                    ? catEntry.children.map(function (c) { return c.slug; })
+                    : ["best-sellers", "offers", "new-arrivals"];
+
+                meta = {
+                    title: brandName,
+                    description: catEntry
+                        ? "Explore " + brandName + " care essentials and subcategories at Heliomed."
+                        : "Explore authentic products and care essentials from " + brandName + " at Heliomed.",
+                    subs: childSubSlugs
+                };
+            } else if (catEntry && catEntry.children && catEntry.children.length > 0) {
+                meta = {
+                    ...meta,
+                    subs: catEntry.children.map(function (c) { return c.slug; })
+                };
+            }
+
             document.title = meta.title + " | Heliomed";
             titleEl.textContent = meta.title;
             breadcrumbName.textContent = meta.title;
             descriptionEl.textContent = meta.description;
             heroCount.textContent = items.length;
             subcategories.innerHTML = (meta.subs || []).map(function (item) {
-                return '<a href="./collection.html?collection=' + encodeURIComponent(item) + '">' + escapeHtml(collectionMeta[item]?.title || titleFromSlug(item)) + '</a>';
+                const subTitle = collectionMeta[item]?.title || categoryMap.get(item)?.title || titleFromSlug(item);
+                return '<a href="./collection.html?collection=' + encodeURIComponent(item) + '">' + escapeHtml(subTitle) + '</a>';
             }).join("");
             const related = ["best-sellers", "new-arrivals", "offers", "supports-recovery", "skincare", "vitamins"].filter(function (item) { return item !== slug; });
             relatedLinks.innerHTML = related.map(function (item) {
-                return '<a href="./collection.html?collection=' + encodeURIComponent(item) + '">' + escapeHtml(collectionMeta[item]?.title || titleFromSlug(item)) + '</a>';
+                const relTitle = collectionMeta[item]?.title || categoryMap.get(item)?.title || titleFromSlug(item);
+                return '<a href="./collection.html?collection=' + encodeURIComponent(item) + '">' + escapeHtml(relTitle) + '</a>';
             }).join("");
         }
+
         async function loadProducts() {
             try {
-                const rawProducts = await fetchQueryLazy("catalog:all", async () => {
-                    const snapshot = await getDocs(query(collection(db, "medicines"), orderBy("title")));
-                    return snapshot.docs.map(function (documentSnapshot) {
-                        return normalizeProduct(documentSnapshot.data(), documentSnapshot.id);
-                    });
-                });
+                populateCategoryTree(BASE_CATEGORY_TREE);
+
+                const [rawCategories, rawProducts] = await Promise.all([
+                    fetchQueryLazy("navbar_categories:all", async () => {
+                        try {
+                            const snapshot = await getDocs(query(collection(db, "categories"), orderBy("sortOrder")));
+                            return snapshot.docs.map(function (item) { return { id: item.id, ...item.data() }; });
+                        } catch (e) {
+                            return [];
+                        }
+                    }),
+                    fetchQueryLazy("catalog:all", async () => {
+                        const snapshot = await getDocs(query(collection(db, "medicines"), orderBy("title")));
+                        return snapshot.docs.map(function (documentSnapshot) {
+                            return normalizeProduct(documentSnapshot.data(), documentSnapshot.id);
+                        });
+                    })
+                ]);
+
+                if (rawCategories && rawCategories.length) {
+                    populateCategoryTree(rawCategories);
+                }
+
                 products = (rawProducts || []).map(function (item) {
                     return normalizeProduct(item, item.id);
                 }).filter(window.HeliomedProductUrls.isProductAvailable).filter(baseMatches);
+
                 setupHero(products);
                 render();
             } catch (error) {

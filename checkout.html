@@ -125,6 +125,11 @@
             font-weight: 900;
         }
         .wide { grid-column: 1 / -1; }
+        .required-star {
+            color: #dc2626;
+            font-weight: 900;
+            margin-left: 2px;
+        }
         input,
         select,
         textarea {
@@ -447,7 +452,6 @@
                 <li class="nav-item"><a href="#blog" class="nav-trigger"><i class="fas fa-newspaper"></i> BLOG</a></li>
                 <li class="nav-item mobile-only-nav"><a href="./account.html" class="nav-trigger account-link"><i class="far fa-user"></i> LOGIN</a></li>
                 <li class="nav-item mobile-only-nav"><a href="./wishlist.html" class="nav-trigger"><i class="far fa-heart"></i> WISHLIST</a></li>
-                <li class="nav-item mobile-only-nav"><a href="./cart.html" class="nav-trigger"><i class="fas fa-shopping-bag"></i> CART</a></li>
             </ul>
     
             <div class="header-actions">
@@ -461,7 +465,7 @@
                         <i class="far fa-heart"></i>
                         <span class="wishlist-count">0</span>
                     </a>
-                    <a class="cart-icon-wrapper" href="./cart.html" aria-label="Open cart">
+                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
                     </a>
@@ -493,15 +497,15 @@
                     <h2>Contact</h2>
                     <div class="field-grid">
                         <label>
-                            Full name
+                            Full name <span class="required-star">*</span>
                             <input name="name" autocomplete="name" required>
                         </label>
                         <label>
-                            Phone number
+                            Phone number <span class="required-star">*</span>
                             <input name="phone" autocomplete="tel" required>
                         </label>
                         <label class="wide">
-                            Email
+                            Email <span class="required-star">*</span>
                             <input name="email" type="email" autocomplete="email" required readonly>
                         </label>
                     </div>
@@ -511,47 +515,43 @@
                     <h2>Delivery Address</h2>
                     <div class="field-grid">
                         <label class="wide">
-                            Country
-                            <select name="country">
+                            Country <span class="required-star">*</span>
+                            <select name="country" required>
                                 <option value="Lebanon">Lebanon</option>
                             </select>
                         </label>
                         <label>
-                            State/Province
+                            State/Province <span class="required-star">*</span>
                             <select name="area" id="areaSelect" required></select>
                         </label>
                         <label>
-                            City
+                            City <span class="required-star">*</span>
                             <input name="city" autocomplete="address-level2" required>
                         </label>
                         <label class="wide">
-                            Address
+                            Address <span class="required-star">*</span>
                             <input name="address" autocomplete="street-address" required>
                         </label>
                         <label class="wide">
-                            Apartment/Suite/Building
-                            <input name="building">
+                            Apartment/Suite/Building <span class="required-star">*</span>
+                            <input name="building" required>
                         </label>
                         <label class="wide">
-                            Floor (الطابق)
-                            <input name="floor">
-                        </label>
-                        <label class="wide">
-                            Address Line (مزيد من المعلومات حول العنوان)
-                            <textarea name="notes"></textarea>
+                            Floor (الطابق) <span class="required-star">*</span>
+                            <input name="floor" required>
                         </label>
                     </div>
                 </section>
 
                 <section class="form-section">
-                    <h2>Payment Method</h2>
+                    <h2>Payment Method <span class="required-star">*</span></h2>
                     <div class="payment-options">
                         <label class="payment-option">
-                            <input type="radio" name="payment" value="Cash on Delivery" checked>
+                            <input type="radio" name="payment" value="Cash on Delivery" checked required>
                             Cash on Delivery
                         </label>
                         <label class="payment-option">
-                            <input type="radio" name="payment" value="Whish">
+                            <input type="radio" name="payment" value="Whish" required>
                             Whish
                         </label>
                     </div>
@@ -801,7 +801,7 @@
                     building: form.get("building"),
                     floor: form.get("floor"),
                     street: form.get("address"),
-                    notes: form.get("notes")
+                    notes: form.get("notes") || ""
                 }
             };
             payload.idempotencyKey = idempotencyKeyFor(payload);

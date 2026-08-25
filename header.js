@@ -26,7 +26,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function setMobileNav(open) {
         if (!header || !mobileNavToggle) return;
-        if (open) setCategoryNav(false);
+        if (open) {
+            setCategoryNav(false);
+            if (window.HeliomedCart && typeof window.HeliomedCart.closeDrawer === 'function') {
+                window.HeliomedCart.closeDrawer();
+            }
+        }
         header.classList.toggle('mobile-nav-open', open);
         document.documentElement.classList.toggle('mobile-nav-lock', open);
         document.body.classList.toggle('mobile-nav-lock', open);
@@ -342,4 +347,21 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    function attachCartListeners() {
+        document.querySelectorAll('.cart-icon-wrapper[href*="cart.html"], .header-cart-btn, [data-open-cart]').forEach(function (btn) {
+            if (btn.dataset.cartDrawerBound === 'true' || btn.closest('#cart-drawer')) return;
+            btn.dataset.cartDrawerBound = 'true';
+            btn.addEventListener('click', function (event) {
+                event.preventDefault();
+                setMobileNav(false);
+                setCategoryNav(false);
+                if (window.HeliomedCart && typeof window.HeliomedCart.openDrawer === 'function') {
+                    window.HeliomedCart.openDrawer();
+                }
+            });
+        });
+    }
+    attachCartListeners();
+    document.addEventListener('heliomed:navbar-categories-loaded', attachCartListeners);
 });

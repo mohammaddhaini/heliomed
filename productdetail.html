@@ -868,7 +868,6 @@
                 <li class="nav-item"><a href="#blog" class="nav-trigger"><i class="fas fa-newspaper"></i> BLOG</a></li>
                 <li class="nav-item mobile-only-nav"><a href="./account.html" class="nav-trigger account-link"><i class="far fa-user"></i> LOGIN</a></li>
                 <li class="nav-item mobile-only-nav"><a href="./wishlist.html" class="nav-trigger"><i class="far fa-heart"></i> WISHLIST</a></li>
-                <li class="nav-item mobile-only-nav"><a href="./cart.html" class="nav-trigger"><i class="fas fa-shopping-bag"></i> CART</a></li>
             </ul>
     
             <div class="header-actions">
@@ -882,7 +881,7 @@
                         <i class="far fa-heart"></i>
                         <span class="wishlist-count">0</span>
                     </a>
-                    <a class="cart-icon-wrapper" href="./cart.html" aria-label="Open cart">
+                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
                     </a>
@@ -1586,8 +1585,8 @@
         document.getElementById("increaseQty").addEventListener("click", function () {
             quantity.value = Number(quantity.value || 1) + 1;
         });
-        function addCurrentToCart() {
-            if (!currentProduct || addToCart.disabled) return false;
+        function addCurrentToCart(shouldOpenDrawer) {
+            if (!currentProduct) return false;
             const selectedQuantity = Math.max(1, Number(quantity.value || 1));
             const brand = getBrand(currentProduct.title);
             const price = variantPrice(selectedVariant, currentProduct);
@@ -1603,14 +1602,14 @@
                 newPrice: price.newPrice,
                 price: Number(price.newValue || parseMoney(price.newPrice)),
                 url: variantUrl
-            }, selectedQuantity);
+            }, selectedQuantity, { openDrawer: shouldOpenDrawer !== false });
             showToast((currentProduct?.title || "Product") + " added to cart.");
             return true;
         }
-        addToCart.addEventListener("click", addCurrentToCart);
-        stickyAdd.addEventListener("click", addCurrentToCart);
+        addToCart.addEventListener("click", function () { addCurrentToCart(true); });
+        stickyAdd.addEventListener("click", function () { addCurrentToCart(true); });
         buyNow.addEventListener("click", function () {
-            if (addCurrentToCart()) window.location.href = "./checkout.html";
+            if (addCurrentToCart(false)) window.location.href = "./checkout.html";
         });
         document.getElementById("zoomTrigger").addEventListener("click", function () {
             if (!mainImage.src) return;
