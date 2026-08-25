@@ -18,6 +18,7 @@ const PUBLIC_FILES = [
   "header.css",
   "header.js",
   "heliomed-logo.png",
+  "hero-image.mjs",
   "icon.ico",
   "icon.png",
   "index-cms.js",

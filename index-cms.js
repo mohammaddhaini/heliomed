@@ -8,6 +8,7 @@ import {
     query
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 import { fetchQueryLazy } from "./products-cache.js";
+import { applyHeroImage } from "./hero-image.mjs";
 
 const isPreviewMode = detectPreviewMode();
 const HOMEPAGE_LOADER_MIN_MS = 3000;
@@ -186,21 +187,25 @@ function ensureContentCatalog() {
             };
         });
         const contentBrands = (contentData.brands || []).map(item => {
+            const brandSlug = String(item.id || item.title || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
             return {
                 id: item.id,
                 title: item.title || item.id,
                 subtitle: item.description || "Brand",
-                href: "./brand.html?brand=" + encodeURIComponent(item.id),
+                href: "./collection.html?collection=" + encodeURIComponent(brandSlug || item.id),
                 imageUrl: item.imageUrl || ""
             };
         });
-        const productBrands = Array.from(new Set(productCatalog.map(product => product.brand).filter(Boolean))).map(brand => ({
-            id: brand,
-            title: brand,
-            subtitle: "Brand",
-            href: "./brand.html?brand=" + encodeURIComponent(brand),
-            imageUrl: ""
-        }));
+        const productBrands = Array.from(new Set(productCatalog.map(product => product.brand).filter(Boolean))).map(brand => {
+            const brandSlug = String(brand || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+            return {
+                id: brand,
+                title: brand,
+                subtitle: "Brand",
+                href: "./collection.html?collection=" + encodeURIComponent(brandSlug || brand),
+                imageUrl: ""
+            };
+        });
         collectionCatalog = mergeCatalogItems([...categoryCollections, ...contentCollections]);
         brandCatalog = mergeCatalogItems([...contentBrands, ...productBrands]);
     }).catch(error => {
@@ -488,7 +493,7 @@ function renderHeroCarousel(sec) {
     heroEl.innerHTML = `
         <div class="slider-arrow left"><i class="fas fa-chevron-left"></i></div>
         <div class="hero-image">
-            <img src="${escapeHtml(initial.imageUrl || '')}" alt="${escapeHtml(initial.headline || 'Hero banner')}">
+            <img${initial.imageUrl ? ` src="${escapeHtml(initial.imageUrl)}"` : ' hidden'} alt="${escapeHtml(initial.headline || 'Hero banner')}">
         </div>
         <div class="hero-content">
             <div class="hero-kicker">${escapeHtml(initial.kicker || 'Heliomed Essentials')}</div>
@@ -726,8 +731,9 @@ function renderBrandShowcase(sec) {
 
     const initialTab = tabs[0] || {};
     const initialBrandName = initialTab.brandName || "";
+    const initialBrandSlug = String(initialBrandName || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
     const initialProducts = resolveTabProducts(initialTab);
-    const initialBrandUrl = initialBrandName ? `./brand.html?brand=${encodeURIComponent(initialBrandName)}` : "./collection.html";
+    const initialBrandUrl = initialBrandName ? `./collection.html?collection=${encodeURIComponent(initialBrandSlug || initialBrandName)}` : "./collection.html";
 
     brandEl.innerHTML = `
         <div class="cc-cat-header">
@@ -911,10 +917,7 @@ function initHeroSliders() {
             }
 
             const img = hero.querySelector(".hero-image img");
-            if (img && slide.imageUrl) {
-                img.src = slide.imageUrl;
-                img.alt = slide.headline || "Hero slide";
-            }
+            applyHeroImage(img, slide);
 
             hero.classList.remove("is-fading");
         }, 180);
@@ -973,7 +976,8 @@ function initBrandTabs() {
 
                 if (showAllBtn) {
                     const brandName = data.brandName || "";
-                    showAllBtn.href = brandName ? `./brand.html?brand=${encodeURIComponent(brandName)}` : "./collection.html";
+                    const brandSlug = String(brandName || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+                    showAllBtn.href = brandName ? `./collection.html?collection=${encodeURIComponent(brandSlug || brandName)}` : "./collection.html";
                     showAllBtn.innerHTML = `Show all in ${escapeHtml(brandName || 'Brand')} &rarr;`;
                 }
             }, { signal: controller.signal });

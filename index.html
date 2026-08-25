@@ -1231,7 +1231,6 @@
             </li>
             <li class="nav-item mobile-only-nav"><a href="./account.html" class="nav-trigger account-link"><i class="far fa-user"></i> LOGIN</a></li>
             <li class="nav-item mobile-only-nav"><a href="./wishlist.html" class="nav-trigger"><i class="far fa-heart"></i> WISHLIST</a></li>
-            <li class="nav-item mobile-only-nav"><a href="./cart.html" class="nav-trigger"><i class="fas fa-shopping-bag"></i> CART</a></li>
         </ul>
 
         <div class="header-actions">
@@ -1241,9 +1240,9 @@
                 <div class="home-search-predict" id="homeSearchPredict" role="listbox" aria-label="Product suggestions"></div>
             </div>
             <div class="header-icons">
-                <a href="./account.html"><i class="far fa-user"></i></a>
-                <a class="cart-icon-wrapper" href="./wishlist.html"><i class="far fa-heart"></i><span class="wishlist-count">0</span></a>
-                <a class="cart-icon-wrapper" href="./cart.html"><i class="fas fa-shopping-bag"></i><span class="cart-count">0</span></a>
+                <a href="./account.html" aria-label="Account"><i class="far fa-user"></i></a>
+                <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Wishlist"><i class="far fa-heart"></i><span class="wishlist-count">0</span></a>
+                <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart"><i class="fas fa-shopping-bag"></i><span class="cart-count">0</span></a>
             </div>
         </div>
     </header>
@@ -1314,7 +1313,7 @@
 
     <!-- SCRIPT MODULES -->
     <script src="./product-url.js"></script>
-    <script type="module" src="./index-cms.js"></script>
+    <script type="module" src="./index-cms.js?v=20260825-hero-image-fix"></script>
     <script type="module" src="./navbar-categories.js"></script>
     <script src="./cart.js"></script>
     <script src="./wishlist.js"></script>
