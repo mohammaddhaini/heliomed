@@ -1,20 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/ico" href="icon.ico">
+    <link rel="icon" type="image/x-icon" href="icon.ico?v=2">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function () {
+            var lang = localStorage.getItem("heliomed_lang") === "ar" ? "ar" : "en";
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        })();
+    </script>
     <title>Collection | Heliomed</title>
     <meta name="description" content="Browse Heliomed collections.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
     <style>
         :root {
-            --brand-blue: #1D5F73;
-            --brand-pink: #C2A26B;
+            --pearl-aqua: #A2D8D2;
+            --pearl-aqua-deep: #146B66;
+            --pearl-aqua-hover: #0E5652;
+            --pearl-aqua-soft: #F0F8F7;
+            --pearl-aqua-border: #CCE8E5;
+
+            --brand-blue: #146B66;
+            --brand-blue-hover: #0E5652;
+            --brand-pink: #A2D8D2;
             --brand-dark: #07111F;
-            --brand-soft-blue: #FBF7F0;
-            --brand-soft-pink: #F8F2E8;
-            --brand-border: #E8DCC8;
+            --brand-soft-blue: #F0F8F7;
+            --brand-soft-pink: #F0F8F7;
+            --brand-border: #CCE8E5;
         }
         * { box-sizing: border-box; }
         body {
@@ -24,7 +41,8 @@
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
         a { color: inherit; text-decoration: none; }
-        button, input, select { font: inherit; }
+        button, input, select, textarea { font: inherit; }
+        input:not([type="checkbox"]):not([type="radio"]), select, textarea { font-size: 16px; }
         .header {
             position: sticky;
             top: 0;
@@ -83,59 +101,184 @@
             margin-bottom: 18px;
         }
         .breadcrumb a { color: var(--brand-pink); font-weight: 900; }
-        .collection-hero {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 280px;
-            gap: 24px;
-            align-items: end;
-            padding: clamp(22px, 4vw, 42px);
-            margin-bottom: 24px;
-            background: var(--brand-soft-blue);
-            border: 1px solid var(--brand-border);
+
+        /* Circular Category Cards matching reference */
+        .subcategories-wrap {
+            position: relative;
+            margin-bottom: 28px;
+            padding: 0;
         }
-        h1 {
-            margin: 0 0 12px;
-            font-size: clamp(28px, 5vw, 64px);
-            line-height: 1.08;
-            letter-spacing: 0;
-            overflow-wrap: break-word;
-            word-break: normal;
-        }
-        .hero-copy {
-            max-width: 720px;
-            margin: 0;
-            color: #53616c;
-            line-height: 1.6;
-            font-weight: 700;
-        }
-        .hero-stat {
-            padding: 18px;
-            background: #fff;
-            border-left: 4px solid var(--brand-pink);
-            font-weight: 900;
-        }
-        .hero-stat strong {
-            display: block;
-            font-size: 34px;
-            line-height: 1;
-        }
-        .subcategories,
-        .related-links {
+        .subcategories {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 24px;
+            align-items: flex-start;
+            gap: 20px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            padding: 10px 6px 18px;
+            margin: 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
         }
-        .subcategories a,
-        .related-links a {
-            min-height: 36px;
-            display: inline-flex;
-            align-items: center;
-            padding: 0 13px;
-            border: 1px solid var(--brand-border);
+        .subcategories::-webkit-scrollbar {
+            height: 6px;
+        }
+        .subcategories::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .subcategories::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+        .subcategories::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .subcategories-scroll-btn {
+            position: absolute;
+            top: 54px;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             background: #fff;
-            font-size: 13px;
+            border: 1px solid var(--brand-border);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+            color: var(--brand-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .subcategories-scroll-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .subcategories-scroll-btn:hover {
+            background: var(--brand-soft-blue);
+            border-color: var(--brand-blue);
+            color: var(--brand-blue);
+            transform: translateY(-50%) scale(1.08);
+        }
+        .subcategories-scroll-btn.prev {
+            left: -12px;
+        }
+        .subcategories-scroll-btn.next {
+            right: -12px;
+        }
+        [dir="rtl"] .subcategories-scroll-btn.prev {
+            left: auto;
+            right: -12px;
+        }
+        [dir="rtl"] .subcategories-scroll-btn.next {
+            right: auto;
+            left: -12px;
+        }
+        .subcategory-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            text-decoration: none;
+            flex: 0 0 auto;
+            width: 96px;
+            cursor: pointer;
+            transition: transform 0.25s ease;
+        }
+        .subcategory-item:hover {
+            transform: translateY(-4px);
+        }
+        .subcategory-circle {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background-color: #EEF1F5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid transparent;
+            transition: all 0.25s ease;
+        }
+        .subcategory-item:hover .subcategory-circle {
+            background-color: #E3E8EF;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            border-color: rgba(29, 95, 115, 0.25);
+        }
+        .subcategory-item.active .subcategory-circle {
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 3px rgba(29, 95, 115, 0.22);
+            background-color: #fff;
+        }
+        .subcategory-img {
+            width: 74%;
+            height: 74%;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+            display: block;
+            transition: transform 0.25s ease;
+            pointer-events: none;
+        }
+        .subcategory-item:hover .subcategory-img {
+            transform: scale(1.08);
+        }
+        .subcategory-placeholder {
+            width: 72%;
+            height: 72%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 28px;
+        }
+        .subcategory-name {
+            margin-top: 10px;
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 1.25;
+            color: #1a202c;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            max-width: 96px;
+            word-break: break-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.2s ease;
+        }
+        .subcategory-item:hover .subcategory-name {
+            color: var(--brand-blue);
+        }
+        .subcategory-item.active .subcategory-name {
+            color: var(--brand-blue);
             font-weight: 900;
+        }
+        @media (max-width: 768px) {
+            .subcategories {
+                gap: 14px;
+                padding: 8px 4px 14px;
+            }
+            .subcategory-item {
+                width: 78px;
+            }
+            .subcategory-circle {
+                width: 72px;
+                height: 72px;
+            }
+            .subcategory-name {
+                font-size: 10px;
+                max-width: 78px;
+            }
+            .subcategories-scroll-btn {
+                display: none;
+            }
         }
         .shop-layout {
             display: grid;
@@ -354,19 +497,73 @@
             font-size: 12px;
         }
         .wish-btn { color: var(--brand-pink); font-size: 16px; }
-        .load-more {
+        .pagination-wrap {
             display: none;
-            min-height: 46px;
-            margin: 28px auto 0;
-            padding: 0 24px;
-            border: 1px solid var(--brand-pink);
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            margin-top: 36px;
+            padding-top: 24px;
+            border-top: 1px solid var(--brand-border);
+        }
+        .pagination-wrap.visible {
+            display: flex;
+        }
+        .pagination-info {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .pagination-btn {
+            min-width: 38px;
+            height: 38px;
+            padding: 0 10px;
+            border-radius: 6px;
+            border: 1px solid var(--brand-border);
             background: #fff;
             color: var(--brand-dark);
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
-            font-weight: 900;
-            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
         }
-        .load-more.visible { display: block; }
+        .pagination-btn:hover:not(:disabled) {
+            border-color: var(--brand-blue);
+            color: var(--brand-blue);
+            background: var(--brand-soft-blue);
+        }
+        .pagination-btn.active {
+            background: var(--brand-blue);
+            border-color: var(--brand-blue);
+            color: #fff;
+            font-weight: 800;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+        .pagination-ellipsis {
+            padding: 0 4px;
+            color: #94a3b8;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        [dir="rtl"] .pagination-btn.prev i {
+            transform: rotate(180deg);
+        }
+        [dir="rtl"] .pagination-btn.next i {
+            transform: rotate(180deg);
+        }
         .empty-state {
             display: none;
             border: 1px dashed var(--brand-border);
@@ -376,13 +573,6 @@
             text-align: center;
         }
         .empty-state.visible { display: block; }
-        .related-section {
-            margin-top: 44px;
-        }
-        .related-section h2 {
-            margin: 0 0 14px;
-            font-size: 28px;
-        }
         @media (max-width: 1120px) {
             .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             .collection-hero { grid-template-columns: 1fr; }
@@ -400,6 +590,8 @@
     </style>
     <link rel="stylesheet" href="./responsive.css">
     <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./rtl.css">
+    <script src="./i18n.js"></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -416,7 +608,7 @@
                 <span class="hamburger-bar"></span>
             </button>
     
-            <ul class="nav-links" id="primary-navigation">
+            <ul class="nav-links" id="primary-navigation" data-i18n-static-text>
                 <li class="nav-panel-header" aria-hidden="true">
                     <span class="nav-panel-title">MENU</span>
                     <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
@@ -559,73 +751,61 @@
 
     <main>
         <nav class="breadcrumb" aria-label="Breadcrumb">
-            <a href="./index.html">Home</a>
+            <a href="./index.html" data-i18n="collection.home">Home</a>
             <span>/</span>
             <span id="breadcrumbName">Collection</span>
         </nav>
 
-        <section class="collection-hero">
-            <div>
-                <h1 id="collectionTitle">Collection</h1>
-                <p class="hero-copy" id="collectionDescription">Browse Heliomed products.</p>
-            </div>
-            <div class="hero-stat">
-                <strong id="heroCount">0</strong>
-                <span>products found</span>
-            </div>
-        </section>
-
-        <div class="subcategories" id="subcategories"></div>
+        <div class="subcategories-wrap" id="subcategoriesWrap">
+            <button class="subcategories-scroll-btn prev" id="subcategoriesPrev" type="button" aria-label="Scroll left"><i class="fas fa-chevron-left"></i></button>
+            <div class="subcategories" id="subcategories"></div>
+            <button class="subcategories-scroll-btn next" id="subcategoriesNext" type="button" aria-label="Scroll right"><i class="fas fa-chevron-right"></i></button>
+        </div>
 
         <section class="shop-layout">
-            <aside class="filter-sidebar" aria-label="Collection filters">
+            <aside class="filter-sidebar" aria-label="Collection filters" data-i18n-aria="aria.collectionFilters">
                 <div class="filter-group" data-filter-group="brand">
-                    <button class="filter-heading" type="button">Brand <i class="fas fa-chevron-down"></i></button>
+                    <button class="filter-heading" type="button"><span data-i18n="collection.brand">Brand</span> <i class="fas fa-chevron-down"></i></button>
                     <div class="filter-body" id="brandFilters"></div>
                 </div>
                 <div class="filter-group" data-filter-group="category">
-                    <button class="filter-heading" type="button">Category <i class="fas fa-chevron-down"></i></button>
+                    <button class="filter-heading" type="button"><span data-i18n="collection.category">Category</span> <i class="fas fa-chevron-down"></i></button>
                     <div class="filter-body" id="categoryFilters"></div>
                 </div>
                 <div class="filter-group" data-filter-group="section">
-                    <button class="filter-heading" type="button">Section <i class="fas fa-chevron-down"></i></button>
+                    <button class="filter-heading" type="button"><span data-i18n="collection.section">Section</span> <i class="fas fa-chevron-down"></i></button>
                     <div class="filter-body" id="sectionFilters"></div>
                 </div>
                 <div class="filter-group" data-filter-group="offer">
-                    <button class="filter-heading" type="button">Offer <i class="fas fa-chevron-down"></i></button>
+                    <button class="filter-heading" type="button"><span data-i18n="collection.offer">Offer</span> <i class="fas fa-chevron-down"></i></button>
                     <div class="filter-body" id="offerFilters"></div>
                 </div>
                 <div class="filter-group" data-filter-group="price">
-                    <button class="filter-heading" type="button">Price <i class="fas fa-chevron-down"></i></button>
+                    <button class="filter-heading" type="button"><span data-i18n="collection.price">Price</span> <i class="fas fa-chevron-down"></i></button>
                     <div class="price-body">
-                        <input id="minPrice" type="number" min="0" step="0.01" placeholder="Min">
-                        <input id="maxPrice" type="number" min="0" step="0.01" placeholder="Max">
+                        <input id="minPrice" type="number" min="0" step="0.01" placeholder="Min" data-i18n-placeholder="collection.min">
+                        <input id="maxPrice" type="number" min="0" step="0.01" placeholder="Max" data-i18n-placeholder="collection.max">
                     </div>
                 </div>
-                <button class="clear-filters" id="clearFilters" type="button">Clear filters</button>
+                <button class="clear-filters" id="clearFilters" type="button" data-i18n="collection.clearFilters">Clear filters</button>
             </aside>
 
             <section class="results-area">
                 <div class="results-top">
                     <div class="status-row" id="statusRow">Loading products...</div>
-                    <label class="sort-wrap">Sort
-                        <select id="sortSelect" aria-label="Sort products">
-                            <option value="az">A to Z</option>
-                            <option value="za">Z to A</option>
-                            <option value="priceAsc">Price: low to high</option>
-                            <option value="priceDesc">Price: high to low</option>
+                    <label class="sort-wrap"><span data-i18n="collection.sort">Sort</span>
+                        <select id="sortSelect" aria-label="Sort products" data-i18n-aria="aria.sortProducts">
+                            <option value="az" data-i18n="collection.sortAz">A to Z</option>
+                            <option value="za" data-i18n="collection.sortZa">Z to A</option>
+                            <option value="priceAsc" data-i18n="collection.sortPriceAsc">Price: low to high</option>
+                            <option value="priceDesc" data-i18n="collection.sortPriceDesc">Price: high to low</option>
                         </select>
                     </label>
                 </div>
-                <section class="product-grid" id="productGrid" aria-label="Collection products"></section>
-                <button class="load-more" id="loadMore" type="button">Load more</button>
-                <div class="empty-state" id="emptyState">No products matched this collection.</div>
+                <section class="product-grid" id="productGrid" aria-label="Collection products" data-i18n-aria="aria.collectionProducts"></section>
+                <div class="pagination-wrap" id="collectionPagination"></div>
+                <div class="empty-state" id="emptyState" data-i18n="collection.empty">No products matched this collection.</div>
             </section>
-        </section>
-
-        <section class="related-section">
-            <h2>Related Collections</h2>
-            <div class="related-links" id="relatedLinks"></div>
         </section>
     </main>
 
@@ -634,8 +814,14 @@
     <script src="./wishlist.js"></script>
     <script type="module">
         import { db } from "./firebase-init.js";
-        import { collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { collection, doc, getDoc, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
         import { fetchQueryLazy } from "./products-cache.js";
+
+        const t = (key, params) => window.HeliomedI18n?.t ? window.HeliomedI18n.t(key, params) : key;
+        const tp = (key, count, params) => window.HeliomedI18n?.tp ? window.HeliomedI18n.tp(key, count, params) : t(key, params);
+        const contentValue = (record, key, fallback = "") => window.HeliomedI18n?.contentValue
+            ? window.HeliomedI18n.contentValue(record, key, fallback)
+            : (record && record[key]) || fallback;
 
         const params = new URLSearchParams(window.location.search);
         const slug = params.get("collection") || params.get("category") || params.get("brand") || "best-sellers";
@@ -643,12 +829,15 @@
         const descriptionEl = document.getElementById("collectionDescription");
         const breadcrumbName = document.getElementById("breadcrumbName");
         const heroCount = document.getElementById("heroCount");
+        const collectionHero = document.getElementById("collectionHero");
+        const subcategoriesWrap = document.getElementById("subcategoriesWrap");
         const subcategories = document.getElementById("subcategories");
-        const relatedLinks = document.getElementById("relatedLinks");
+        const subcategoriesPrev = document.getElementById("subcategoriesPrev");
+        const subcategoriesNext = document.getElementById("subcategoriesNext");
         const productGrid = document.getElementById("productGrid");
         const statusRow = document.getElementById("statusRow");
         const emptyState = document.getElementById("emptyState");
-        const loadMore = document.getElementById("loadMore");
+        const collectionPagination = document.getElementById("collectionPagination");
         const sortSelect = document.getElementById("sortSelect");
         const minPrice = document.getElementById("minPrice");
         const maxPrice = document.getElementById("maxPrice");
@@ -662,8 +851,10 @@
         const fieldMap = { brand: "brand", category: "category", section: "section", offer: "badge" };
         const selected = { brand: new Set(), category: new Set(), section: new Set(), offer: new Set() };
         const pageSize = 12;
-        let shown = pageSize;
+        let currentPage = 1;
         let products = [];
+        let collectionContentRecord = null;
+        let categoryImagesMap = {};
 
         const collectionMeta = {
             "best-sellers": { title: "Best Sellers", description: "Customer-favorite care essentials across parapharmacy, beauty, wellness, and recovery.", subs: ["offers", "new-arrivals", "under-20", "beauty-essentials"] },
@@ -825,14 +1016,18 @@
             if (!entry) {
                 entry = {
                     title: title || titleFromSlug(slug),
+                    title_ar: String(node.title_ar || "").trim(),
                     slug: slug,
+                    imageUrl: String(node.imageUrl || node.image || "").trim(),
                     children: [],
                     allDescendants: new Set([slug, norm, slugifyText(title)])
                 };
                 categoryMap.set(slug, entry);
                 if (norm) categoryMap.set(norm, entry);
-            } else if (title && !entry.title) {
-                entry.title = title;
+            } else {
+                if (title) entry.title = title;
+                if (String(node.title_ar || "").trim()) entry.title_ar = String(node.title_ar).trim();
+                if (node.imageUrl || node.image) entry.imageUrl = String(node.imageUrl || node.image).trim();
             }
 
             const children = Array.isArray(node.children) ? node.children : [];
@@ -998,7 +1193,7 @@
                 const matchedBrandProduct = items.find(function (p) {
                     return slugifyText(p.brand) === cleanSlug || normalizeText(p.brand) === slugNorm;
                 });
-                const brandName = matchedBrandProduct ? matchedBrandProduct.brand : (catEntry ? catEntry.title : titleFromSlug(slug));
+                const brandName = matchedBrandProduct ? matchedBrandProduct.brand : (catEntry ? contentValue(catEntry, "title", catEntry.slug) : titleFromSlug(slug));
                 const childSubSlugs = catEntry && catEntry.children && catEntry.children.length > 0
                     ? catEntry.children.map(function (c) { return c.slug; })
                     : ["best-sellers", "offers", "new-arrivals"];
@@ -1017,27 +1212,109 @@
                 };
             }
 
+            if (collectionContentRecord) {
+                meta = {
+                    ...meta,
+                    title: contentValue(collectionContentRecord, "title", meta.title),
+                    description: contentValue(collectionContentRecord, "description", meta.description)
+                };
+            } else if (catEntry) {
+                meta = {
+                    ...meta,
+                    title: contentValue(catEntry, "title", meta.title)
+                };
+            }
+
             document.title = meta.title + " | Heliomed";
-            titleEl.textContent = meta.title;
-            breadcrumbName.textContent = meta.title;
-            descriptionEl.textContent = meta.description;
-            heroCount.textContent = items.length;
-            subcategories.innerHTML = (meta.subs || []).map(function (item) {
-                const subTitle = collectionMeta[item]?.title || categoryMap.get(item)?.title || titleFromSlug(item);
-                return '<a href="./collection.html?collection=' + encodeURIComponent(item) + '">' + escapeHtml(subTitle) + '</a>';
-            }).join("");
-            const related = ["best-sellers", "new-arrivals", "offers", "supports-recovery", "skincare", "vitamins"].filter(function (item) { return item !== slug; });
-            relatedLinks.innerHTML = related.map(function (item) {
-                const relTitle = collectionMeta[item]?.title || categoryMap.get(item)?.title || titleFromSlug(item);
-                return '<a href="./collection.html?collection=' + encodeURIComponent(item) + '">' + escapeHtml(relTitle) + '</a>';
-            }).join("");
+            if (breadcrumbName) breadcrumbName.textContent = meta.title;
+            if (titleEl) titleEl.textContent = meta.title;
+            if (descriptionEl) descriptionEl.textContent = meta.description;
+            if (heroCount) heroCount.textContent = items.length;
+
+            if (!meta.subs || !meta.subs.length) {
+                if (subcategoriesWrap) subcategoriesWrap.style.display = "none";
+                subcategories.innerHTML = "";
+            } else {
+                if (subcategoriesWrap) subcategoriesWrap.style.display = "";
+                subcategories.innerHTML = (meta.subs || []).map(function (item) {
+                    const cleanItemSlug = slugifyText(item);
+                    const itemNorm = normalizeText(item);
+                    const subEntry = categoryMap.get(cleanItemSlug) || categoryMap.get(item) || categoryMap.get(itemNorm);
+                    const subTitle = subEntry
+                        ? contentValue(subEntry, "title", collectionMeta[item]?.title || titleFromSlug(item))
+                        : collectionMeta[item]?.title || titleFromSlug(item);
+
+                    // 1. Check custom uploaded photo from settings/categoryImages or category doc
+                    let imgUrl = (categoryImagesMap && (categoryImagesMap[cleanItemSlug] || categoryImagesMap[item] || categoryImagesMap[itemNorm])) ||
+                                 (subEntry && (subEntry.imageUrl || subEntry.image)) || "";
+
+                    // 2. Fallback: match a product from this category/subcategory that has an image
+                    if (!imgUrl && products && products.length) {
+                        const matchedProduct = products.find(function (p) {
+                            const pCat = slugifyText(p.category || "");
+                            const pSub = slugifyText(p.subcategory || p.subCategory || "");
+                            const pSec = slugifyText(p.section || "");
+                            return pCat === cleanItemSlug || pSub === cleanItemSlug || pSec === cleanItemSlug ||
+                                (subEntry && subEntry.allDescendants && (subEntry.allDescendants.has(pCat) || subEntry.allDescendants.has(pSub) || subEntry.allDescendants.has(pSec)));
+                        });
+                        if (matchedProduct) {
+                            imgUrl = matchedProduct.imageUrl || (matchedProduct.images && matchedProduct.images[0]) || "";
+                        }
+                    }
+
+                    const isActive = (cleanSlug === cleanItemSlug || slug === item);
+                    const imageHtml = imgUrl
+                        ? '<img src="' + escapeHtml(imgUrl) + '" alt="' + escapeHtml(subTitle) + '" class="subcategory-img" loading="lazy">'
+                        : '<div class="subcategory-placeholder"><i class="fas fa-shapes"></i></div>';
+
+                    return '<a href="./collection.html?collection=' + encodeURIComponent(item) + '" class="subcategory-item' + (isActive ? ' active' : '') + '">' +
+                        '<div class="subcategory-circle">' +
+                            imageHtml +
+                        '</div>' +
+                        '<span class="subcategory-name">' + escapeHtml(subTitle) + '</span>' +
+                    '</a>';
+                }).join("");
+
+                requestAnimationFrame(updateSubcategoriesScrollButtons);
+                setTimeout(updateSubcategoriesScrollButtons, 120);
+            }
+        }
+
+        function updateSubcategoriesScrollButtons() {
+            if (!subcategories || !subcategoriesPrev || !subcategoriesNext) return;
+            const hasOverflow = subcategories.scrollWidth > subcategories.clientWidth + 4;
+            if (!hasOverflow) {
+                subcategoriesPrev.classList.remove("visible");
+                subcategoriesNext.classList.remove("visible");
+                return;
+            }
+            const isRTL = document.documentElement.dir === "rtl";
+            const scrollLeft = Math.abs(subcategories.scrollLeft);
+            const maxScroll = subcategories.scrollWidth - subcategories.clientWidth;
+            subcategoriesPrev.classList.toggle("visible", scrollLeft > 10);
+            subcategoriesNext.classList.toggle("visible", scrollLeft < maxScroll - 10);
+        }
+
+        if (subcategories && subcategoriesPrev && subcategoriesNext) {
+            subcategories.addEventListener("scroll", updateSubcategoriesScrollButtons, { passive: true });
+            window.addEventListener("resize", updateSubcategoriesScrollButtons, { passive: true });
+            subcategoriesPrev.addEventListener("click", function () {
+                const isRTL = document.documentElement.dir === "rtl";
+                const amount = 260;
+                subcategories.scrollBy({ left: isRTL ? amount : -amount, behavior: "smooth" });
+            });
+            subcategoriesNext.addEventListener("click", function () {
+                const isRTL = document.documentElement.dir === "rtl";
+                const amount = 260;
+                subcategories.scrollBy({ left: isRTL ? -amount : amount, behavior: "smooth" });
+            });
         }
 
         async function loadProducts() {
             try {
                 populateCategoryTree(BASE_CATEGORY_TREE);
 
-                const [rawCategories, rawProducts] = await Promise.all([
+                const [rawCategories, rawProducts, contentRecord, categoryImagesDoc] = await Promise.all([
                     fetchQueryLazy("navbar_categories:all", async () => {
                         try {
                             const snapshot = await getDocs(query(collection(db, "categories"), orderBy("sortOrder")));
@@ -1051,8 +1328,17 @@
                         return snapshot.docs.map(function (documentSnapshot) {
                             return normalizeProduct(documentSnapshot.data(), documentSnapshot.id);
                         });
-                    })
+                    }),
+                    getDoc(doc(db, "collectionContent", slug))
+                        .then(function (snapshot) { return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null; })
+                        .catch(function () { return null; }),
+                    getDoc(doc(db, "settings", "categoryImages"))
+                        .then(function (snapshot) { return snapshot.exists() ? (snapshot.data() || {}) : {}; })
+                        .catch(function () { return {}; })
                 ]);
+
+                collectionContentRecord = contentRecord;
+                categoryImagesMap = categoryImagesDoc || {};
 
                 if (rawCategories && rawCategories.length) {
                     populateCategoryTree(rawCategories);
@@ -1066,7 +1352,7 @@
                 render();
             } catch (error) {
                 console.error(error);
-                statusRow.textContent = "Could not load products.";
+                statusRow.textContent = t("collection.couldNotLoad");
                 emptyState.classList.add("visible");
             }
         }
@@ -1106,9 +1392,10 @@
             wrapper.classList.toggle("is-hidden", values.length === 0);
             filterTargets[group].innerHTML = values.map(function ([value, count]) {
                 const id = group + "-" + value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+                const displayLabel = (group === "category" || group === "section" || group === "offer") ? t(value) : value;
                 return '<label class="check-row" for="' + escapeHtml(id) + '">' +
                     '<input id="' + escapeHtml(id) + '" type="checkbox" data-group="' + group + '" value="' + escapeHtml(value) + '"' + (selected[group].has(value) ? " checked" : "") + '>' +
-                    '<span>' + escapeHtml(value) + '</span><span class="check-count">(' + count + ')</span>' +
+                    '<span>' + escapeHtml(displayLabel) + '</span><span class="check-count">(' + count + ')</span>' +
                 '</label>';
             }).join("");
         }
@@ -1122,16 +1409,74 @@
             });
             return sorted;
         }
+        function renderPagination(totalItems, current, size) {
+            if (!collectionPagination) return;
+            const totalPages = Math.ceil(totalItems / size) || 1;
+            if (totalItems <= size) {
+                collectionPagination.classList.remove("visible");
+                collectionPagination.innerHTML = "";
+                return;
+            }
+            collectionPagination.classList.add("visible");
+
+            const startItem = (current - 1) * size + 1;
+            const endItem = Math.min(current * size, totalItems);
+            const isRTL = document.documentElement.dir === "rtl";
+            const prevIcon = '<i class="fas fa-chevron-left"></i>';
+            const nextIcon = '<i class="fas fa-chevron-right"></i>';
+
+            const pageNumbers = [];
+            if (totalPages <= 7) {
+                for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+            } else {
+                pageNumbers.push(1);
+                if (current > 3) pageNumbers.push("...");
+                const start = Math.max(2, current - 1);
+                const end = Math.min(totalPages - 1, current + 1);
+                for (let i = start; i <= end; i++) pageNumbers.push(i);
+                if (current < totalPages - 2) pageNumbers.push("...");
+                pageNumbers.push(totalPages);
+            }
+
+            const infoText = isRTL
+                ? `عرض ${startItem}–${endItem} من أصل ${totalItems} منتج`
+                : `Showing ${startItem}–${endItem} of ${totalItems} products`;
+
+            const buttonsHtml = pageNumbers.map(p => {
+                if (p === "...") {
+                    return '<span class="pagination-ellipsis">&hellip;</span>';
+                }
+                const isActive = p === current;
+                return `<button type="button" class="pagination-btn ${isActive ? 'active' : ''}" data-target-page="${p}" ${isActive ? 'aria-current="page"' : ''}>${p}</button>`;
+            }).join("");
+
+            collectionPagination.innerHTML = `
+                <div class="pagination-info">${escapeHtml(infoText)}</div>
+                <div class="pagination-controls">
+                    <button type="button" class="pagination-btn prev" ${current <= 1 ? "disabled" : ""} data-target-page="${current - 1}" aria-label="Previous page">${prevIcon}</button>
+                    ${buttonsHtml}
+                    <button type="button" class="pagination-btn next" ${current >= totalPages ? "disabled" : ""} data-target-page="${current + 1}" aria-label="Next page">${nextIcon}</button>
+                </div>
+            `;
+        }
+
         function renderProducts(items) {
-            const visible = items.slice(0, shown);
-            emptyState.classList.toggle("visible", items.length === 0);
-            loadMore.classList.toggle("visible", items.length > shown);
+            const total = items.length;
+            const totalPages = Math.ceil(total / pageSize) || 1;
+            if (currentPage > totalPages) currentPage = 1;
+
+            const start = (currentPage - 1) * pageSize;
+            const visible = items.slice(start, start + pageSize);
+
+            emptyState.classList.toggle("visible", total === 0);
+            renderPagination(total, currentPage, pageSize);
+
             productGrid.innerHTML = visible.map(function (product) {
                 const detailUrl = window.HeliomedProductUrls.productPath(product);
                 const showPrice = productHasVisiblePrice(product);
                 return '<article class="product-card">' +
                     '<a class="product-image" href="' + detailUrl + '">' +
-                        (product.imageUrl ? '<img src="' + escapeHtml(product.imageUrl) + '" alt="' + escapeHtml(product.title) + '">' : '<div class="placeholder">Image coming soon</div>') +
+                        (product.imageUrl ? '<img src="' + escapeHtml(product.imageUrl) + '" alt="' + escapeHtml(product.title) + '">' : '<div class="placeholder">' + escapeHtml(t("product.imageComingSoon")) + '</div>') +
                         (product.badge ? '<span class="badge">' + escapeHtml(product.badge) + '</span>' : "") +
                     '</a>' +
                     '<div class="product-body">' +
@@ -1142,9 +1487,9 @@
                             '<span class="new-price">' + escapeHtml(product.newPrice) + '</span>' +
                         '</div>' : '') +
                         '<div class="card-actions">' +
-                            '<a class="details-btn" href="' + detailUrl + '">Details</a>' +
-                            '<button class="add-btn" type="button" data-product-id="' + escapeHtml(product.id) + '"' + (showPrice ? "" : " disabled") + '>Add</button>' +
-                            '<button class="wish-btn" type="button" data-product-id="' + escapeHtml(product.id) + '" aria-label="Toggle wishlist"><i class="' + (window.HeliomedWishlist.hasItem(product.id) ? "fas" : "far") + ' fa-heart"></i></button>' +
+                            '<a class="details-btn" href="' + detailUrl + '">' + escapeHtml(t("card.details")) + '</a>' +
+                            '<button class="add-btn" type="button" data-product-id="' + escapeHtml(product.id) + '"' + (showPrice ? "" : " disabled") + '>' + escapeHtml(t("card.add")) + '</button>' +
+                            '<button class="wish-btn" type="button" data-product-id="' + escapeHtml(product.id) + '" aria-label="' + escapeHtml(t("aria.toggleWishlist")) + '"><i class="' + (window.HeliomedWishlist.hasItem(product.id) ? "fas" : "far") + ' fa-heart"></i></button>' +
                         '</div>' +
                     '</div>' +
                 '</article>';
@@ -1153,7 +1498,7 @@
         function render() {
             Object.keys(filterTargets).forEach(renderFacet);
             const visible = sortProducts(filteredProducts());
-            statusRow.textContent = visible.length + " product" + (visible.length === 1 ? "" : "s");
+            statusRow.textContent = tp("collection.productCount", visible.length);
             renderProducts(visible);
         }
         document.querySelectorAll(".filter-heading").forEach(function (button) {
@@ -1167,25 +1512,35 @@
             const values = selected[checkbox.dataset.group];
             if (checkbox.checked) values.add(checkbox.value);
             else values.delete(checkbox.value);
-            shown = pageSize;
+            currentPage = 1;
             render();
         });
         [minPrice, maxPrice, sortSelect].forEach(function (control) {
-            control.addEventListener("input", function () { shown = pageSize; render(); });
-            control.addEventListener("change", function () { shown = pageSize; render(); });
+            control.addEventListener("input", function () { currentPage = 1; render(); });
+            control.addEventListener("change", function () { currentPage = 1; render(); });
         });
         clearFilters.addEventListener("click", function () {
             Object.values(selected).forEach(function (set) { set.clear(); });
             minPrice.value = "";
             maxPrice.value = "";
             sortSelect.value = "az";
-            shown = pageSize;
+            currentPage = 1;
             render();
         });
-        loadMore.addEventListener("click", function () {
-            shown += pageSize;
-            render();
-        });
+        if (collectionPagination) {
+            collectionPagination.addEventListener("click", function (event) {
+                const btn = event.target.closest("[data-target-page]");
+                if (!btn || btn.disabled) return;
+                const targetPage = Number(btn.dataset.targetPage);
+                if (!Number.isFinite(targetPage) || targetPage === currentPage) return;
+                currentPage = targetPage;
+                render();
+                const targetEl = document.querySelector(".results-top") || productGrid;
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            });
+        }
         productGrid.addEventListener("click", function (event) {
             const addButton = event.target.closest(".add-btn");
             const wishButton = event.target.closest(".wish-btn");
@@ -1206,13 +1561,17 @@
             };
             if (addButton) {
                 window.HeliomedCart.addItem(item, 1);
-                addButton.textContent = "Added";
-                window.setTimeout(function () { addButton.textContent = "Add"; }, 1000);
+                addButton.textContent = t("card.added");
+                window.setTimeout(function () { addButton.textContent = t("card.add"); }, 1000);
             }
             if (wishButton) {
                 const saved = window.HeliomedWishlist.toggleItem(item);
                 wishButton.querySelector("i").className = (saved ? "fas" : "far") + " fa-heart";
             }
+        });
+        window.addEventListener("heliomed:language-change", function () {
+            setupHero(products);
+            render();
         });
         setupHero([]);
         loadProducts();

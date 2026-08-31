@@ -35,7 +35,16 @@ export function openProductDB() {
             };
 
             request.onsuccess = (event) => {
-                resolve(event.target.result);
+                const db = event.target.result;
+                if (db) {
+                    db.onversionchange = () => {
+                        try {
+                            db.close();
+                        } catch (e) {}
+                        dbPromise = null;
+                    };
+                }
+                resolve(db);
             };
 
             request.onerror = (event) => {
@@ -245,22 +254,181 @@ export async function fetchQueryLazy(queryKey, fetcherFn) {
     return result;
 }
 
-/**
- * Clear all cache data (useful on manual sync or admin updates)
- */
+export async function closeProductDB() {
+    if (dbPromise) {
+        try {
+            const db = await dbPromise;
+            if (db && typeof db.close === "function") {
+                db.close();
+            }
+        } catch (err) {
+            console.warn("Error closing IndexedDB:", err);
+        }
+        dbPromise = null;
+    }
+}
+
 export async function clearAllProductCache() {
-    const db = await openProductDB();
-    if (!db) return;
+    try {
+        const db = await openProductDB();
+        if (db) {
+            await new Promise((resolve) => {
+                try {
+                    const tx = db.transaction([STORE_PRODUCTS, STORE_QUERIES], "readwrite");
+                    tx.objectStore(STORE_PRODUCTS).clear();
+                    tx.objectStore(STORE_QUERIES).clear();
+                    tx.oncomplete = () => resolve(true);
+                    tx.onerror = () => resolve(false);
+                } catch (err) {
+                    resolve(false);
+                }
+            });
+        }
+    } catch (e) {}
+
+    await closeProductDB();
 
     return new Promise((resolve) => {
         try {
-            const tx = db.transaction([STORE_PRODUCTS, STORE_QUERIES], "readwrite");
-            tx.objectStore(STORE_PRODUCTS).clear();
-            tx.objectStore(STORE_QUERIES).clear();
-            tx.oncomplete = () => resolve(true);
-            tx.onerror = () => resolve(false);
+            if (typeof indexedDB === "undefined") return resolve(true);
+            const req = indexedDB.deleteDatabase(DB_NAME);
+            req.onsuccess = () => resolve(true);
+            req.onerror = () => resolve(false);
+            req.onblocked = () => resolve(true);
         } catch (err) {
             resolve(false);
         }
     });
+}
+
+export async function clearAllCache() {
+    const results = {
+        indexedDB: false,
+        caches: false,
+        serviceWorkers: false,
+        sessionStorage: false,
+        localStorage: false
+    };
+
+    try {
+        await clearAllProductCache();
+
+        if (typeof indexedDB !== "undefined" && typeof indexedDB.databases === "function") {
+            try {
+                const dbs = await indexedDB.databases();
+                for (const dbInfo of (dbs || [])) {
+                    if (!dbInfo || !dbInfo.name) continue;
+                    if (
+                        dbInfo.name.includes("firebaseLocalStorageDb") ||
+                        dbInfo.name.includes("firebase-heartbeat")
+                    ) {
+                        continue;
+                    }
+                    if (dbInfo.name === DB_NAME || dbInfo.name.toLowerCase().includes("cache")) {
+                        indexedDB.deleteDatabase(dbInfo.name);
+                    }
+                }
+            } catch (e) {}
+        }
+        results.indexedDB = true;
+    } catch (err) {
+        console.warn("Error clearing IndexedDB cache:", err);
+    }
+
+    try {
+        if (typeof window !== "undefined" && "caches" in window && window.caches) {
+            const keys = await window.caches.keys();
+            await Promise.all(keys.map((k) => window.caches.delete(k)));
+            results.caches = true;
+        }
+    } catch (err) {
+        console.warn("Error clearing CacheStorage:", err);
+    }
+
+    try {
+        if (typeof navigator !== "undefined" && "serviceWorker" in navigator && navigator.serviceWorker) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(registrations.map((reg) => reg.unregister()));
+            results.serviceWorkers = true;
+        }
+    } catch (err) {
+        console.warn("Error unregistering service workers:", err);
+    }
+
+    try {
+        if (typeof sessionStorage !== "undefined") {
+            sessionStorage.clear();
+            results.sessionStorage = true;
+        }
+    } catch (err) {
+        console.warn("Error clearing sessionStorage:", err);
+    }
+
+    try {
+        if (typeof localStorage !== "undefined") {
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key) {
+                    const lower = key.toLowerCase();
+                    if (
+                        lower.includes("cache") ||
+                        key === "heliomedDeliverySettings"
+                    ) {
+                        keysToRemove.push(key);
+                    }
+                }
+            }
+            keysToRemove.forEach((k) => localStorage.removeItem(k));
+            results.localStorage = true;
+        }
+    } catch (err) {
+        console.warn("Error clearing localStorage cache keys:", err);
+    }
+
+    return results;
+}
+
+let isClearing = false;
+
+export function setupCacheClearShortcut() {
+    if (typeof window === "undefined" || window.__heliomedCacheShortcutBound) return;
+    window.__heliomedCacheShortcutBound = true;
+
+    window.addEventListener("keydown", async (event) => {
+        const isCtrlOrCmd = event.ctrlKey || event.metaKey;
+        const isRKey = event.key === "R" || event.key === "r" || event.code === "KeyR";
+        const isF5Key = event.key === "F5" || event.code === "F5";
+        const isClearCacheShortcut = (isCtrlOrCmd && event.shiftKey && isRKey) || (isCtrlOrCmd && isF5Key);
+
+        if (!isClearCacheShortcut) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (isClearing) return;
+        isClearing = true;
+
+        try {
+            await clearAllCache();
+        } catch (err) {
+            console.error("[Heliomed] Error clearing cache:", err);
+        }
+
+        setTimeout(() => {
+            if (typeof window !== "undefined" && window.location && typeof window.location.reload === "function") {
+                window.location.reload();
+            }
+        }, 80);
+    }, { capture: true });
+}
+
+if (typeof window !== "undefined") {
+    window.HeliomedCache = {
+        clearAll: clearAllCache,
+        clearProducts: clearAllProductCache,
+        closeDB: closeProductDB,
+        setupShortcut: setupCacheClearShortcut
+    };
+    setupCacheClearShortcut();
 }

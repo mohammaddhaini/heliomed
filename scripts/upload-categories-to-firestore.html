@@ -70,12 +70,35 @@
     <main>
         <h1>Upload category tree</h1>
         <p>This imports the storefront header taxonomy into the Firestore <strong>categories</strong> collection. Existing matching top-level category documents are updated.</p>
-        <button id="uploadButton" type="button">Upload categories</button>
-        <pre id="log">Ready.</pre>
+        
+        <div id="authSection" style="background:#FFFDF9; border:1px solid #E5DDD0; border-left:4px solid var(--gold); border-radius:8px; padding:14px 18px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div id="authPrompt">
+                <div style="font-weight:700; font-size:13px;">Admin Login Required</div>
+                <div style="font-size:12px; color:#64748B;">Please log in with your Admin account to write to Firestore.</div>
+            </div>
+            <form id="authForm" style="display:flex; gap:8px;">
+                <input type="email" id="adminEmail" placeholder="Admin Email" required style="height:36px; padding:0 10px; border:1px solid #CBD5E1; border-radius:6px; font-size:13px;">
+                <input type="password" id="adminPassword" placeholder="Password" required style="height:36px; padding:0 10px; border:1px solid #CBD5E1; border-radius:6px; font-size:13px;">
+                <button type="submit" id="signInBtn" style="height:36px; padding:0 14px; background:var(--gold); color:#fff; border:0; border-radius:6px; font-weight:700; cursor:pointer;">Sign In</button>
+            </form>
+            <div id="authSuccess" style="display:none; align-items:center; justify-content:space-between; width:100%;">
+                <span style="font-weight:700; color:#15803D;">✓ Authenticated: <strong id="userEmailBadge" style="color:#0F172A;"></strong></span>
+                <button type="button" id="signOutBtn" style="height:32px; padding:0 12px; background:#E2E8F0; border:0; border-radius:6px; cursor:pointer; font-size:12px;">Sign Out</button>
+            </div>
+        </div>
+
+        <button id="uploadButton" type="button" disabled>Sign in above to enable Upload</button>
+        <pre id="log">Please sign in with your Admin account above before uploading categories.</pre>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
         import {
             getFirestore,
             writeBatch,
@@ -94,9 +117,60 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
+
+        const authForm = document.getElementById("authForm");
+        const authPrompt = document.getElementById("authPrompt");
+        const authSuccess = document.getElementById("authSuccess");
+        const userEmailBadge = document.getElementById("userEmailBadge");
+        const signInBtn = document.getElementById("signInBtn");
+        const signOutBtn = document.getElementById("signOutBtn");
+        const adminEmail = document.getElementById("adminEmail");
+        const adminPassword = document.getElementById("adminPassword");
         const uploadButton = document.getElementById("uploadButton");
         const logOutput = document.getElementById("log");
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                authPrompt.style.display = "none";
+                authForm.style.display = "none";
+                authSuccess.style.display = "flex";
+                userEmailBadge.textContent = user.email;
+                uploadButton.disabled = false;
+                uploadButton.textContent = "Upload categories";
+                logOutput.textContent = "Ready. Authenticated as " + user.email + ".";
+            } else {
+                authPrompt.style.display = "block";
+                authForm.style.display = "flex";
+                authSuccess.style.display = "none";
+                uploadButton.disabled = true;
+                uploadButton.textContent = "Sign in above to enable Upload";
+                logOutput.textContent = "Please sign in with your Admin credentials above.";
+            }
+        });
+
+        authForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            signInBtn.disabled = true;
+            signInBtn.textContent = "Signing In...";
+            try {
+                await signInWithEmailAndPassword(auth, adminEmail.value.trim(), adminPassword.value);
+                log("Signed in as " + adminEmail.value.trim());
+            } catch (err) {
+                console.error(err);
+                alert("Sign-in failed: " + err.message);
+                log("Sign-in failed: " + err.message);
+            } finally {
+                signInBtn.disabled = false;
+                signInBtn.textContent = "Sign In";
+            }
+        });
+
+        signOutBtn.addEventListener("click", () => signOut(auth));
 
         const categories = [
             {

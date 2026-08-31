@@ -1,20 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/x-icon" href="icon.ico?v=2">
+    <script>
+        (function () {
+            const lang = localStorage.getItem("heliomed_lang") === "ar" ? "ar" : "en";
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        }());
+    </script>
     <link rel="icon" type="image/ico" href="icon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Track My Order | Heliomed</title>
     <meta name="description" content="Track your Heliomed order status.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
     <style>
         :root {
-            --brand-blue: #1D5F73;
-            --brand-pink: #C2A26B;
+            --pearl-aqua: #A2D8D2;
+            --pearl-aqua-deep: #146B66;
+            --pearl-aqua-hover: #0E5652;
+            --pearl-aqua-soft: #F0F8F7;
+            --pearl-aqua-border: #CCE8E5;
+
+            --brand-blue: #146B66;
+            --brand-blue-hover: #0E5652;
+            --brand-pink: #A2D8D2;
             --brand-dark: #07111F;
-            --brand-soft-blue: #FBF7F0;
-            --brand-soft-pink: #F8F2E8;
-            --brand-border: #E8DCC8;
+            --brand-soft-blue: #F0F8F7;
+            --brand-soft-pink: #F0F8F7;
+            --brand-border: #CCE8E5;
             --muted: #5d6d69;
         }
         * { box-sizing: border-box; }
@@ -107,7 +125,7 @@
         }
         .input-row {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) auto;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
             gap: 10px;
         }
         .track-form input {
@@ -117,6 +135,8 @@
             padding: 0 14px;
             color: var(--brand-dark);
             font-weight: 800;
+            font-size: 16px;
+            border-radius: 4px;
             outline: none;
         }
         .track-form input:focus {
@@ -341,6 +361,8 @@
     </style>
     <link rel="stylesheet" href="./responsive.css">
     <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./rtl.css">
+    <script src="./i18n.js"></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -351,16 +373,16 @@
                 </a>
             </div>
     
-            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-navigation" aria-expanded="false">
+            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" data-i18n-aria="common.openMenu" aria-controls="primary-navigation" aria-expanded="false">
                 <span class="hamburger-bar"></span>
                 <span class="hamburger-bar"></span>
                 <span class="hamburger-bar"></span>
             </button>
     
-            <ul class="nav-links" id="primary-navigation">
+            <ul class="nav-links" id="primary-navigation" data-i18n-static-text>
                 <li class="nav-panel-header" aria-hidden="true">
-                    <span class="nav-panel-title">MENU</span>
-                    <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
+                    <span class="nav-panel-title" data-i18n="nav.menu">MENU</span>
+                    <button class="nav-panel-close" type="button" aria-label="Close menu" data-i18n-aria="common.closeMenu"><i class="fas fa-times"></i></button>
                 </li>
                 <li class="nav-item">
                     <a href="./collection.html?collection=parapharmacy" class="nav-trigger">PARAPHARMACY <i class="fas fa-chevron-down"></i></a>
@@ -481,16 +503,16 @@
     
             <div class="header-actions">
                 <div class="search-box">
-                    <input type="text" placeholder="Search for products">
+                    <input type="text" placeholder="Search for products" data-i18n-placeholder="common.searchPlaceholder">
                     <i class="fas fa-search"></i>
                 </div>
                 <div class="header-icons">
-                    <a href="./account.html" aria-label="Open account"><i class="far fa-user"></i></a>
-                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist">
+                    <a href="./account.html" aria-label="Open account" data-i18n-aria="common.openAccount"><i class="far fa-user"></i></a>
+                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist" data-i18n-aria="common.openWishlist">
                         <i class="far fa-heart"></i>
                         <span class="wishlist-count">0</span>
                     </a>
-                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart">
+                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart" data-i18n-aria="common.shoppingCart">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
                     </a>
@@ -501,14 +523,15 @@
     <main>
         <section class="track-hero">
             <div>
-                <h1>Track My Order</h1>
-                <p class="hero-copy">Enter your order number to see the current status, items, payment, delivery details and total.</p>
+                <h1 data-i18n="track.title">Track My Order</h1>
+                <p class="hero-copy" data-i18n="track.heroCopy">Enter your order number to see the current status, items, payment, delivery details and total.</p>
             </div>
             <form class="track-form" id="trackForm">
-                <label for="orderInput">Order number</label>
+                <label for="orderInput" data-i18n="track.orderNumber">Order number</label>
                 <div class="input-row">
                     <input id="orderInput" type="text" placeholder="HM-20260815-12345" autocomplete="off" required>
-                    <button type="submit"><i class="fas fa-location-arrow"></i> Track</button>
+                    <input id="phoneInput" type="tel" placeholder="Phone number" aria-label="Phone number" autocomplete="tel" data-i18n-placeholder="account.phone" data-i18n-aria="account.phone" required>
+                    <button type="submit"><i class="fas fa-location-arrow"></i> <span data-i18n="track.track">Track</span></button>
                 </div>
                 <p class="status-message" id="statusMessage"></p>
             </form>
@@ -527,73 +550,76 @@
 
                 <div class="progress" id="statusProgress"></div>
 
-                <h2>Order Details</h2>
+                <h2 data-i18n="order.details">Order Details</h2>
                 <div class="detail-grid">
                     <div class="detail-box">
-                        <span class="detail-label">Customer</span>
+                        <span class="detail-label" data-i18n="order.customer">Customer</span>
                         <p class="detail-value" id="customerDetails"></p>
                     </div>
                     <div class="detail-box">
-                        <span class="detail-label">Payment</span>
+                        <span class="detail-label" data-i18n="order.payment">Payment</span>
                         <p class="detail-value" id="paymentDetails"></p>
                     </div>
                     <div class="detail-box">
-                        <span class="detail-label">Delivery Address</span>
+                        <span class="detail-label" data-i18n="checkout.deliveryAddress">Delivery Address</span>
                         <p class="detail-value" id="addressDetails"></p>
                     </div>
                     <div class="detail-box">
-                        <span class="detail-label">Delivery Area</span>
+                        <span class="detail-label" data-i18n="track.deliveryArea">Delivery Area</span>
                         <p class="detail-value" id="areaDetails"></p>
                     </div>
                 </div>
 
-                <h2>Products</h2>
+                <h2 data-i18n="order.products">Products</h2>
                 <div id="orderItems"></div>
                 <div class="action-row">
-                    <a class="action-link secondary" href="./account.html">Account</a>
-                    <a class="action-link" href="./search.html">Shop More</a>
+                    <a class="action-link secondary" href="./account.html" data-i18n="account.title">Account</a>
+                    <a class="action-link" href="./search.html" data-i18n="track.shopMore">Shop More</a>
                 </div>
             </section>
 
             <aside class="panel">
-                <h2>Total</h2>
+                <h2 data-i18n="cart.total">Total</h2>
                 <div class="summary-line">
-                    <span>Items</span>
+                    <span data-i18n="cart.itemsLabel">Items</span>
                     <strong id="summaryCount">0</strong>
                 </div>
                 <div class="summary-line">
-                    <span>Subtotal</span>
+                    <span data-i18n="cart.subtotal">Subtotal</span>
                     <strong id="summarySubtotal">$0.00</strong>
                 </div>
                 <div class="summary-line" id="discountLine" hidden>
-                    <span>Discount</span>
+                    <span data-i18n="checkout.discount">Discount</span>
                     <strong id="summaryDiscount">-$0.00</strong>
                 </div>
                 <div class="summary-line">
-                    <span>Delivery</span>
+                    <span data-i18n="checkout.delivery">Delivery</span>
                     <strong id="summaryDelivery">$0.00</strong>
                 </div>
                 <div class="summary-line total">
-                    <span>Total</span>
+                    <span data-i18n="cart.total">Total</span>
                     <span id="summaryTotal">$0.00</span>
                 </div>
             </aside>
         </section>
     </main>
-
     <script src="./cart.js"></script>
     <script src="./wishlist.js"></script>
     <script type="module">
-        import { auth, db } from "./firebase-init.js";
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { functions } from "./firebase-init.js";
+        import { httpsCallable } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-functions.js";
 
         const form = document.getElementById("trackForm");
         const orderInput = document.getElementById("orderInput");
+        const phoneInput = document.getElementById("phoneInput");
         const statusMessage = document.getElementById("statusMessage");
         const orderResult = document.getElementById("orderResult");
         const statusSteps = ["Order received", "Confirmation / processing", "Fulfillment", "Shipping", "Delivered / paid"];
-        let currentUser = null;
+        const trackOrder = httpsCallable(functions, "trackOrder");
+
+        function t(key, fallback) {
+            return window.HeliomedI18n?.t ? window.HeliomedI18n.t(key, fallback) : fallback;
+        }
 
         function escapeHtml(value) {
             return String(value ?? "").replace(/[&<>"']/g, function (char) {
@@ -607,6 +633,17 @@
 
         function normalizeOrderNumber(value) {
             return String(value || "").trim().toUpperCase();
+        }
+
+        function savedPhoneForOrder(orderNumber) {
+            try {
+                const orders = JSON.parse(localStorage.getItem("heliomedOrders") || "[]");
+                const order = orders.find(function (item) { return item.id === orderNumber; })
+                    || JSON.parse(localStorage.getItem("heliomedLastOrder") || "null");
+                return order?.id === orderNumber ? order.customer?.phone || "" : "";
+            } catch (error) {
+                return "";
+            }
         }
 
         function timestampText(value) {
@@ -627,16 +664,16 @@
             const cancelled = status === "Cancelled";
             document.getElementById("statusProgress").innerHTML = statusSteps.map(function (step, index) {
                 const state = cancelled ? "" : (index < current ? " done" : index === current ? " active" : "");
-                return '<div class="progress-step' + state + '"><strong>' + escapeHtml(step) + '</strong></div>';
+                return '<div class="progress-step' + state + '"><strong>' + escapeHtml(t("track.step." + index, step)) + '</strong></div>';
             }).join("");
         }
 
         function renderOrder(order) {
             const status = order.status || "Order received";
             document.title = order.id + " | Track My Order | Heliomed";
-            document.getElementById("orderTitle").textContent = status === "Cancelled" ? "Order cancelled" : "Order status";
-            document.getElementById("orderId").textContent = "Order " + order.id;
-            document.getElementById("updatedText").textContent = timestampText(order.updatedAt) ? "Updated " + timestampText(order.updatedAt) : "";
+            document.getElementById("orderTitle").textContent = status === "Cancelled" ? t("track.orderCancelled", "Order cancelled") : t("track.orderStatus", "Order status");
+            document.getElementById("orderId").textContent = t("order.orderPrefix", "Order") + " " + order.id;
+            document.getElementById("updatedText").textContent = timestampText(order.updatedAt) ? t("track.updated", "Updated") + " " + timestampText(order.updatedAt) : "";
             const pill = document.getElementById("statusPill");
             pill.textContent = status;
             pill.className = "status-pill" + (status === "Cancelled" ? " cancelled" : "");
@@ -651,10 +688,10 @@
             document.getElementById("addressDetails").innerHTML =
                 escapeHtml(address.street || "") +
                 (address.building ? "<br>" + escapeHtml(address.building) : "") +
-                (address.floor ? "<br>Floor " + escapeHtml(address.floor) : "") +
+                (address.floor ? "<br>" + escapeHtml(t("checkout.floorPlain", "Floor")) + " " + escapeHtml(address.floor) : "") +
                 (address.city ? "<br>" + escapeHtml(address.city) : "") +
                 (address.notes ? "<br>" + escapeHtml(address.notes) : "");
-            document.getElementById("areaDetails").textContent = address.areaLabel || address.area || "Lebanon";
+            document.getElementById("areaDetails").textContent = address.areaLabel || address.area || t("checkout.lebanon", "Lebanon");
 
             document.getElementById("summaryCount").textContent = order.itemCount || (order.items || []).reduce(function (sum, item) {
                 return sum + Number(item.quantity || 1);
@@ -662,7 +699,7 @@
             document.getElementById("summarySubtotal").textContent = formatMoney(order.subtotal || 0);
             document.getElementById("summaryDiscount").textContent = "-" + formatMoney(order.discountAmount || 0);
             document.getElementById("discountLine").hidden = !(order.discountAmount > 0);
-            document.getElementById("summaryDelivery").textContent = Number(order.delivery || 0) === 0 ? "Free" : formatMoney(order.delivery || 0);
+            document.getElementById("summaryDelivery").textContent = Number(order.delivery || 0) === 0 ? t("checkout.free", "Free") : formatMoney(order.delivery || 0);
             document.getElementById("summaryTotal").textContent = formatMoney(order.total || 0);
             document.getElementById("orderItems").innerHTML = (order.items || []).map(function (item) {
                 const lineTotal = Number(item.price || 0) * Number(item.quantity || 1);
@@ -673,59 +710,49 @@
                     '<div class="item-image">' + image + '</div>' +
                     '<div>' +
                         '<p class="item-title">' + escapeHtml(item.title || "Product") + '</p>' +
-                        '<div class="item-meta">Qty ' + escapeHtml(item.quantity || 1) + ' - ' + escapeHtml(item.newPrice || formatMoney(item.price || 0)) + '</div>' +
+                        '<div class="item-meta">' + escapeHtml(t("cart.qty", "Qty")) + ' ' + escapeHtml(item.quantity || 1) + ' - ' + escapeHtml(item.newPrice || formatMoney(item.price || 0)) + '</div>' +
                     '</div>' +
                     '<div class="item-total">' + formatMoney(lineTotal) + '</div>' +
                 '</article>';
             }).join("");
             renderProgress(status);
             orderResult.classList.remove("hidden");
-            setMessage("Order found.", "success");
+            setMessage(t("track.orderFound", "Order found."), "success");
         }
 
-        async function loadOrder(orderNumber) {
+        async function loadOrder(orderNumber, phone) {
             const normalized = normalizeOrderNumber(orderNumber);
             if (!normalized) return;
-            if (!currentUser) {
-                setMessage("Sign in to track your orders.", "error");
-                orderResult.classList.add("hidden");
-                return;
-            }
+            const normalizedPhone = String(phone || "").trim();
+            if (!normalizedPhone) return;
             orderInput.value = normalized;
-            setMessage("Checking order...", "");
+            phoneInput.value = normalizedPhone;
+            setMessage(t("track.checkingOrder", "Checking order..."), "");
             orderResult.classList.add("hidden");
             try {
-                const snapshot = await getDoc(doc(db, "orders", normalized));
-                if (!snapshot.exists()) {
-                    setMessage("No order found with that number. Check the order number and try again.", "error");
-                    return;
-                }
-                const order = { id: snapshot.id, ...snapshot.data() };
+                const result = await trackOrder({ orderId: normalized, phone: normalizedPhone });
+                const order = result.data;
                 renderOrder(order);
                 const url = new URL(window.location.href);
                 url.searchParams.set("order", normalized);
                 window.history.replaceState({}, "", url.toString());
             } catch (error) {
                 console.error(error);
-                setMessage("Could not load the order right now. Try again in a moment.", "error");
+                setMessage(error?.message || t("track.notFound", "No order found with those details. Check the order number and phone number and try again."), "error");
             }
         }
 
         form.addEventListener("submit", function (event) {
             event.preventDefault();
-            loadOrder(orderInput.value);
+            loadOrder(orderInput.value, phoneInput.value);
         });
 
-        onAuthStateChanged(auth, function (user) {
-            currentUser = user;
-            if (!user) {
-                orderResult.classList.add("hidden");
-                setMessage("Sign in to track your orders.", "error");
-                return;
-            }
-            const requestedOrder = new URLSearchParams(window.location.search).get("order");
-            if (requestedOrder) loadOrder(requestedOrder);
-        });
+        const requestedOrder = normalizeOrderNumber(new URLSearchParams(window.location.search).get("order"));
+        if (requestedOrder) {
+            orderInput.value = requestedOrder;
+            phoneInput.value = savedPhoneForOrder(requestedOrder);
+            if (phoneInput.value) loadOrder(requestedOrder, phoneInput.value);
+        }
     </script>
     <script type="module" src="./navbar-categories.js"></script>
     <script src="./header.js"></script>

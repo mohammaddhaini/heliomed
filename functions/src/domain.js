@@ -33,6 +33,7 @@ const ALLOWED_STATUSES = new Set([
 const CHECKOUT_KEYS = new Set([
     "idempotencyKey", "items", "discountCode", "deliveryArea", "payment", "customer", "address"
 ]);
+const TRACKING_KEYS = new Set(["orderId", "phone"]);
 
 export class CheckoutError extends Error {
     constructor(code, message) {
@@ -40,6 +41,35 @@ export class CheckoutError extends Error {
         this.name = "CheckoutError";
         this.code = code;
     }
+}
+
+export function resolveDeliveryConfig(settings) {
+    if (settings && typeof settings === "object" && Array.isArray(settings.areas) && settings.areas.length > 0) {
+        const costs = new Map();
+        const labels = new Map();
+        for (const item of settings.areas) {
+            const val = String(item.value || item.id || "").trim().toLowerCase();
+            if (!val || item.active === false) continue;
+            const costCents = Math.max(0, Math.round(Number(item.cost ?? item.price ?? 0) * 100));
+            costs.set(val, costCents);
+            labels.set(val, String(item.label || item.name || val).trim());
+        }
+        const freeShippingCents = Number.isFinite(Number(settings.freeShippingThreshold))
+            ? Math.max(0, Math.round(Number(settings.freeShippingThreshold) * 100))
+            : FREE_SHIPPING_CENTS;
+        if (costs.size > 0) {
+            return {
+                costs,
+                labels,
+                freeShippingCents
+            };
+        }
+    }
+    return {
+        costs: DELIVERY_COSTS,
+        labels: DELIVERY_LABELS,
+        freeShippingCents: FREE_SHIPPING_CENTS
+    };
 }
 
 function fail(code, message) {
@@ -59,6 +89,13 @@ function text(value, field, maximum, required = true) {
     if (required && normalized.length === 0) fail("invalid-argument", `${field} is required.`);
     if (normalized.length > maximum) fail("invalid-argument", `${field} is too long.`);
     return normalized;
+}
+
+export function normalizePhoneForMatch(value) {
+    let digits = String(value || "").replace(/\D/g, "");
+    if (digits.startsWith("00")) digits = digits.slice(2);
+    if (digits.startsWith("961") && digits.length > 8) digits = digits.slice(3);
+    return digits.replace(/^0+/, "");
 }
 
 function cartItem(value) {
@@ -93,7 +130,7 @@ function addressInput(value, deliveryArea) {
     };
 }
 
-export function parseCheckoutInput(value) {
+export function parseCheckoutInput(value, deliveryConfig = null) {
     const input = record(value, "checkout");
     if (Object.keys(input).some((key) => !CHECKOUT_KEYS.has(key))) {
         fail("invalid-argument", "Checkout contains untrusted fields.");
@@ -106,7 +143,10 @@ export function parseCheckoutInput(value) {
         fail("invalid-argument", "idempotencyKey is invalid.");
     }
     const deliveryArea = text(input.deliveryArea, "deliveryArea", 80).toLowerCase();
-    if (!DELIVERY_COSTS.has(deliveryArea)) fail("invalid-argument", "Unknown delivery area.");
+    if (deliveryConfig) {
+        const config = resolveDeliveryConfig(deliveryConfig);
+        if (!config.costs.has(deliveryArea)) fail("invalid-argument", "Unknown delivery area.");
+    }
     const payment = text(input.payment, "payment", 80);
     if (!ALLOWED_PAYMENTS.has(payment)) fail("invalid-argument", "Unknown payment method.");
     const customer = record(input.customer, "customer");
@@ -122,6 +162,18 @@ export function parseCheckoutInput(value) {
         },
         address: addressInput(input.address, deliveryArea)
     };
+}
+
+export function parseTrackingInput(value) {
+    const input = record(value, "tracking request");
+    if (Object.keys(input).some((key) => !TRACKING_KEYS.has(key))) {
+        fail("invalid-argument", "Tracking request contains untrusted fields.");
+    }
+    const orderId = text(input.orderId, "orderId", 80).toUpperCase();
+    if (!/^HM-[0-9]{8}-[A-Z0-9]{5,20}$/.test(orderId)) fail("invalid-argument", "orderId is invalid.");
+    const phone = text(input.phone, "phone", 40);
+    if (normalizePhoneForMatch(phone).length < 7) fail("invalid-argument", "phone is invalid.");
+    return { orderId, phone };
 }
 
 function cents(value, field) {
@@ -240,7 +292,7 @@ function normalizedDiscount(discount, requestedCode, subtotal) {
     };
 }
 
-export function priceCheckout({ checkout, medicines, discount }) {
+export function priceCheckout({ checkout, medicines, discount, deliveryConfig = null }) {
     const medicineStates = new Map();
     const pricedInputs = [];
 
@@ -324,8 +376,11 @@ export function priceCheckout({ checkout, medicines, discount }) {
         };
     });
     const subtotal = items.reduce((sum, item) => sum + Math.round(item.price * 100) * item.quantity, 0);
+    const config = resolveDeliveryConfig(deliveryConfig);
     const appliedDiscount = normalizedDiscount(discount, checkout.discountCode, subtotal);
-    let delivery = subtotal >= FREE_SHIPPING_CENTS || appliedDiscount?.freeShipping ? 0 : DELIVERY_COSTS.get(checkout.deliveryArea);
+    let delivery = subtotal >= config.freeShippingCents || appliedDiscount?.freeShipping
+        ? 0
+        : (config.costs.get(checkout.deliveryArea) ?? 0);
     let discountAmount = 0;
     if (appliedDiscount?.type === "percent" || appliedDiscount?.type === "percentage") {
         discountAmount = Math.min(subtotal, Math.round(subtotal * appliedDiscount.value / 100));
@@ -358,9 +413,11 @@ export function fingerprintCheckout(userId, checkout) {
     return createHash("sha256").update(JSON.stringify(canonical({ userId, checkout }))).digest("hex");
 }
 
-export function getDeliveryAreaDetails(value) {
-    if (!DELIVERY_COSTS.has(value)) fail("invalid-argument", "Unknown delivery area.");
-    return { value, label: DELIVERY_LABELS.get(value), cost: DELIVERY_COSTS.get(value) / 100 };
+export function getDeliveryAreaDetails(value, deliveryConfig = null) {
+    const config = resolveDeliveryConfig(deliveryConfig);
+    const key = String(value || "").toLowerCase();
+    if (!config.costs.has(key)) fail("invalid-argument", "Unknown delivery area.");
+    return { value: key, label: config.labels.get(key) || key, cost: (config.costs.get(key) ?? 0) / 100 };
 }
 
 export function parseStatusUpdate(value) {

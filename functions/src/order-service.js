@@ -4,9 +4,12 @@ import {
     CheckoutError,
     fingerprintCheckout,
     getDeliveryAreaDetails,
+    normalizePhoneForMatch,
     parseCheckoutInput,
+    parseTrackingInput,
     parseStatusUpdate,
-    priceCheckout
+    priceCheckout,
+    resolveDeliveryConfig
 } from "./domain.js";
 
 function requireAuth(auth) {
@@ -14,8 +17,21 @@ function requireAuth(auth) {
     return auth;
 }
 
-function idempotencyId(userId, key) {
-    return createHash("sha256").update(`${userId}\0${key}`).digest("hex");
+function checkoutActorId(auth, checkout) {
+    if (auth?.uid) return `user:${auth.uid}`;
+    return guestActorId(checkout.customer.phone);
+}
+
+function guestActorId(phone) {
+    return `guest:${createHash("sha256").update(normalizePhoneForMatch(phone)).digest("hex")}`;
+}
+
+function guestThrottleId(phone) {
+    return createHash("sha256").update(guestActorId(phone)).digest("hex");
+}
+
+function idempotencyId(actorId, key) {
+    return createHash("sha256").update(`${actorId}\0${key}`).digest("hex");
 }
 
 function dollars(value) {
@@ -105,11 +121,11 @@ function openOrderCount(throttle) {
     return Number.isInteger(count) && count > 0 ? count : 0;
 }
 
-function canonicalOrder({ auth, checkout, priced, orderId, createdAt }) {
-    const area = getDeliveryAreaDetails(checkout.deliveryArea);
+function canonicalOrder({ auth, checkout, priced, orderId, createdAt, deliveryConfig = null }) {
+    const area = getDeliveryAreaDetails(checkout.deliveryArea, deliveryConfig);
     return {
         id: orderId,
-        userId: auth.uid,
+        userId: auth?.uid || "",
         createdAt,
         updatedAt: createdAt,
         status: "Order received",
@@ -126,24 +142,26 @@ function canonicalOrder({ auth, checkout, priced, orderId, createdAt }) {
         customer: {
             name: checkout.customer.name,
             phone: checkout.customer.phone,
-            email: String(auth.token?.email ?? "")
+            email: String(auth?.token?.email ?? "")
         },
         address: { ...checkout.address, areaLabel: area.label }
     };
 }
 
 export async function createOrder({ db, auth: authValue, data, now, makeOrderId }) {
-    const auth = requireAuth(authValue);
+    const auth = authValue || null;
     const checkout = parseCheckoutInput(data);
-    const fingerprint = fingerprintCheckout(auth.uid, checkout);
-    const idempotencyRef = db.collection("orderIdempotency").doc(idempotencyId(auth.uid, checkout.idempotencyKey));
-    const throttleRef = db.collection("checkoutThrottle").doc(auth.uid);
+    const actorId = checkoutActorId(auth, checkout);
+    const fingerprint = fingerprintCheckout(auth?.uid || actorId, checkout);
+    const idempotencyRef = db.collection("orderIdempotency").doc(idempotencyId(auth?.uid || actorId, checkout.idempotencyKey));
+    const throttleRef = db.collection("checkoutThrottle").doc(auth?.uid || guestThrottleId(checkout.customer.phone));
 
     return db.runTransaction(async (transaction) => {
         const [idempotencySnapshot, throttleSnapshot] = await transaction.getAll(idempotencyRef, throttleRef);
         if (idempotencySnapshot.exists) {
             const replay = idempotencySnapshot.data();
-            if (replay.userId !== auth.uid || replay.fingerprint !== fingerprint) {
+            const replayActorId = replay.actorId || (replay.userId ? `user:${replay.userId}` : "");
+            if (replayActorId !== actorId || replay.fingerprint !== fingerprint) {
                 throw new CheckoutError("already-exists", "This checkout key was already used for different details.");
             }
             const orderSnapshot = await transaction.get(db.collection("orders").doc(replay.orderId));
@@ -171,13 +189,19 @@ export async function createOrder({ db, auth: authValue, data, now, makeOrderId 
         const discountRef = checkout.discountCode
             ? db.collection("discountCodes").doc(checkout.discountCode)
             : null;
-        const refs = discountRef ? [...medicineRefs, discountRef] : medicineRefs;
+        const deliverySettingsRef = db.collection("settings").doc("delivery");
+        const refs = discountRef
+            ? [...medicineRefs, discountRef, deliverySettingsRef]
+            : [...medicineRefs, deliverySettingsRef];
         const snapshots = await transaction.getAll(...refs);
         const medicines = medicineSnapshots(snapshots.slice(0, medicineRefs.length), medicineRefs);
-        const discountSnapshot = discountRef ? snapshots.at(-1) : null;
+        const discountSnapshot = discountRef ? snapshots[medicineRefs.length] : null;
         const discount = discountSnapshot?.exists ? discountSnapshot.data() : null;
-        const priced = priceCheckout({ checkout, medicines, discount });
-        const order = canonicalOrder({ auth, checkout, priced, orderId: makeOrderId(), createdAt });
+        const deliverySettingsSnapshot = snapshots.at(-1);
+        const deliverySettings = deliverySettingsSnapshot?.exists ? deliverySettingsSnapshot.data() : null;
+        const deliveryConfig = resolveDeliveryConfig(deliverySettings);
+        const priced = priceCheckout({ checkout, medicines, discount, deliveryConfig });
+        const order = canonicalOrder({ auth, checkout, priced, orderId: makeOrderId(), createdAt, deliveryConfig });
         const medicineRefById = new Map(medicineRefs.map((ref) => [ref.id, ref]));
 
         for (const update of priced.inventoryUpdates) {
@@ -191,13 +215,15 @@ export async function createOrder({ db, auth: authValue, data, now, makeOrderId 
         }
         transaction.create(db.collection("orders").doc(order.id), order);
         transaction.create(idempotencyRef, {
-            userId: auth.uid,
+            actorId,
+            userId: auth?.uid || "",
             fingerprint,
             orderId: order.id,
             createdAt
         });
         const throttleRecord = {
-            userId: auth.uid,
+            actorId,
+            userId: auth?.uid || "",
             fingerprint,
             orderId: order.id,
             lastCreatedAt: createdAt,
@@ -209,6 +235,24 @@ export async function createOrder({ db, auth: authValue, data, now, makeOrderId 
             transaction.create(throttleRef, throttleRecord);
         }
         return order;
+    });
+}
+
+export async function trackOrder({ db, data }) {
+    const request = parseTrackingInput(data);
+
+    return db.runTransaction(async (transaction) => {
+        const orderRef = db.collection("orders").doc(request.orderId);
+        const orderSnapshot = await transaction.get(orderRef);
+        if (!orderSnapshot.exists) throw new CheckoutError("not-found", "Order not found.");
+
+        const order = orderSnapshot.data();
+        const expectedPhone = normalizePhoneForMatch(order?.customer?.phone);
+        const requestedPhone = normalizePhoneForMatch(request.phone);
+        if (!expectedPhone || expectedPhone !== requestedPhone) {
+            throw new CheckoutError("permission-denied", "Order number and phone number do not match.");
+        }
+        return { id: orderSnapshot.id, ...order };
     });
 }
 
@@ -241,6 +285,9 @@ export async function updateOrderStatus({ db, auth: authValue, data, now }) {
             const orderUserId = String(order.userId || "").trim();
             if (orderUserId) {
                 throttleRef = db.collection("checkoutThrottle").doc(orderUserId);
+                throttleSnapshot = await transaction.get(throttleRef);
+            } else if (order?.customer?.phone) {
+                throttleRef = db.collection("checkoutThrottle").doc(guestThrottleId(order.customer.phone));
                 throttleSnapshot = await transaction.get(throttleRef);
             }
         }

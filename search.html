@@ -1,22 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/x-icon" href="icon.ico?v=2">
+    <script>
+        (function () {
+            var lang = localStorage.getItem("heliomed_lang") === "ar" ? "ar" : "en";
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        })();
+    </script>
     <link rel="icon" type="image/ico" href="icon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search | Heliomed</title>
     <meta name="description" content="Search Heliomed products.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
     <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./rtl.css">
     <link rel="stylesheet" href="./responsive.css">
     <style>
         :root {
-            --brand-blue: #1D5F73;
-            --brand-pink: #C2A26B;
+            --pearl-aqua: #A2D8D2;
+            --pearl-aqua-deep: #146B66;
+            --pearl-aqua-hover: #0E5652;
+            --pearl-aqua-soft: #F0F8F7;
+            --pearl-aqua-border: #CCE8E5;
+
+            --brand-blue: #146B66;
+            --brand-blue-hover: #0E5652;
+            --brand-pink: #A2D8D2;
             --brand-dark: #07111F;
-            --brand-soft-blue: #FBF7F0;
-            --brand-soft-pink: #F8F2E8;
-            --brand-border: #E8DCC8;
+            --brand-soft-blue: #F0F8F7;
+            --brand-soft-pink: #F0F8F7;
+            --brand-border: #CCE8E5;
         }
 
         * { box-sizing: border-box; }
@@ -27,6 +46,8 @@
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
         a { color: inherit; text-decoration: none; }
+        button, input, select, textarea { font: inherit; }
+        input:not([type="checkbox"]):not([type="radio"]), select, textarea { font-size: 16px; }
 
         main {
             width: min(1320px, calc(100% - 28px));
@@ -409,6 +430,74 @@
         }
         .empty-state.visible { display: block; }
 
+        .pagination-wrap {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            margin-top: 36px;
+            padding-top: 24px;
+            border-top: 1px solid var(--brand-border);
+        }
+        .pagination-wrap.visible {
+            display: flex;
+        }
+        .pagination-info {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .pagination-btn {
+            min-width: 38px;
+            height: 38px;
+            padding: 0 10px;
+            border-radius: 6px;
+            border: 1px solid var(--brand-border);
+            background: #fff;
+            color: var(--brand-dark);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            border-color: var(--brand-blue);
+            color: var(--brand-blue);
+            background: var(--brand-soft-blue);
+        }
+        .pagination-btn.active {
+            background: var(--brand-blue);
+            border-color: var(--brand-blue);
+            color: #fff;
+            font-weight: 800;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+        .pagination-ellipsis {
+            padding: 0 4px;
+            color: #94a3b8;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        [dir="rtl"] .pagination-btn.prev i {
+            transform: rotate(180deg);
+        }
+        [dir="rtl"] .pagination-btn.next i {
+            transform: rotate(180deg);
+        }
+
         @media (max-width: 1120px) {
             .header { padding: 12px 18px; gap: 12px; }
             .nav-links { gap: 10px; }
@@ -551,6 +640,7 @@
             .results-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
     </style>
+    <script src="./i18n.js"></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -567,7 +657,7 @@
                 <span class="hamburger-bar"></span>
             </button>
     
-            <ul class="nav-links" id="primary-navigation">
+            <ul class="nav-links" id="primary-navigation" data-i18n-static-text>
                 <li class="nav-panel-header" aria-hidden="true">
                     <span class="nav-panel-title">MENU</span>
                     <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
@@ -691,7 +781,7 @@
     
             <div class="header-actions">
                 <div class="search-box">
-                    <input type="text" placeholder="Search for products">
+                    <input type="text" placeholder="Search for products" data-i18n-placeholder="search.placeholderForProducts">
                     <i class="fas fa-search"></i>
                 </div>
                 <div class="header-icons">
@@ -710,64 +800,65 @@
 
     <main>
         <div class="search-layout">
-            <aside class="filter-sidebar" id="filterSidebar" aria-label="Product filters">
+            <aside class="filter-sidebar" id="filterSidebar" aria-label="Product filters" data-i18n-aria="search.filters">
                 <div class="filter-panel-header">
-                    <span>Filters</span>
-                    <button class="close-filters" id="closeFilters" type="button" aria-label="Close filters"><i class="fas fa-times"></i></button>
+                    <span data-i18n="search.filters">Filters</span>
+                    <button class="close-filters" id="closeFilters" type="button" aria-label="Close filters" data-i18n-aria="search.closeFilters"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="side-search">
                     <div class="side-search-control">
-                        <input id="searchInput" type="search" autocomplete="off" placeholder="SEARCH" aria-label="Search products">
-                        <button class="clear-search" id="clearSearch" type="button" aria-label="Clear search">x</button>
+                        <input id="searchInput" type="search" autocomplete="off" placeholder="SEARCH" data-i18n-placeholder="search.inputPlaceholder" aria-label="Search products" data-i18n-aria="search.searchProducts">
+                        <button class="clear-search" id="clearSearch" type="button" aria-label="Clear search" data-i18n-aria="search.clearSearch">x</button>
                     </div>
                 </div>
                 <div class="filter-group" data-filter-group="category">
-                    <button class="filter-heading" type="button">Category <i class="fas fa-chevron-down"></i></button>
+                    <button class="filter-heading" type="button"><span data-i18n="collection.category">Category</span> <i class="fas fa-chevron-down"></i></button>
                     <div class="filter-body" id="categoryFilters"></div>
                 </div>
                 <div class="filter-group" data-filter-group="brand">
-                    <button class="filter-heading" type="button">Brand <i class="fas fa-chevron-down"></i></button>
+                    <button class="filter-heading" type="button"><span data-i18n="collection.brand">Brand</span> <i class="fas fa-chevron-down"></i></button>
                     <div class="filter-body" id="brandFilters"></div>
                 </div>
                 <div class="filter-group" data-filter-group="section">
-                    <button class="filter-heading" type="button">Section <i class="fas fa-chevron-down"></i></button>
+                    <button class="filter-heading" type="button"><span data-i18n="collection.section">Section</span> <i class="fas fa-chevron-down"></i></button>
                     <div class="filter-body" id="sectionFilters"></div>
                 </div>
                 <div class="filter-group" data-filter-group="offer">
-                    <button class="filter-heading" type="button">Offer <i class="fas fa-chevron-down"></i></button>
+                    <button class="filter-heading" type="button"><span data-i18n="collection.offer">Offer</span> <i class="fas fa-chevron-down"></i></button>
                     <div class="filter-body" id="offerFilters"></div>
                 </div>
                 <div class="filter-group" data-filter-group="price">
-                    <button class="filter-heading" type="button">Price <i class="fas fa-chevron-down"></i></button>
+                    <button class="filter-heading" type="button"><span data-i18n="collection.price">Price</span> <i class="fas fa-chevron-down"></i></button>
                     <div class="price-body">
-                        <input id="minPrice" type="number" min="0" step="0.01" placeholder="Min">
-                        <input id="maxPrice" type="number" min="0" step="0.01" placeholder="Max">
+                        <input id="minPrice" type="number" min="0" step="0.01" placeholder="Min" data-i18n-placeholder="collection.min">
+                        <input id="maxPrice" type="number" min="0" step="0.01" placeholder="Max" data-i18n-placeholder="collection.max">
                     </div>
                 </div>
-                <button class="clear-filters" id="clearFilters" type="button">Clear filters</button>
-                <button class="apply-filters" id="applyFilters" type="button">View results</button>
+                <button class="clear-filters" id="clearFilters" type="button" data-i18n="collection.clearFilters">Clear filters</button>
+                <button class="apply-filters" id="applyFilters" type="button" data-i18n="search.viewResults">View results</button>
             </aside>
 
             <section class="results-area">
                 <button class="mobile-filter-toggle" id="mobileFilterToggle" type="button" aria-controls="filterSidebar" aria-expanded="false">
                     <i class="fas fa-sliders-h"></i>
-                    <span>Filters</span>
+                    <span data-i18n="search.filters">Filters</span>
                 </button>
                 <div class="category-links" id="categoryLinks"></div>
-                <div class="active-filters" id="activeFilters" aria-label="Active filters"></div>
+                <div class="active-filters" id="activeFilters" aria-label="Active filters" data-i18n-aria="search.activeFilters"></div>
                 <div class="results-top">
                     <div class="status-row" id="statusRow">Loading products...</div>
-                    <label class="sort-wrap">Sort
-                        <select id="sortSelect" aria-label="Sort products">
-                            <option value="az">A to Z</option>
-                            <option value="za">Z to A</option>
-                            <option value="priceAsc">Price: low to high</option>
-                            <option value="priceDesc">Price: high to low</option>
+                    <label class="sort-wrap"><span data-i18n="collection.sort">Sort</span>
+                        <select id="sortSelect" aria-label="Sort products" data-i18n-aria="aria.sortProducts">
+                            <option value="az" data-i18n="collection.sortAz">A to Z</option>
+                            <option value="za" data-i18n="collection.sortZa">Z to A</option>
+                            <option value="priceAsc" data-i18n="collection.sortPriceAsc">Price: low to high</option>
+                            <option value="priceDesc" data-i18n="collection.sortPriceDesc">Price: high to low</option>
                         </select>
                     </label>
                 </div>
-                <section class="results-grid" id="resultsGrid" aria-label="Search results"></section>
-                <div class="empty-state" id="emptyState">No products matched that search.</div>
+                <section class="results-grid" id="resultsGrid" aria-label="Search results" data-i18n-aria="search.searchResults"></section>
+                <div class="empty-state" id="emptyState" data-i18n="search.empty">No products matched that search.</div>
+                <div class="pagination-wrap" id="searchPagination"></div>
             </section>
         </div>
     </main>
@@ -779,6 +870,9 @@
         import { db } from "./firebase-init.js";
         import { collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
         import { fetchQueryLazy } from "./products-cache.js";
+
+        const t = (key, params) => window.HeliomedI18n?.t ? window.HeliomedI18n.t(key, params) : key;
+        const tp = (key, count, params) => window.HeliomedI18n?.tp ? window.HeliomedI18n.tp(key, count, params) : t(key, params);
 
         const searchInput = document.getElementById("searchInput");
         const clearSearch = document.getElementById("clearSearch");
@@ -794,6 +888,9 @@
         const statusRow = document.getElementById("statusRow");
         const resultsGrid = document.getElementById("resultsGrid");
         const emptyState = document.getElementById("emptyState");
+        const searchPagination = document.getElementById("searchPagination");
+        const pageSize = 12;
+        let currentPage = 1;
         const headerSearchInput = document.querySelector(".search-box input");
         const headerSearchIcon = document.querySelector(".search-box i");
         const filterTargets = {
@@ -891,7 +988,7 @@
                 render();
             } catch (error) {
                 products = [];
-                statusRow.textContent = "Could not load products.";
+                statusRow.textContent = t("collection.couldNotLoad");
                 emptyState.classList.add("visible");
                 console.error(error);
             }
@@ -944,9 +1041,10 @@
                 const id = group + "-" + value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
                 const checked = selected[group].has(value) ? " checked" : "";
                 const emptyClass = count === 0 ? " is-empty" : "";
+                const displayLabel = (group === "category" || group === "section" || group === "offer") ? t(value) : value;
                 return '<label class="check-row' + emptyClass + '" for="' + escapeHtml(id) + '">' +
                     '<input id="' + escapeHtml(id) + '" type="checkbox" data-group="' + group + '" value="' + escapeHtml(value) + '"' + checked + '>' +
-                    '<span>' + escapeHtml(value) + '</span>' +
+                    '<span>' + escapeHtml(displayLabel) + '</span>' +
                     '<span class="check-count">(' + count + ')</span>' +
                 '</label>';
             }).join("");
@@ -955,8 +1053,8 @@
         function renderCategoryLinks() {
             const categories = countValues("category").slice(0, 7);
             categoryLinks.innerHTML = categories.length
-                ? '<span>Categories:</span>' + categories.map(function ([category]) {
-                    return '<button type="button" data-category-link="' + escapeHtml(category) + '">' + escapeHtml(category) + '</button>';
+                ? '<span>' + escapeHtml(t("search.categories")) + '</span>' + categories.map(function ([category]) {
+                    return '<button type="button" data-category-link="' + escapeHtml(category) + '">' + escapeHtml(t(category)) + '</button>';
                 }).join("")
                 : "";
         }
@@ -964,15 +1062,16 @@
         function renderActiveFilters() {
             const chips = [];
             if (searchInput.value.trim()) {
-                chips.push({ label: 'Search: ' + searchInput.value.trim(), type: "term", value: "" });
+                chips.push({ label: t("search.termLabel") + ': ' + searchInput.value.trim(), type: "term", value: "" });
             }
             Object.entries(selected).forEach(function ([group, values]) {
                 values.forEach(function (value) {
-                    chips.push({ label: value, type: group, value });
+                    const displayLabel = (group === "category" || group === "section" || group === "offer") ? t(value) : value;
+                    chips.push({ label: displayLabel, type: group, value });
                 });
             });
-            if (minPrice.value !== "") chips.push({ label: "Min $" + minPrice.value, type: "minPrice", value: "" });
-            if (maxPrice.value !== "") chips.push({ label: "Max $" + maxPrice.value, type: "maxPrice", value: "" });
+            if (minPrice.value !== "") chips.push({ label: t("collection.min") + " $" + minPrice.value, type: "minPrice", value: "" });
+            if (maxPrice.value !== "") chips.push({ label: t("collection.max") + " $" + maxPrice.value, type: "maxPrice", value: "" });
             activeFilters.innerHTML = chips.map(function (chip) {
                 return '<button class="active-chip" type="button" data-chip-type="' + escapeHtml(chip.type) + '" data-chip-value="' + escapeHtml(chip.value) + '">' +
                     escapeHtml(chip.label) + ' <i class="fas fa-times"></i>' +
@@ -991,9 +1090,69 @@
             return sorted;
         }
 
+        function renderPagination(totalItems, current, size) {
+            if (!searchPagination) return;
+            const totalPages = Math.ceil(totalItems / size) || 1;
+            if (totalItems <= size) {
+                searchPagination.classList.remove("visible");
+                searchPagination.innerHTML = "";
+                return;
+            }
+            searchPagination.classList.add("visible");
+
+            const startItem = (current - 1) * size + 1;
+            const endItem = Math.min(current * size, totalItems);
+            const isRTL = document.documentElement.dir === "rtl";
+            const prevIcon = '<i class="fas fa-chevron-left"></i>';
+            const nextIcon = '<i class="fas fa-chevron-right"></i>';
+
+            const pageNumbers = [];
+            if (totalPages <= 7) {
+                for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+            } else {
+                pageNumbers.push(1);
+                if (current > 3) pageNumbers.push("...");
+                const start = Math.max(2, current - 1);
+                const end = Math.min(totalPages - 1, current + 1);
+                for (let i = start; i <= end; i++) pageNumbers.push(i);
+                if (current < totalPages - 2) pageNumbers.push("...");
+                pageNumbers.push(totalPages);
+            }
+
+            const infoText = isRTL
+                ? `عرض ${startItem}–${endItem} من أصل ${totalItems} منتج`
+                : `Showing ${startItem}–${endItem} of ${totalItems} products`;
+
+            const buttonsHtml = pageNumbers.map(p => {
+                if (p === "...") {
+                    return '<span class="pagination-ellipsis">&hellip;</span>';
+                }
+                const isActive = p === current;
+                return `<button type="button" class="pagination-btn ${isActive ? 'active' : ''}" data-target-page="${p}" ${isActive ? 'aria-current="page"' : ''}>${p}</button>`;
+            }).join("");
+
+            searchPagination.innerHTML = `
+                <div class="pagination-info">${escapeHtml(infoText)}</div>
+                <div class="pagination-controls">
+                    <button type="button" class="pagination-btn prev" ${current <= 1 ? "disabled" : ""} data-target-page="${current - 1}" aria-label="Previous page">${prevIcon}</button>
+                    ${buttonsHtml}
+                    <button type="button" class="pagination-btn next" ${current >= totalPages ? "disabled" : ""} data-target-page="${current + 1}" aria-label="Next page">${nextIcon}</button>
+                </div>
+            `;
+        }
+
         function renderProducts(items) {
-            emptyState.classList.toggle("visible", items.length === 0);
-            resultsGrid.innerHTML = items.map(function (product) {
+            const total = items.length;
+            const totalPages = Math.ceil(total / pageSize) || 1;
+            if (currentPage > totalPages) currentPage = 1;
+
+            const start = (currentPage - 1) * pageSize;
+            const visible = items.slice(start, start + pageSize);
+
+            emptyState.classList.toggle("visible", total === 0);
+            renderPagination(total, currentPage, pageSize);
+
+            resultsGrid.innerHTML = visible.map(function (product) {
                 const imageUrl = product.imageUrl || "";
                 const detailUrl = window.HeliomedProductUrls.productPath(product);
                 const showPrice = productHasVisiblePrice(product);
@@ -1001,20 +1160,20 @@
                     '<a class="medicine-image" href="' + detailUrl + '">' +
                         (imageUrl
                             ? '<img src="' + escapeHtml(imageUrl) + '" alt="' + escapeHtml(product.title || "Product") + '">'
-                            : '<div class="medicine-placeholder">Image coming soon</div>') +
+                            : '<div class="medicine-placeholder">' + escapeHtml(t("product.imageComingSoon")) + '</div>') +
                         (product.badge ? '<span class="badge">' + escapeHtml(product.badge) + '</span>' : "") +
                     '</a>' +
                     '<div class="medicine-body">' +
                         '<div class="medicine-brand">' + escapeHtml(product.brand || "Heliomed") + '</div>' +
                         '<h2 class="medicine-title"><a href="' + detailUrl + '">' + escapeHtml(product.title || "Untitled product") + '</a></h2>' +
                         (showPrice ? '<div class="medicine-price">' +
-                            (product.oldPrice ? '<span class="old-price">MSRP: ' + escapeHtml(product.oldPrice) + '</span>' : "") +
-                            '<span>Now: </span><span class="new-price">' + escapeHtml(product.newPrice) + '</span>' +
+                            (product.oldPrice ? '<span class="old-price">' + escapeHtml(t("product.msrp", { price: product.oldPrice })) + '</span>' : "") +
+                            '<span>' + escapeHtml(t("product.now", { price: "" })) + '</span><span class="new-price">' + escapeHtml(product.newPrice) + '</span>' +
                         '</div>' : '') +
                         '<div class="card-actions">' +
-                            '<a class="quick-add" href="' + detailUrl + '">Details</a>' +
-                            '<button class="add-card-btn" type="button" data-product-id="' + escapeHtml(product.id) + '"' + (showPrice ? "" : " disabled") + '>Add</button>' +
-                            '<button class="wishlist-btn" type="button" data-product-id="' + escapeHtml(product.id) + '" aria-label="Toggle wishlist"><i class="' + (window.HeliomedWishlist.hasItem(product.id) ? "fas" : "far") + ' fa-heart"></i></button>' +
+                            '<a class="quick-add" href="' + detailUrl + '">' + escapeHtml(t("card.details")) + '</a>' +
+                            '<button class="add-card-btn" type="button" data-product-id="' + escapeHtml(product.id) + '"' + (showPrice ? "" : " disabled") + '>' + escapeHtml(t("card.add")) + '</button>' +
+                            '<button class="wishlist-btn" type="button" data-product-id="' + escapeHtml(product.id) + '" aria-label="' + escapeHtml(t("aria.toggleWishlist")) + '"><i class="' + (window.HeliomedWishlist.hasItem(product.id) ? "fas" : "far") + ' fa-heart"></i></button>' +
                         '</div>' +
                     '</div>' +
                 '</article>';
@@ -1026,7 +1185,7 @@
             Object.keys(filterTargets).forEach(renderFacet);
             renderActiveFilters();
             const visibleProducts = sortProducts(filteredProducts());
-            statusRow.textContent = visibleProducts.length + " product" + (visibleProducts.length === 1 ? "" : "s");
+            statusRow.textContent = tp("collection.productCount", visibleProducts.length);
             renderProducts(visibleProducts);
         }
 
@@ -1046,8 +1205,8 @@
                 price: product.newPriceValue,
                 url: window.HeliomedProductUrls.productPath(product)
             }, 1);
-            button.textContent = "Added";
-            window.setTimeout(function () { button.textContent = "Add"; }, 1200);
+            button.textContent = t("card.added");
+            window.setTimeout(function () { button.textContent = t("card.add"); }, 1200);
         });
         resultsGrid.addEventListener("click", function (event) {
             const button = event.target.closest(".wishlist-btn");
@@ -1066,6 +1225,7 @@
             sortSelect.value = "az";
             Object.values(selected).forEach(function (set) { set.clear(); });
             history.replaceState(null, "", window.location.pathname);
+            currentPage = 1;
             render();
         }
 
@@ -1080,6 +1240,7 @@
             const values = selected[checkbox.dataset.group];
             if (checkbox.checked) values.add(checkbox.value);
             else values.delete(checkbox.value);
+            currentPage = 1;
             render();
         });
         categoryLinks.addEventListener("click", function (event) {
@@ -1087,6 +1248,7 @@
             if (!button) return;
             selected.category.clear();
             selected.category.add(button.dataset.categoryLink);
+            currentPage = 1;
             render();
         });
         activeFilters.addEventListener("click", function (event) {
@@ -1104,24 +1266,41 @@
             } else if (selected[type]) {
                 selected[type].delete(value);
             }
+            currentPage = 1;
             render();
         });
         [searchInput, minPrice, maxPrice, sortSelect].forEach(function (control) {
-            control.addEventListener("input", render);
-            control.addEventListener("change", render);
+            control.addEventListener("input", function () { currentPage = 1; render(); });
+            control.addEventListener("change", function () { currentPage = 1; render(); });
         });
         clearSearch.addEventListener("click", function () {
             searchInput.value = "";
             headerSearchInput.value = "";
+            currentPage = 1;
             render();
         });
         clearFilters.addEventListener("click", clearAll);
+
+        if (searchPagination) {
+            searchPagination.addEventListener("click", function (event) {
+                const btn = event.target.closest("[data-target-page]");
+                if (!btn || btn.disabled) return;
+                const targetPage = Number(btn.dataset.targetPage);
+                if (!Number.isFinite(targetPage) || targetPage === currentPage) return;
+                currentPage = targetPage;
+                render();
+                const targetEl = document.querySelector(".results-top") || resultsGrid;
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            });
+        }
         function setFilterPanel(open) {
             document.body.classList.toggle("filter-panel-open", open);
             mobileFilterToggle.setAttribute("aria-expanded", open ? "true" : "false");
         }
         mobileFilterToggle.addEventListener("click", function () {
-            setCategoryNav(false);
+            document.dispatchEvent(new CustomEvent("heliomed:close-header-nav"));
             setFilterPanel(true);
         });
         closeFilters.addEventListener("click", function () { setFilterPanel(false); });
@@ -1132,6 +1311,7 @@
 
         function runHeaderSearch() {
             searchInput.value = headerSearchInput.value.trim();
+            currentPage = 1;
             render();
         }
         headerSearchIcon.addEventListener("click", runHeaderSearch);
@@ -1142,112 +1322,10 @@
             }
         });
 
-        document.querySelector(".mobile-nav-toggle").addEventListener("click", function () {
-            const header = document.querySelector(".header");
-            updateHeaderOffset();
-            setCategoryNav(false);
-            setFilterPanel(false);
-            const open = !header.classList.contains("mobile-nav-open");
-            header.classList.toggle("mobile-nav-open", open);
-            document.body.classList.toggle("mobile-nav-lock", open);
-            this.setAttribute("aria-expanded", open ? "true" : "false");
-            if (!open) restoreAllCategoryMenus();
-        });
-        function setCategoryNav(open) {
-            const header = document.querySelector(".header");
-            const toggle = document.querySelector(".mobile-category-toggle");
-            const categoryItem = document.querySelector(".category-nav-item");
-            if (!header || !toggle || !categoryItem) return;
-            if (open) {
-                setFilterPanel(false);
-                header.classList.remove("mobile-nav-open");
-                document.querySelector(".mobile-nav-toggle").setAttribute("aria-expanded", "false");
-            }
-            header.classList.toggle("mobile-category-open", open);
-            categoryItem.classList.toggle("is-open", open);
-            document.body.classList.toggle("mobile-nav-lock", open);
-            toggle.setAttribute("aria-expanded", open ? "true" : "false");
-            if (!open) restoreCategoryMenu(categoryItem.querySelector(".category-menu"));
-        }
-        
-        function updateHeaderOffset() {
-            const header = document.querySelector(".header");
-            if (!header) return;
-            document.documentElement.style.setProperty("--header-bottom", header.getBoundingClientRect().bottom + "px");
-        }
-        updateHeaderOffset();
-        if ('ResizeObserver' in window) new ResizeObserver(updateHeaderOffset).observe(document.querySelector(".header"));
-        window.addEventListener("scroll", updateHeaderOffset, { passive: true });
-        document.querySelector(".header")?.addEventListener("transitionend", updateHeaderOffset);
-        function restoreCategoryMenu(menu) {
-            if (!menu || !menu.dataset.originalContent) return;
-            const grid = menu.querySelector(".category-menu-grid");
-            if (grid) grid.innerHTML = menu.dataset.originalContent;
-            menu.scrollTop = 0;
-        }
-        function restoreAllCategoryMenus() {
-            document.querySelectorAll(".category-menu").forEach(restoreCategoryMenu);
-        }
-        document.querySelector(".nav-links").addEventListener("click", function (event) {
-            const summary = event.target.closest(".category-branch summary");
-            if (summary) {
-                event.preventDefault();
-                event.stopPropagation();
-                const branch = summary.closest(".category-branch");
-                const menu = summary.closest(".category-menu");
-                const grid = menu?.querySelector(".category-menu-grid");
-                const branchLinks = branch?.querySelector("div");
-                if (!menu || !grid || !branchLinks) return;
-                if (!menu.dataset.originalContent) menu.dataset.originalContent = grid.innerHTML;
-                const title = summary.childNodes[0]?.textContent.trim() || summary.textContent.trim();
-                grid.innerHTML = '<button class="category-back" type="button"><i class="fas fa-chevron-left"></i> Back</button>' +
-                    '<div class="category-panel"><strong>' + title + '</strong>' + branchLinks.innerHTML + '</div>';
-                menu.scrollTop = 0;
-                return;
-            }
-
-            const back = event.target.closest(".category-back");
-            if (back) {
-                event.preventDefault();
-                event.stopPropagation();
-                restoreCategoryMenu(back.closest(".category-menu"));
-                return;
-            }
-
-            const trigger = event.target.closest(".nav-trigger");
-            if (!trigger) return;
-            const item = trigger.closest(".nav-item");
-            const submenu = item.querySelector(".mega-menu");
-            if (!submenu) return;
-            event.preventDefault();
-            const shouldOpen = !item.classList.contains("is-open");
-            if (!shouldOpen && submenu.classList.contains("category-menu")) restoreCategoryMenu(submenu);
-            document.querySelectorAll(".nav-item.is-open").forEach(function (openItem) {
-                if (openItem !== item) {
-                    restoreCategoryMenu(openItem.querySelector(".category-menu"));
-                    openItem.classList.remove("is-open");
-                }
-            });
-            item.classList.toggle("is-open", shouldOpen);
-            if (shouldOpen && submenu.classList.contains("category-menu")) submenu.scrollTop = 0;
-        });
-        document.addEventListener("click", function (event) {
-            if (event.target.closest(".nav-links") || event.target.closest(".mobile-nav-toggle") || event.target.closest(".mobile-category-toggle")) return;
-            const header = document.querySelector(".header");
-            if (header.classList.contains("mobile-category-open")) {
-                setCategoryNav(false);
-                return;
-            }
-            document.querySelectorAll(".nav-item.is-open").forEach(function (item) {
-                restoreCategoryMenu(item.querySelector(".category-menu"));
-                item.classList.remove("is-open");
-            });
-        });
-        window.addEventListener("resize", updateHeaderOffset);
-
         const params = new URLSearchParams(window.location.search);
         searchInput.value = params.get("q") || "";
         headerSearchInput.value = searchInput.value;
+        window.addEventListener("heliomed:language-change", render);
         loadProducts();
     </script>
     

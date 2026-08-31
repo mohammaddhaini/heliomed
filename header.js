@@ -5,6 +5,205 @@ document.addEventListener('DOMContentLoaded', function () {
     var mobileCategoryToggle = document.querySelector('.mobile-category-toggle');
     var navLinks = document.querySelector('.nav-links');
 
+    function tr(key) {
+        return window.HeliomedI18n && typeof window.HeliomedI18n.t === 'function' ? window.HeliomedI18n.t(key) : key;
+    }
+
+    function updateResponsiveLanguageButton() {
+        var currentLang = (window.HeliomedI18n && typeof window.HeliomedI18n.currentLang === 'function')
+            ? window.HeliomedI18n.currentLang()
+            : (document.documentElement.lang || 'en');
+        var oppositeLang = currentLang === 'ar' ? 'en' : 'ar';
+        var oppositeLabel = currentLang === 'ar' ? 'EN' : 'عربي';
+
+        document.querySelectorAll('.language-toggle-btn').forEach(function (btn) {
+            btn.setAttribute('data-lang-option', oppositeLang);
+            btn.textContent = oppositeLabel;
+            btn.setAttribute('aria-label', tr('aria.language') + ' (' + oppositeLabel + ')');
+        });
+    }
+
+    function setupLanguageSwitcher() {
+        var actions = document.querySelector('.header-actions');
+        if (!actions) return;
+        var switcher = actions.querySelector('.language-switcher');
+        if (!switcher) {
+            switcher = document.createElement('div');
+            switcher.className = 'language-switcher';
+            switcher.setAttribute('aria-label', tr('aria.language'));
+            switcher.setAttribute('data-i18n-aria', 'aria.language');
+            switcher.innerHTML = [
+                '<div class="language-desktop">',
+                '    <button type="button" data-lang-option="en" aria-pressed="false">EN</button>',
+                '    <span class="language-divider" aria-hidden="true">|</span>',
+                '    <button type="button" data-lang-option="ar" aria-pressed="false">عربي</button>',
+                '</div>',
+                '<button type="button" class="language-toggle-btn" aria-label="' + tr('aria.language') + '"></button>'
+            ].join('');
+            var icons = actions.querySelector('.header-icons');
+            actions.insertBefore(switcher, icons || null);
+        } else {
+            if (!switcher.querySelector('.language-toggle-btn')) {
+                var desktopWrapper = switcher.querySelector('.language-desktop');
+                if (!desktopWrapper) {
+                    desktopWrapper = document.createElement('div');
+                    desktopWrapper.className = 'language-desktop';
+                    while (switcher.firstChild) {
+                        desktopWrapper.appendChild(switcher.firstChild);
+                    }
+                    switcher.appendChild(desktopWrapper);
+                }
+                var toggleBtn = document.createElement('button');
+                toggleBtn.type = 'button';
+                toggleBtn.className = 'language-toggle-btn';
+                toggleBtn.setAttribute('aria-label', tr('aria.language'));
+                switcher.appendChild(toggleBtn);
+            }
+        }
+        updateResponsiveLanguageButton();
+        if (window.HeliomedI18n && typeof window.HeliomedI18n.translate === 'function') {
+            window.HeliomedI18n.translate(switcher);
+        }
+    }
+
+    function injectResponsiveSearchButton() {
+        var actions = document.querySelector('.header-actions');
+        if (!actions || actions.querySelector('.header-search-btn')) return;
+        var searchBtn = document.createElement('button');
+        searchBtn.type = 'button';
+        searchBtn.className = 'header-search-btn';
+        searchBtn.setAttribute('aria-label', tr('aria.openSearch'));
+        searchBtn.setAttribute('data-i18n-aria-label', 'aria.openSearch');
+        searchBtn.innerHTML = '<i class="fas fa-search" aria-hidden="true"></i>';
+
+        var icons = actions.querySelector('.header-icons');
+        actions.insertBefore(searchBtn, icons || null);
+    }
+
+    function ensureSearchSlideBar() {
+        var drawer = document.getElementById('search-slide-bar');
+        if (drawer) return drawer;
+
+        drawer = document.createElement('div');
+        drawer.id = 'search-slide-bar';
+        drawer.className = 'search-slide-bar';
+        drawer.setAttribute('role', 'dialog');
+        drawer.setAttribute('aria-modal', 'true');
+        drawer.setAttribute('aria-label', tr('aria.openSearch'));
+
+        drawer.innerHTML = [
+            '<div class="search-slide-overlay" data-search-slide-close></div>',
+            '<div class="search-slide-panel">',
+            '    <div class="search-slide-header">',
+            '        <div class="search-slide-title-wrap">',
+            '            <i class="fas fa-search search-slide-title-icon" aria-hidden="true"></i>',
+            '            <span class="search-slide-title" data-i18n="search.searchProducts">' + tr('search.searchProducts') + '</span>',
+            '        </div>',
+            '        <button type="button" class="search-slide-close-btn" data-search-slide-close aria-label="' + tr('aria.closeSearch') + '" data-i18n-aria-label="aria.closeSearch">',
+            '            <i class="fas fa-times" aria-hidden="true"></i>',
+            '        </button>',
+            '    </div>',
+            '    <form class="search-slide-form" action="./search.html" method="get" role="search">',
+            '        <div class="search-slide-input-wrap">',
+            '            <i class="fas fa-search search-slide-input-icon" aria-hidden="true"></i>',
+            '            <input type="text" name="q" class="search-slide-input" placeholder="' + tr('search.placeholder') + '" autocomplete="off" autocapitalize="off" spellcheck="false" data-i18n-placeholder="search.placeholder">',
+            '            <button type="button" class="search-slide-clear-btn" aria-label="' + tr('search.clearSearch') + '" data-i18n-aria-label="search.clearSearch" style="display: none;">',
+            '                <i class="fas fa-times-circle" aria-hidden="true"></i>',
+            '            </button>',
+            '        </div>',
+            '        <button type="submit" class="search-slide-submit-btn" data-i18n="search.termLabel">' + tr('search.termLabel') + '</button>',
+            '    </form>',
+            '    <div class="search-slide-quick">',
+            '        <span class="search-slide-quick-label" data-i18n="search.popularSearches">' + tr('search.popularSearches') + '</span>',
+            '        <div class="search-slide-tags">',
+            '            <a href="./collection.html?collection=Paraparapharmacy" class="search-slide-tag" data-i18n="nav.parapharmacy">' + tr('nav.parapharmacy') + '</a>',
+            '            <a href="./collection.html?collection=medical-supplies" class="search-slide-tag" data-i18n="nav.medicalSupplies">' + tr('nav.medicalSupplies') + '</a>',
+            '            <a href="./collection.html?collection=skin-care" class="search-slide-tag" data-i18n="nav.skinCare">' + tr('nav.skinCare') + '</a>',
+            '            <a href="./collection.html?collection=organic" class="search-slide-tag" data-i18n="nav.organic">' + tr('nav.organic') + '</a>',
+            '            <a href="./collection.html?collection=offers" class="search-slide-tag" data-i18n="nav.offers">' + tr('nav.offers') + '</a>',
+            '        </div>',
+            '    </div>',
+            '    <div class="search-slide-results" id="searchSlideResults"></div>',
+            '</div>'
+        ].join('');
+
+        document.body.appendChild(drawer);
+
+        if (window.HeliomedI18n && typeof window.HeliomedI18n.translate === 'function') {
+            window.HeliomedI18n.translate(drawer);
+        }
+
+        var form = drawer.querySelector('.search-slide-form');
+        var input = drawer.querySelector('.search-slide-input');
+        var clearBtn = drawer.querySelector('.search-slide-clear-btn');
+
+        if (input && clearBtn) {
+            input.addEventListener('input', function () {
+                clearBtn.style.display = input.value.trim().length > 0 ? 'inline-flex' : 'none';
+            });
+            clearBtn.addEventListener('click', function () {
+                input.value = '';
+                clearBtn.style.display = 'none';
+                input.focus();
+            });
+        }
+
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                var val = (input?.value || '').trim();
+                e.preventDefault();
+                closeSearchSlideBar();
+                window.location.href = './search.html' + (val ? '?q=' + encodeURIComponent(val) : '');
+            });
+        }
+
+        return drawer;
+    }
+
+    function openSearchSlideBar() {
+        var drawer = ensureSearchSlideBar();
+        setMobileNav(false);
+        setCategoryNav(false);
+        if (window.HeliomedCart && typeof window.HeliomedCart.closeDrawer === 'function') {
+            window.HeliomedCart.closeDrawer();
+        }
+
+        drawer.classList.add('is-open');
+        document.documentElement.classList.add('search-slide-lock');
+        document.body.classList.add('search-slide-lock');
+
+        var input = drawer.querySelector('.search-slide-input');
+        if (input) {
+            setTimeout(function () {
+                input.focus();
+            }, 120);
+        }
+    }
+
+    function closeSearchSlideBar() {
+        var drawer = document.getElementById('search-slide-bar');
+        if (!drawer) return;
+
+        drawer.classList.remove('is-open');
+        document.documentElement.classList.remove('search-slide-lock');
+        document.body.classList.remove('search-slide-lock');
+    }
+
+    window.HeliomedSearch = {
+        open: openSearchSlideBar,
+        close: closeSearchSlideBar
+    };
+
+    function updateMobileMenuLabel(open) {
+        if (!mobileNavToggle) return;
+        var key = open ? 'aria.closeMenu' : 'aria.openMenu';
+        mobileNavToggle.setAttribute('aria-label', tr(key));
+        mobileNavToggle.setAttribute('data-i18n-aria', key);
+    }
+
+    setupLanguageSwitcher();
+    injectResponsiveSearchButton();
+
     function isMobileNav() {
         return window.matchMedia('(max-width: 900px)').matches;
     }
@@ -28,6 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!header || !mobileNavToggle) return;
         if (open) {
             setCategoryNav(false);
+            closeSearchSlideBar();
             if (window.HeliomedCart && typeof window.HeliomedCart.closeDrawer === 'function') {
                 window.HeliomedCart.closeDrawer();
             }
@@ -36,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.documentElement.classList.toggle('mobile-nav-lock', open);
         document.body.classList.toggle('mobile-nav-lock', open);
         mobileNavToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        mobileNavToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        updateMobileMenuLabel(open);
         updateHeaderOffset();
         if (!open) {
             document.querySelectorAll('.nav-item.is-open').forEach(function (item) {
@@ -62,6 +262,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('heliomed:mobile-nav-close', function () {
         setMobileNav(false);
     });
+    document.addEventListener('heliomed:close-header-nav', function () {
+        setMobileNav(false);
+        setCategoryNav(false);
+    });
     // Also use event delegation so any .nav-panel-close works regardless of when it appears
     document.addEventListener('click', function (e) {
         if (e.target.closest('.nav-panel-close')) setMobileNav(false);
@@ -73,6 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (open) {
             header.classList.remove('mobile-nav-open');
             mobileNavToggle?.setAttribute('aria-expanded', 'false');
+            closeSearchSlideBar();
         }
         header.classList.toggle('mobile-category-open', open);
         categoryItem.classList.toggle('is-open', open);
@@ -120,7 +325,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             updateHeaderOffset();
-            header?.classList.toggle('scrolled', currentY > 80);
+            if (currentY > 30) {
+                header?.classList.add('is-scrolled');
+                header?.classList.add('scrolled');
+            } else if (currentY < 12) {
+                header?.classList.remove('is-scrolled');
+                header?.classList.remove('scrolled');
+            }
 
             if (header) {
                 if (!isResponsiveHeader() || currentY < 40 || shouldKeepHeaderVisible()) {
@@ -264,6 +475,24 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.addEventListener('click', function (event) {
+        if (event.target.closest('[data-search-slide-close]')) {
+            event.preventDefault();
+            closeSearchSlideBar();
+            return;
+        }
+
+        var searchTrigger = event.target.closest('.header-search-btn');
+        if (searchTrigger) {
+            event.preventDefault();
+            var searchDrawer = document.getElementById('search-slide-bar');
+            if (searchDrawer && searchDrawer.classList.contains('is-open')) {
+                closeSearchSlideBar();
+            } else {
+                openSearchSlideBar();
+            }
+            return;
+        }
+
         if (event.target.closest('.nav-links') || event.target.closest('.mobile-nav-toggle') || event.target.closest('.mobile-category-toggle')) return;
         if (header?.classList.contains('mobile-category-open')) {
             setCategoryNav(false);
@@ -286,6 +515,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (event.key !== 'Escape') return;
         setMobileNav(false);
         setCategoryNav(false);
+        closeSearchSlideBar();
         document.querySelectorAll('.nav-item.is-open').forEach(function (item) {
             item.classList.remove('is-open');
         });
@@ -302,6 +532,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!isMobileNav()) {
             setMobileNav(false);
             setCategoryNav(false);
+            closeSearchSlideBar();
         }
     });
 
@@ -356,6 +587,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 event.preventDefault();
                 setMobileNav(false);
                 setCategoryNav(false);
+                closeSearchSlideBar();
                 if (window.HeliomedCart && typeof window.HeliomedCart.openDrawer === 'function') {
                     window.HeliomedCart.openDrawer();
                 }
@@ -364,4 +596,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     attachCartListeners();
     document.addEventListener('heliomed:navbar-categories-loaded', attachCartListeners);
+    window.addEventListener('heliomed:language-change', function () {
+        updateMobileMenuLabel(header?.classList.contains('mobile-nav-open'));
+        updateResponsiveLanguageButton();
+        var searchDrawer = document.getElementById('search-slide-bar');
+        if (searchDrawer && window.HeliomedI18n && typeof window.HeliomedI18n.translate === 'function') {
+            window.HeliomedI18n.translate(searchDrawer);
+        }
+        if (window.HeliomedI18n && typeof window.HeliomedI18n.translate === 'function') {
+            window.HeliomedI18n.translate(document);
+        }
+    });
 });

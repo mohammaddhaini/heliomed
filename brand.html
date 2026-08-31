@@ -1,20 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/x-icon" href="icon.ico?v=2">
+    <script>
+        (function () {
+            const lang = localStorage.getItem("heliomed_lang") === "ar" ? "ar" : "en";
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        }());
+    </script>
     <link rel="icon" type="image/ico" href="icon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brands | Heliomed</title>
     <meta name="description" content="Explore parapharmacy, skincare, wellness, and medical brands at Heliomed.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
     <style>
         :root {
-            --brand-blue: #1D5F73;
-            --brand-pink: #C2A26B;
+            --pearl-aqua: #A2D8D2;
+            --pearl-aqua-deep: #146B66;
+            --pearl-aqua-hover: #0E5652;
+            --pearl-aqua-soft: #F0F8F7;
+            --pearl-aqua-border: #CCE8E5;
+
+            --brand-blue: #146B66;
+            --brand-blue-hover: #0E5652;
+            --brand-pink: #A2D8D2;
             --brand-dark: #07111F;
-            --brand-soft-blue: #FBF7F0;
-            --brand-soft-pink: #F8F2E8;
-            --brand-border: #E8DCC8;
+            --brand-soft-blue: #F0F8F7;
+            --brand-soft-pink: #F0F8F7;
+            --brand-border: #CCE8E5;
         }
         * { box-sizing: border-box; }
         body {
@@ -350,7 +368,9 @@
         }
     </style>
     <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./rtl.css">
     <link rel="stylesheet" href="./responsive.css">
+    <script src="./i18n.js"></script>
 </head>
 <body>
     <header class="header">
@@ -358,16 +378,16 @@
             <a href="./index.html"><img src="heliomed-logo.png" alt="Heliomed logo"></a>
         </div>
 
-        <button class="mobile-nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-navigation" aria-expanded="false">
+        <button class="mobile-nav-toggle" type="button" aria-label="Open menu" data-i18n-aria="common.openMenu" aria-controls="primary-navigation" aria-expanded="false">
             <span class="hamburger-bar"></span>
             <span class="hamburger-bar"></span>
             <span class="hamburger-bar"></span>
         </button>
 
-        <ul class="nav-links" id="primary-navigation">
+            <ul class="nav-links" id="primary-navigation" data-i18n-static-text>
             <li class="nav-panel-header" aria-hidden="true">
-                <span class="nav-panel-title">MENU</span>
-                <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
+                <span class="nav-panel-title" data-i18n="nav.menu">MENU</span>
+                <button class="nav-panel-close" type="button" aria-label="Close menu" data-i18n-aria="common.closeMenu"><i class="fas fa-times"></i></button>
             </li>
             <li class="nav-item">
                 <a href="./collection.html?collection=parapharmacy" class="nav-trigger">PARAPHARMACY <i class="fas fa-chevron-down"></i></a>
@@ -417,16 +437,16 @@
 
         <div class="header-actions">
             <div class="search-box">
-                <input type="text" placeholder="Search for products">
+                <input type="text" placeholder="Search for products" data-i18n-placeholder="common.searchPlaceholder">
                 <i class="fas fa-search"></i>
             </div>
             <div class="header-icons">
-                <a href="./account.html" aria-label="Open account"><i class="far fa-user"></i></a>
-                <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist">
+                <a href="./account.html" aria-label="Open account" data-i18n-aria="common.openAccount"><i class="far fa-user"></i></a>
+                <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist" data-i18n-aria="common.openWishlist">
                     <i class="far fa-heart"></i>
                     <span class="wishlist-count">0</span>
                 </a>
-                <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart">
+                <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart" data-i18n-aria="common.shoppingCart">
                     <i class="fas fa-shopping-bag"></i>
                     <span class="cart-count">0</span>
                 </a>
@@ -435,44 +455,44 @@
     </header>
 
     <main>
-        <nav class="breadcrumb" aria-label="Breadcrumb">
-            <a href="./index.html">Home</a>
+        <nav class="breadcrumb" aria-label="Breadcrumb" data-i18n-aria="brand.breadcrumb">
+            <a href="./index.html" data-i18n="nav.home">Home</a>
             <span>/</span>
-            <span>Brands</span>
+            <span data-i18n="brand.title">Brands</span>
         </nav>
 
         <section class="brand-hero">
             <div class="brand-hero-text">
-                <h1>Shop by Brand</h1>
-                <p>Explore authentic parapharmacy, skincare, wellness, and medical supplies from trusted brands.</p>
+                <h1 data-i18n="brand.heroTitle">Shop by Brand</h1>
+                <p data-i18n="brand.heroCopy">Explore authentic parapharmacy, skincare, wellness, and medical supplies from trusted brands.</p>
             </div>
             <div class="brand-hero-stat">
                 <strong id="brandTotalCount">0</strong>
-                <span>Brands</span>
+                <span data-i18n="brand.title">Brands</span>
             </div>
         </section>
 
         <div class="section-header" id="featuredHeading" style="display: none;">
-            <h2>Featured Brands</h2>
-            <p>Popular names shoppers trust most</p>
+            <h2 data-i18n="brand.featured">Featured Brands</h2>
+            <p data-i18n="brand.featuredCopy">Popular names shoppers trust most</p>
         </div>
         <div class="featured-grid" id="featuredBrands"></div>
 
         <div class="section-header">
-            <h2>All Brands Directory</h2>
-            <p>Filter or search alphabetically</p>
+            <h2 data-i18n="brand.directory">All Brands Directory</h2>
+            <p data-i18n="brand.directoryCopy">Filter or search alphabetically</p>
         </div>
 
         <div class="brand-controls-wrap">
             <div class="brand-search-box">
                 <i class="fas fa-search"></i>
-                <input class="brand-search-input" id="brandSearch" type="search" placeholder="Search brands by name..." autocomplete="off">
+                <input class="brand-search-input" id="brandSearch" type="search" placeholder="Search brands by name..." data-i18n-placeholder="brand.searchPlaceholder" autocomplete="off">
             </div>
-            <div class="letter-filter-scroll" id="letterFilter" aria-label="Filter brands by first letter"></div>
+            <div class="letter-filter-scroll" id="letterFilter" aria-label="Filter brands by first letter" data-i18n-aria="brand.filterByLetter"></div>
         </div>
 
         <section class="brand-directory-grid" id="brandDirectory"></section>
-        <div class="empty-state" id="brandEmptyState">No brands found matching your search.</div>
+        <div class="empty-state" id="brandEmptyState" data-i18n="brand.noResults">No brands found matching your search.</div>
     </main>
 
     <script src="./cart.js"></script>

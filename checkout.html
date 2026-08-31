@@ -1,20 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/x-icon" href="icon.ico?v=2">
+    <script>
+        (function () {
+            const lang = localStorage.getItem("heliomed_lang") === "ar" ? "ar" : "en";
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        }());
+    </script>
     <link rel="icon" type="image/ico" href="icon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout | Heliomed</title>
     <meta name="description" content="Complete your Heliomed order.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
     <style>
         :root {
-            --brand-blue: #1D5F73;
-            --brand-pink: #C2A26B;
+            --pearl-aqua: #A2D8D2;
+            --pearl-aqua-deep: #146B66;
+            --pearl-aqua-hover: #0E5652;
+            --pearl-aqua-soft: #F0F8F7;
+            --pearl-aqua-border: #CCE8E5;
+
+            --brand-blue: #146B66;
+            --brand-blue-hover: #0E5652;
+            --brand-pink: #A2D8D2;
             --brand-dark: #07111F;
-            --brand-soft-blue: #FBF7F0;
-            --brand-soft-pink: #F8F2E8;
-            --brand-border: #E8DCC8;
+            --brand-soft-blue: #F0F8F7;
+            --brand-soft-pink: #F0F8F7;
+            --brand-border: #CCE8E5;
         }
         * { box-sizing: border-box; }
         body {
@@ -130,7 +148,7 @@
             font-weight: 900;
             margin-left: 2px;
         }
-        input,
+        input:not([type="checkbox"]):not([type="radio"]),
         select,
         textarea {
             width: 100%;
@@ -138,6 +156,8 @@
             padding: 12px;
             outline: none;
             background: #fff;
+            font-size: 16px;
+            border-radius: 4px;
         }
         textarea {
             min-height: 92px;
@@ -316,6 +336,8 @@
     </style>
     <link rel="stylesheet" href="./responsive.css">
     <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./rtl.css">
+    <script src="./i18n.js"></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -326,16 +348,16 @@
                 </a>
             </div>
     
-            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-navigation" aria-expanded="false">
+            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" data-i18n-aria="common.openMenu" aria-controls="primary-navigation" aria-expanded="false">
                 <span class="hamburger-bar"></span>
                 <span class="hamburger-bar"></span>
                 <span class="hamburger-bar"></span>
             </button>
     
-            <ul class="nav-links" id="primary-navigation">
+            <ul class="nav-links" id="primary-navigation" data-i18n-static-text>
                 <li class="nav-panel-header" aria-hidden="true">
-                    <span class="nav-panel-title">MENU</span>
-                    <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
+                    <span class="nav-panel-title" data-i18n="nav.menu">MENU</span>
+                    <button class="nav-panel-close" type="button" aria-label="Close menu" data-i18n-aria="common.closeMenu"><i class="fas fa-times"></i></button>
                 </li>
                 <li class="nav-item">
                     <a href="./collection.html?collection=parapharmacy" class="nav-trigger">PARAPHARMACY <i class="fas fa-chevron-down"></i></a>
@@ -456,16 +478,16 @@
     
             <div class="header-actions">
                 <div class="search-box">
-                    <input type="text" placeholder="Search for products">
+                    <input type="text" placeholder="Search for products" data-i18n-placeholder="common.searchPlaceholder">
                     <i class="fas fa-search"></i>
                 </div>
                 <div class="header-icons">
-                    <a href="./account.html" aria-label="Open account"><i class="far fa-user"></i></a>
-                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist">
+                    <a href="./account.html" aria-label="Open account" data-i18n-aria="common.openAccount"><i class="far fa-user"></i></a>
+                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist" data-i18n-aria="common.openWishlist">
                         <i class="far fa-heart"></i>
                         <span class="wishlist-count">0</span>
                     </a>
-                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart">
+                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart" data-i18n-aria="common.shoppingCart">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
                     </a>
@@ -475,80 +497,70 @@
 
     <main>
         <div class="page-title">
-            <h1>Checkout</h1>
-            <a class="back-link" href="./cart.html">Back to cart</a>
+            <h1 data-i18n="checkout.title">Checkout</h1>
+            <a class="back-link" href="./cart.html" data-i18n="checkout.backToCart">Back to cart</a>
         </div>
 
         <div class="empty-checkout" id="emptyCheckout">
-            <h2>Your cart is empty</h2>
-            <p>Add products before checkout.</p>
-            <a class="back-link" href="./search.html">Browse products</a>
-        </div>
-
-        <div class="auth-required" id="authRequired">
-            <h2>Email account required</h2>
-            <p>Log in or create an account with email and password before checkout.</p>
-            <a class="auth-link" href="./account.html?next=checkout.html">Make / log in with email</a>
+            <h2 data-i18n="cart.emptyTitle">Your cart is empty</h2>
+            <p data-i18n="checkout.emptyBody">Add products before checkout.</p>
+            <a class="back-link" href="./search.html" data-i18n="cart.browseProducts">Browse products</a>
         </div>
 
         <section class="checkout-layout" id="checkoutLayout">
             <form class="checkout-form" id="checkoutForm">
                 <section class="form-section">
-                    <h2>Contact</h2>
+                    <h2 data-i18n="checkout.contact">Contact</h2>
                     <div class="field-grid">
                         <label>
-                            Full name <span class="required-star">*</span>
+                            <span data-i18n="account.fullName">Full name</span> <span class="required-star">*</span>
                             <input name="name" autocomplete="name" required>
                         </label>
                         <label>
-                            Phone number <span class="required-star">*</span>
+                            <span data-i18n="account.phone">Phone number</span> <span class="required-star">*</span>
                             <input name="phone" autocomplete="tel" required>
-                        </label>
-                        <label class="wide">
-                            Email <span class="required-star">*</span>
-                            <input name="email" type="email" autocomplete="email" required readonly>
                         </label>
                     </div>
                 </section>
 
                 <section class="form-section">
-                    <h2>Delivery Address</h2>
+                    <h2 data-i18n="checkout.deliveryAddress">Delivery Address</h2>
                     <div class="field-grid">
                         <label class="wide">
-                            Country <span class="required-star">*</span>
+                            <span data-i18n="checkout.country">Country</span> <span class="required-star">*</span>
                             <select name="country" required>
                                 <option value="Lebanon">Lebanon</option>
                             </select>
                         </label>
                         <label>
-                            State/Province <span class="required-star">*</span>
+                            <span data-i18n="checkout.stateProvince">State/Province</span> <span class="required-star">*</span>
                             <select name="area" id="areaSelect" required></select>
                         </label>
                         <label>
-                            City <span class="required-star">*</span>
+                            <span data-i18n="checkout.city">City</span> <span class="required-star">*</span>
                             <input name="city" autocomplete="address-level2" required>
                         </label>
                         <label class="wide">
-                            Address <span class="required-star">*</span>
+                            <span data-i18n="checkout.address">Address</span> <span class="required-star">*</span>
                             <input name="address" autocomplete="street-address" required>
                         </label>
                         <label class="wide">
-                            Apartment/Suite/Building <span class="required-star">*</span>
+                            <span data-i18n="checkout.building">Apartment/Suite/Building</span> <span class="required-star">*</span>
                             <input name="building" required>
                         </label>
                         <label class="wide">
-                            Floor (الطابق) <span class="required-star">*</span>
+                            <span data-i18n="checkout.floor">Floor (الطابق)</span> <span class="required-star">*</span>
                             <input name="floor" required>
                         </label>
                     </div>
                 </section>
 
                 <section class="form-section">
-                    <h2>Payment Method <span class="required-star">*</span></h2>
+                    <h2><span data-i18n="checkout.paymentMethod">Payment Method</span> <span class="required-star">*</span></h2>
                     <div class="payment-options">
                         <label class="payment-option">
                             <input type="radio" name="payment" value="Cash on Delivery" checked required>
-                            Cash on Delivery
+                            <span data-i18n="checkout.cashOnDelivery">Cash on Delivery</span>
                         </label>
                         <label class="payment-option">
                             <input type="radio" name="payment" value="Whish" required>
@@ -557,45 +569,44 @@
                     </div>
                 </section>
 
-                <button class="place-order" type="submit">Place order</button>
+                <button class="place-order" type="submit" data-i18n="checkout.placeOrder">Place order</button>
                 <div class="form-note" id="formNote" aria-live="polite"></div>
             </form>
 
-            <aside class="summary-panel" aria-label="Order summary">
-                <h2>Order Summary</h2>
+            <aside class="summary-panel" aria-label="Order summary" data-i18n-aria="checkout.orderSummary">
+                <h2 data-i18n="cart.summaryTitle">Order Summary</h2>
                 <div id="summaryItems"></div>
                 <div class="summary-line">
-                    <span>Items</span>
+                    <span data-i18n="cart.itemsLabel">Items</span>
                     <strong id="summaryCount">0</strong>
                 </div>
                 <div class="summary-line">
-                    <span>Subtotal</span>
+                    <span data-i18n="cart.subtotal">Subtotal</span>
                     <strong id="summarySubtotal">$0.00</strong>
                 </div>
                 <form class="discount-control" id="discountForm">
-                    <label for="discountCode">Gift / discount code</label>
+                    <label for="discountCode" data-i18n="checkout.discountCode">Gift / discount code</label>
                     <div class="discount-row">
-                        <input id="discountCode" type="text" autocomplete="off" placeholder="Code">
-                        <button class="apply-discount" type="submit">Apply</button>
+                        <input id="discountCode" type="text" autocomplete="off" placeholder="Code" data-i18n-placeholder="checkout.codePlaceholder">
+                        <button class="apply-discount" type="submit" data-i18n="checkout.apply">Apply</button>
                     </div>
                     <div class="summary-note" id="discountNote" aria-live="polite"></div>
                 </form>
                 <div class="summary-line" id="discountLine" hidden>
-                    <span>Discount</span>
+                    <span data-i18n="checkout.discount">Discount</span>
                     <strong id="summaryDiscount">-$0.00</strong>
                 </div>
                 <div class="summary-line">
-                    <span>Delivery</span>
+                    <span data-i18n="checkout.delivery">Delivery</span>
                     <strong id="summaryDelivery">$0.00</strong>
                 </div>
                 <div class="summary-line total">
-                    <span>Total</span>
+                    <span data-i18n="cart.total">Total</span>
                     <span id="summaryTotal">$0.00</span>
                 </div>
             </aside>
         </section>
     </main>
-
     <script src="./cart.js"></script>
     <script src="./wishlist.js"></script>
     <script type="module">
@@ -606,7 +617,6 @@
 
         const checkoutLayout = document.getElementById("checkoutLayout");
         const emptyCheckout = document.getElementById("emptyCheckout");
-        const authRequired = document.getElementById("authRequired");
         const summaryItems = document.getElementById("summaryItems");
         const summaryCount = document.getElementById("summaryCount");
         const summarySubtotal = document.getElementById("summarySubtotal");
@@ -623,6 +633,10 @@
         const IDEMPOTENCY_KEY = "heliomedCheckoutIdempotency";
         const createOrder = httpsCallable(functions, "createOrder");
         let currentUser = null;
+
+        function t(key, fallback) {
+            return window.HeliomedI18n?.t ? window.HeliomedI18n.t(key, fallback) : fallback;
+        }
 
         function escapeHtml(value) {
             return String(value ?? "").replace(/[&<>"']/g, function (char) {
@@ -671,13 +685,14 @@
             }).join("");
         }
 
+        window.addEventListener("heliomed:language-change", fillAreas);
+
         function fillProfile() {
             const profile = readProfile();
             Array.from(document.getElementById("checkoutForm").elements).forEach(function (field) {
                 if (!field.name || profile[field.name] === undefined) return;
                 field.value = profile[field.name];
             });
-            if (currentUser?.email) document.getElementById("checkoutForm").elements.email.value = currentUser.email;
             if (profile.area) {
                 areaSelect.value = profile.area;
                 window.HeliomedCart.setDeliveryArea(profile.area);
@@ -707,15 +722,13 @@
             const items = window.HeliomedCart.getItems();
             const summary = window.HeliomedCart.getSummary();
             const hasItems = items.length > 0;
-            const canCheckout = hasItems && currentUser && currentUser.email;
-            checkoutLayout.hidden = !canCheckout;
+            checkoutLayout.hidden = !hasItems;
             emptyCheckout.classList.toggle("visible", !hasItems);
-            authRequired.classList.toggle("visible", hasItems && !(currentUser && currentUser.email));
             summaryCount.textContent = window.HeliomedCart.getCount();
             summarySubtotal.textContent = window.HeliomedCart.formatMoney(summary.subtotal);
             summaryDiscount.textContent = "-" + window.HeliomedCart.formatMoney(summary.discountAmount);
             discountLine.hidden = summary.discountAmount <= 0;
-            summaryDelivery.textContent = summary.delivery === 0 ? "Free" : window.HeliomedCart.formatMoney(summary.delivery);
+            summaryDelivery.textContent = summary.delivery === 0 ? t("checkout.free", "Free") : window.HeliomedCart.formatMoney(summary.delivery);
             summaryTotal.textContent = window.HeliomedCart.formatMoney(summary.total);
             discountCode.value = summary.discount?.code || "";
             summaryItems.innerHTML = items.map(function (item) {
@@ -726,7 +739,7 @@
                     '<div class="summary-image">' + image + '</div>' +
                     '<div>' +
                         '<p class="summary-title">' + escapeHtml(item.title) + '</p>' +
-                        '<div class="summary-meta">Qty ' + escapeHtml(item.quantity) + ' · ' + escapeHtml(item.newPrice || window.HeliomedCart.formatMoney(item.price)) + '</div>' +
+                        '<div class="summary-meta">' + escapeHtml(t("cart.qty", "Qty")) + ' ' + escapeHtml(item.quantity) + ' · ' + escapeHtml(item.newPrice || window.HeliomedCart.formatMoney(item.price)) + '</div>' +
                     '</div>' +
                 '</article>';
             }).join("");
@@ -735,14 +748,14 @@
         discountForm.addEventListener("submit", async function (event) {
             event.preventDefault();
             discountNote.classList.remove("error");
-            discountNote.textContent = "Checking code...";
+            discountNote.textContent = t("checkout.checkingCode", "Checking code...");
             try {
                 const discount = await findDiscount(discountCode.value);
                 const subtotal = window.HeliomedCart.getSubtotal();
                 if (!discount || discount.active === false) {
                     window.HeliomedCart.clearDiscount();
                     discountNote.classList.add("error");
-                    discountNote.textContent = "Code not found or inactive.";
+                    discountNote.textContent = t("checkout.codeInvalid", "Code not found or inactive.");
                     renderSummary();
                     return;
                 }
@@ -750,17 +763,17 @@
                 if (subtotal < minSubtotal) {
                     window.HeliomedCart.clearDiscount();
                     discountNote.classList.add("error");
-                    discountNote.textContent = "This code needs a minimum subtotal of " + window.HeliomedCart.formatMoney(minSubtotal) + ".";
+                    discountNote.textContent = t("checkout.minimumSubtotalPrefix", "This code needs a minimum subtotal of") + " " + window.HeliomedCart.formatMoney(minSubtotal) + ".";
                     renderSummary();
                     return;
                 }
                 window.HeliomedCart.setDiscount(discount);
-                discountNote.textContent = "Code applied.";
+                discountNote.textContent = t("checkout.codeApplied", "Code applied.");
                 renderSummary();
             } catch (error) {
                 console.error(error);
                 discountNote.classList.add("error");
-                discountNote.textContent = "Could not check this code right now.";
+                discountNote.textContent = t("checkout.codeCheckError", "Could not check this code right now.");
             }
         });
 
@@ -769,19 +782,14 @@
             const submitButton = event.currentTarget.querySelector('[type="submit"]');
             const items = window.HeliomedCart.getItems();
             if (!items.length) {
-                formNote.textContent = "Add products before checkout.";
-                return;
-            }
-            if (!currentUser || !currentUser.email) {
-                authRequired.classList.add("visible");
-                checkoutLayout.hidden = true;
+                formNote.textContent = t("checkout.emptyBody", "Add products before checkout.");
                 return;
             }
             if (!event.currentTarget.reportValidity()) return;
             const form = new FormData(event.currentTarget);
             window.HeliomedCart.setDeliveryArea(form.get("area"));
             const profile = Object.fromEntries(form.entries());
-            profile.email = currentUser.email;
+            if (currentUser?.email) profile.email = currentUser.email;
             localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
             const payload = {
                 items: items.map(function (item) {
@@ -805,10 +813,14 @@
                 }
             };
             payload.idempotencyKey = idempotencyKeyFor(payload);
-            formNote.textContent = "Placing your order...";
+            formNote.textContent = t("checkout.placingOrder", "Placing your order...");
             submitButton.disabled = true;
             try {
-                await setDoc(doc(db, "userProfiles", currentUser.uid), profile, { merge: true });
+                await auth.authStateReady();
+                const checkoutUser = auth.currentUser;
+                if (checkoutUser) {
+                    await setDoc(doc(db, "userProfiles", checkoutUser.uid), profile, { merge: true });
+                }
                 const result = await createOrder(payload);
                 const order = result.data;
                 saveOrder(order);
@@ -818,12 +830,27 @@
                 window.location.href = "./order-confirmation.html?order=" + encodeURIComponent(order.id);
             } catch (error) {
                 console.error(error);
-                formNote.textContent = error?.message || "Could not place the order. Please try again.";
+                formNote.textContent = error?.message || t("checkout.placeOrderError", "Could not place the order. Please try again.");
                 submitButton.disabled = false;
             }
         });
 
+        async function syncDeliverySettings() {
+            try {
+                const snapshot = await getDoc(doc(db, "settings", "delivery"));
+                if (snapshot.exists()) {
+                    window.HeliomedCart.setDeliverySettings(snapshot.data());
+                }
+            } catch (error) {
+                console.warn("Could not sync delivery settings:", error);
+            }
+            fillAreas();
+            renderSummary();
+        }
+
         fillAreas();
+        fillProfile();
+        syncDeliverySettings();
         areaSelect.addEventListener("change", function () {
             window.HeliomedCart.setDeliveryArea(areaSelect.value);
             renderSummary();

@@ -12,6 +12,7 @@ import { medicineWriteOperation, requestPagesDeploy } from "./deploy-hook.js";
 import { CheckoutError } from "./domain.js";
 import {
     createOrder as createOrderTransaction,
+    trackOrder as trackOrderTransaction,
     updateOrderStatus as updateOrderStatusTransaction
 } from "./order-service.js";
 import {
@@ -20,16 +21,23 @@ import {
     rebuildDirtyProducts
 } from "./rebuild-service.js";
 import { submitProductReview as submitProductReviewTransaction } from "./review-service.js";
+import { sendOrderConfirmationWhatsApp } from "./whatsapp-service.js";
 
 initializeApp();
 
 const db = getFirestore();
 const cloudflareDeployHook = defineSecret("CLOUDFLARE_PAGES_DEPLOY_HOOK");
+const greenApiIdInstance = defineSecret("GREEN_API_ID_INSTANCE");
+const greenApiTokenInstance = defineSecret("GREEN_API_TOKEN_INSTANCE");
 const callableOptions = {
     region: "europe-west1",
     timeoutSeconds: 30,
     memory: "256MiB",
     maxInstances: 20
+};
+const createOrderOptions = {
+    ...callableOptions,
+    secrets: [greenApiIdInstance, greenApiTokenInstance]
 };
 
 const productDirtyOptions = {
@@ -64,15 +72,33 @@ function callableError(error) {
     return new HttpsError("internal", "The request could not be completed.");
 }
 
-export const createOrder = onCall(callableOptions, async (request) => {
+export const createOrder = onCall(createOrderOptions, async (request) => {
     try {
-        return await createOrderTransaction({
+        const order = await createOrderTransaction({
             db,
             auth: request.auth,
             data: request.data,
             now: () => new Date(),
             makeOrderId
         });
+
+        try {
+            const notificationSnapshot = await db.collection("settings").doc("notifications").get().catch(() => null);
+            const notifications = notificationSnapshot?.exists ? notificationSnapshot.data() : null;
+
+            await sendOrderConfirmationWhatsApp({
+                order,
+                idInstance: greenApiIdInstance.value(),
+                apiTokenInstance: greenApiTokenInstance.value(),
+                template: notifications?.whatsappTemplate,
+                enabled: notifications?.whatsappEnabled !== false,
+                logger: functionsLogger
+            });
+        } catch (notificationError) {
+            functionsLogger.error("Failed to send WhatsApp confirmation:", notificationError);
+        }
+
+        return order;
     } catch (error) {
         throw callableError(error);
     }
@@ -85,6 +111,17 @@ export const updateOrderStatus = onCall(callableOptions, async (request) => {
             auth: request.auth,
             data: request.data,
             now: () => new Date()
+        });
+    } catch (error) {
+        throw callableError(error);
+    }
+});
+
+export const trackOrder = onCall(callableOptions, async (request) => {
+    try {
+        return await trackOrderTransaction({
+            db,
+            data: request.data
         });
     } catch (error) {
         throw callableError(error);

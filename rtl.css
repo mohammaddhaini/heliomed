@@ -1,0 +1,356 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap");
+
+.language-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 34px;
+    padding: 3px;
+    border: 1px solid var(--brand-border, #E8DCC8);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--brand-dark, #07111F);
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.language-switcher .language-desktop button {
+    min-width: 38px;
+    min-height: 28px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    padding: 0 8px;
+}
+
+.language-switcher .language-desktop button.is-active {
+    background: var(--pearl-aqua, #A2D8D2);
+    color: #07111F;
+    font-weight: 800;
+}
+
+.language-switcher .language-divider {
+    color: #a8a097;
+    font-size: 11px;
+}
+
+html[dir="rtl"],
+html[lang="ar"] {
+    font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+html[dir="rtl"] body,
+html[lang="ar"] body,
+html[dir="rtl"] button,
+html[dir="rtl"] input,
+html[dir="rtl"] select,
+html[dir="rtl"] textarea,
+html[lang="ar"] button,
+html[lang="ar"] input,
+html[lang="ar"] select,
+html[lang="ar"] textarea {
+    font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.fa,
+.fas,
+.far,
+.fab,
+.fal,
+.fad,
+.fa-solid,
+.fa-regular,
+.fa-brands,
+[class*="fa-"],
+[class^="fa-"] {
+    font-family: "Font Awesome 6 Free" !important;
+    font-style: normal;
+}
+
+.fab,
+.fa-brands,
+[class*="fa-brands"] {
+    font-family: "Font Awesome 6 Brands" !important;
+}
+
+.fas,
+.fa-solid {
+    font-weight: 900 !important;
+}
+
+.far,
+.fa-regular,
+.fab,
+.fa-brands {
+    font-weight: 400 !important;
+}
+
+.fa::before,
+.fas::before,
+.far::before,
+.fa-solid::before,
+.fa-regular::before,
+[class*="fa-"]:not(.fab):not(.fa-brands)::before {
+    font-family: "Font Awesome 6 Free" !important;
+}
+
+.fab::before,
+.fa-brands::before,
+[class*="fa-brands"]::before {
+    font-family: "Font Awesome 6 Brands" !important;
+}
+
+html[dir="rtl"] body {
+    direction: rtl;
+    text-align: right;
+    line-height: 1.65;
+}
+
+html[dir="rtl"] input,
+html[dir="rtl"] select,
+html[dir="rtl"] textarea {
+    text-align: right;
+}
+
+html[dir="rtl"] .top-social-strip,
+html[dir="rtl"] .header,
+html[dir="rtl"] .nav-links,
+html[dir="rtl"] .header-actions,
+html[dir="rtl"] .header-icons,
+html[dir="rtl"] .breadcrumb,
+html[dir="rtl"] .meta-line,
+html[dir="rtl"] .rating-summary,
+html[dir="rtl"] .price-row,
+html[dir="rtl"] .variant-options,
+html[dir="rtl"] .card-actions,
+html[dir="rtl"] .cart-drawer-header,
+html[dir="rtl"] .cart-drawer-title-wrap,
+html[dir="rtl"] .cart-drawer-item-bottom,
+html[dir="rtl"] .cart-drawer-qty-control,
+html[dir="rtl"] .cart-drawer-actions {
+    direction: rtl;
+}
+
+html[dir="rtl"] .search-box input {
+    text-align: right;
+    padding-right: 35px;
+    padding-left: 15px;
+}
+
+html[dir="rtl"] .search-box i {
+    right: 10px;
+    left: auto;
+}
+
+html[dir="rtl"] .cart-count,
+html[dir="rtl"] .wishlist-count,
+html[dir="rtl"] .header-icons a[href*="cart.html"] .cart-count {
+    right: auto !important;
+    left: -4px !important;
+    top: -6px !important;
+    width: auto !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    line-height: 18px !important;
+    padding: 0 4px !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+}
+
+html[dir="rtl"] .badge,
+html[dir="rtl"] .discount-badge,
+html[dir="rtl"] .cc-pc-badge {
+    left: auto;
+    right: 10px;
+}
+
+html[dir="rtl"] .cc-pc-badge {
+    right: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 6px;
+}
+
+html[dir="rtl"] .cc-pc-trust-badge {
+    left: auto;
+    right: 8px;
+}
+
+html[dir="rtl"] .hero-stat {
+    border-left: 0;
+    border-right: 4px solid var(--pearl-aqua, #A2D8D2);
+}
+
+html[dir="rtl"] .cc-split-layout {
+    border-left: 1px solid var(--brand-border, #CCE8E5);
+    border-right: 6px solid var(--pearl-aqua, #A2D8D2);
+}
+
+html[dir="rtl"] .cc-split-layout.is-reversed {
+    border-right: 1px solid var(--brand-border, #CCE8E5);
+    border-left: 6px solid var(--pearl-aqua, #A2D8D2);
+}
+
+html[dir="rtl"] .cc-split-banner .banner-overlay,
+html[dir="rtl"] .cc-product-card,
+html[dir="rtl"] .product-card,
+html[dir="rtl"] .product-body,
+html[dir="rtl"] .related-body,
+html[dir="rtl"] .review-card,
+html[dir="rtl"] .cart-drawer-item-details {
+    text-align: right;
+}
+
+html[dir="rtl"] .filter-group.is-collapsed .filter-heading i {
+    transform: rotate(90deg);
+}
+
+html[dir="rtl"] .fa-arrow-right,
+html[dir="rtl"] .fa-chevron-right,
+html[dir="rtl"] .fa-chevron-left {
+    transform: scaleX(-1);
+}
+
+html[dir="rtl"] .slider-arrow,
+html[dir="rtl"] .slider-arrow i,
+html[dir="rtl"] .slider-arrow .fa-chevron-left,
+html[dir="rtl"] .slider-arrow .fa-chevron-right {
+    transform: none !important;
+}
+
+html[dir="rtl"] .slider-arrow {
+    transform: translateY(-50%) !important;
+}
+
+html[dir="rtl"] .slider-arrow:hover {
+    transform: translateY(-50%) scale(1.08) !important;
+}
+
+html[dir="rtl"] .slider-arrow.left {
+    left: 16px !important;
+    right: auto !important;
+}
+
+html[dir="rtl"] .slider-arrow.right {
+    right: 16px !important;
+    left: auto !important;
+}
+
+html[dir="rtl"] .footer-bottom-center,
+html[dir="rtl"] .empty-state,
+html[dir="rtl"] .empty,
+html[dir="rtl"] .placeholder,
+html[dir="rtl"] .image-placeholder,
+html[dir="rtl"] .cart-drawer-empty {
+    text-align: center;
+}
+
+html[dir="rtl"] .toast-message,
+html[dir="rtl"] .toast {
+    direction: rtl;
+}
+
+@media (max-width: 900px) {
+    html[dir="rtl"] .nav-links {
+        left: auto !important;
+        right: 0 !important;
+        border-right: 0 !important;
+        border-left: 1px solid var(--brand-border, #E8DCC8) !important;
+        transform: translateX(105%) !important;
+    }
+
+    html[dir="rtl"] .header.mobile-nav-open .nav-links {
+        transform: translateX(0) !important;
+    }
+
+    html[dir="rtl"] .nav-panel-close,
+    html[dir="rtl"] .mega-group-toggle {
+        margin-left: 0 !important;
+        margin-right: auto !important;
+    }
+}
+
+@media (max-width: 760px) {
+    .language-switcher {
+        min-height: 30px;
+        font-size: 11px;
+    }
+
+    .language-switcher .language-desktop button {
+        min-width: 32px;
+        min-height: 24px;
+        padding: 0 6px;
+    }
+}
+
+.language-toggle-btn,
+.language-switcher .language-toggle-btn {
+    min-width: 36px !important;
+    height: 34px !important;
+    padding: 0 9px !important;
+    border: 1px solid var(--brand-border, #E8DCC8) !important;
+    border-radius: 4px !important;
+    background: #ffffff !important;
+    color: var(--brand-dark, #07111F) !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    text-transform: uppercase !important;
+    flex-shrink: 0 !important;
+    letter-spacing: 0.4px !important;
+    box-sizing: border-box !important;
+    line-height: 1 !important;
+}
+
+.language-toggle-btn:hover,
+.language-toggle-btn:active,
+.language-switcher .language-toggle-btn:hover,
+.language-switcher .language-toggle-btn:active {
+    background: var(--brand-soft-blue, #F0F8F7) !important;
+    border-color: var(--brand-blue, #146B66) !important;
+    color: var(--brand-blue, #146B66) !important;
+}
+
+html[dir="rtl"] .search-slide-panel,
+html[dir="rtl"] .search-slide-header,
+html[dir="rtl"] .search-slide-title-wrap,
+html[dir="rtl"] .search-slide-form,
+html[dir="rtl"] .search-slide-quick {
+    direction: rtl;
+    text-align: right;
+}
+
+html[dir="rtl"] .search-slide-input-icon {
+    left: auto;
+    right: 14px;
+}
+
+html[dir="rtl"] .search-slide-input {
+    padding: 10px 42px 10px 40px;
+    text-align: right;
+}
+
+html[dir="rtl"] .search-slide-clear-btn {
+    right: auto;
+    left: 12px;
+}
+
+@media (max-width: 900px) {
+    .language-switcher {
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+        min-height: 34px !important;
+        box-shadow: none !important;
+    }
+}

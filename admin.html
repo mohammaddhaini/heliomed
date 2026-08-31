@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/x-icon" href="icon.ico?v=2">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin | Heliomed</title>
     <meta name="description" content="Heliomed admin management.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
     <style>
         :root {
-            --brand-blue: #1D5F73;
-            --brand-blue-hover: #164958;
-            --brand-pink: #C2A26B;
+            --pearl-aqua: #A2D8D2;
+            --brand-blue: #146B66;
+            --brand-blue-hover: #0E5652;
+            --brand-pink: #A2D8D2;
             --brand-dark: #07111F;
-            --brand-soft-blue: #F4F8FA;
-            --brand-soft-pink: #FAF6EE;
-            --brand-border: #E5DDD0;
-            --brand-border-subtle: #EDE7DD;
+            --brand-soft-blue: #F0F8F7;
+            --brand-soft-pink: #F0F8F7;
+            --brand-border: #CCE8E5;
+            --brand-border-subtle: #D8EEEB;
             --danger: #D9381E;
             --danger-bg: #FDF2F0;
             --ok: #1B7F56;
@@ -1404,6 +1409,75 @@
             letter-spacing: 0.04em;
         }
 
+        /* ================= STORE SETTINGS & WHATSAPP ================= */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 20px;
+        }
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 8px 0 14px;
+        }
+        .placeholder-chip {
+            background: #EBF3F6;
+            color: var(--brand-blue);
+            border: 1px solid #D2E4EB;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .placeholder-chip:hover {
+            background: var(--brand-blue);
+            color: #fff;
+            border-color: var(--brand-blue);
+        }
+        .wa-preview-card {
+            background: #E5DDD5;
+            background-image: radial-gradient(#d3c6ba 1px, transparent 0);
+            background-size: 16px 16px;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--brand-border);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .wa-bubble {
+            background: #DCF8C6;
+            padding: 12px 14px;
+            border-radius: 8px 8px 0 8px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #111;
+            white-space: pre-wrap;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+            max-width: 92%;
+            align-self: flex-end;
+            word-break: break-word;
+            direction: rtl;
+            text-align: right;
+        }
+        .wa-bubble-time {
+            font-size: 10px;
+            color: #888;
+            margin-top: 4px;
+            text-align: left;
+            direction: ltr;
+        }
+        .inline-edit-input {
+            width: 80px;
+            padding: 4px 8px;
+            border: 1px solid var(--brand-border);
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
         /* RESPONSIVE MEDIA QUERIES */
         @media (max-width: 960px) {
             .admin-shell { grid-template-columns: 1fr; }
@@ -1444,6 +1518,8 @@
             .pagination { flex-direction: column; align-items: center; }
         }
     </style>
+    <link rel="stylesheet" href="./rtl.css">
+    <script src="./i18n.js"></script>
 </head>
 <body>
 
@@ -1493,8 +1569,10 @@
                     <button class="tab-btn" type="button" data-tab="orders"><i class="fas fa-receipt"></i> Orders</button>
                     <button class="tab-btn" type="button" data-tab="users"><i class="fas fa-users"></i> Users</button>
                     <button class="tab-btn" type="button" data-tab="discounts"><i class="fas fa-tag"></i> Discounts</button>
+                    <button class="tab-btn" type="button" data-tab="settings"><i class="fas fa-sliders"></i> Store Settings</button>
                 </nav>
                 <a class="sidebar-link" href="./index.html"><i class="fas fa-store"></i> Storefront</a>
+                <button class="sidebar-link" id="adminClearCacheBtn" type="button" title="Clear all cache (Ctrl+Shift+R)"><i class="fas fa-arrows-rotate"></i> Clear Cache</button>
                 <button class="signout-btn" id="signOutBtn" type="button"><i class="fas fa-right-from-bracket"></i> Sign out</button>
             </aside>
 
@@ -1579,8 +1657,14 @@
                                             <label class="wide">Section Headline
                                                 <input id="cmsFieldTitle" placeholder="e.g. Popular Brands">
                                             </label>
+                                            <label class="wide">Section Headline (Arabic)
+                                                <input id="cmsFieldTitleAr" placeholder="اكتب العنوان بالعربية" lang="ar" dir="rtl">
+                                            </label>
                                             <label class="wide">Section Subheading / Caption
                                                 <input id="cmsFieldSubtitle" placeholder="e.g. Daily parapharmacy essentials for confident routines">
+                                            </label>
+                                            <label class="wide">Section Subheading / Caption (Arabic)
+                                                <input id="cmsFieldSubtitleAr" placeholder="اكتب الوصف بالعربية" lang="ar" dir="rtl">
                                             </label>
                                         </div>
                                     </fieldset>
@@ -1634,7 +1718,14 @@
                                 <div class="form-grid">
                                     <label class="wide">Title <input name="title" required></label>
                                     <label>Brand <input name="brand"></label>
-                                    <label>Category <input name="category"></label>
+                                    <label>Category
+                                        <div style="display:flex; gap:6px; align-items:center;">
+                                            <input name="category" style="flex:1;">
+                                            <button type="button" id="quickCategoryPhotoBtn" class="secondary-btn" style="font-size:11px; padding:5px 8px; white-space:nowrap;" title="Open Photo Uploader for this category">
+                                                <i class="fas fa-camera"></i> Category Photo
+                                            </button>
+                                        </div>
+                                    </label>
                                     <label>Section <input name="section"></label>
                                     <label>Badge <input name="badge"></label>
                                     <label>Old price <input name="oldPrice" placeholder="$0.00"></label>
@@ -1685,6 +1776,62 @@
                         </div>
                     </details>
 
+                    <details class="panel-section" id="categoryPhotosSection" style="margin-bottom: 16px;">
+                        <summary><i class="fas fa-layer-group" style="margin-right:8px; color:var(--brand-blue);"></i> Collection Category Photos (Circle Icons)</summary>
+                        <div class="panel-body">
+                            <p style="margin:0 0 16px; font-size:13px; color:var(--text-muted);">
+                                Upload custom photos for categories and subcategories displayed as circular icons on the collection pages.
+                            </p>
+                            <div class="category-photo-manager" style="display:grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start;">
+                                <div style="background:var(--brand-soft-blue); padding:18px; border:1px solid var(--brand-border); border-radius:8px;">
+                                    <h4 style="margin:0 0 12px; font-size:14px; color:var(--brand-dark); font-weight:700;"><i class="fas fa-camera"></i> Category Photo</h4>
+                                    
+                                    <div style="margin-bottom:14px;">
+                                        <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Choose Category to Edit</label>
+                                        <select id="catPhotoCategorySelect" style="width:100%; padding:8px 10px; border:1px solid var(--brand-border); border-radius:4px; font-size:13px; background:#fff;">
+                                            <option value="">-- Choose Category or Subcategory --</option>
+                                        </select>
+                                    </div>
+
+                                    <div style="text-align:center; padding:16px 10px; background:#fff; border:1px solid var(--brand-border); border-radius:6px; margin-bottom:14px;">
+                                        <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase; font-weight:600;">Storefront Circle Preview</div>
+                                        <div id="catPhotoPreviewCircle" style="width:92px; height:92px; border-radius:50%; background:#F1F4F7; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; overflow:hidden; border:2px solid transparent; box-shadow:0 2px 8px rgba(0,0,0,0.06); position:relative;">
+                                            <i class="fas fa-image" style="font-size:30px; color:#94a3b8;"></i>
+                                        </div>
+                                        <div id="catPhotoSelectedTitle" style="font-size:12px; font-weight:800; text-transform:uppercase; color:#1a202c; letter-spacing:0.3px;">No category selected</div>
+                                        <div id="catPhotoSourceBadge" style="font-size:10px; font-weight:700; padding:2px 8px; border-radius:999px; display:inline-block; margin-top:6px; background:#e2e8f0; color:#475569;">No Photo</div>
+                                    </div>
+
+                                    <div style="display:flex; flex-direction:column; gap:10px;">
+                                        <label class="primary-btn" style="cursor:pointer; text-align:center; margin:0; font-size:13px; padding:9px 14px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                                            <i class="fas fa-cloud-arrow-up"></i> Upload Photo (File)
+                                            <input id="catPhotoFileInput" type="file" accept="image/*" style="display:none;">
+                                        </label>
+                                        <div style="display:flex; gap:6px;">
+                                            <input id="catPhotoUrlInput" type="url" placeholder="Or paste image URL..." style="flex:1; padding:7px 10px; font-size:12px; border:1px solid var(--brand-border); border-radius:4px;">
+                                            <button id="catPhotoSaveUrlBtn" type="button" class="secondary-btn" style="font-size:12px; padding:7px 12px;"><i class="fas fa-link"></i> Set URL</button>
+                                        </div>
+                                        <button id="catPhotoRemoveBtn" type="button" class="secondary-btn danger" style="font-size:12px; padding:7px 12px; display:none;">
+                                            <i class="fas fa-trash"></i> Remove Custom Photo
+                                        </button>
+                                    </div>
+                                    <div id="catPhotoUploadStatus" style="font-size:12px; font-weight:600; color:var(--brand-blue); margin-top:10px; min-height:18px; text-align:center;"></div>
+                                </div>
+
+                                <div style="background:#fff; padding:18px; border:1px solid var(--brand-border); border-radius:8px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                                        <div>
+                                            <strong style="font-size:14px; color:var(--brand-dark);">All Store Categories (<span id="catPhotoCount">0</span>)</strong>
+                                            <span style="font-size:12px; color:var(--text-muted); display:block;">Click any category to change its photo</span>
+                                        </div>
+                                        <input id="catPhotoSearch" type="search" placeholder="Search categories..." style="padding:6px 12px; font-size:12px; border:1px solid var(--brand-border); border-radius:4px; width:200px;">
+                                    </div>
+                                    <div id="catPhotoGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 14px; max-height: 480px; overflow-y: auto; padding: 6px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
                     <div class="toolbar">
                         <div class="toolbar-group">
                             <input id="productSearch" type="search" placeholder="Search products...">
@@ -1732,9 +1879,27 @@
                                         </select>
                                     </label>
                                     <label>Title <input name="title" required></label>
+                                    <label>Arabic title <input name="title_ar" lang="ar" dir="rtl" placeholder="العنوان بالعربية"></label>
                                     <label>Slug <input name="slug" placeholder="Auto-generated if blank"></label>
                                     <label>Sort order <input name="sortOrder" type="number" step="1" value="0"></label>
                                     <label class="wide">Link / href <input name="href" placeholder="./collection.html?collection=skin-care"></label>
+                                    <div class="wide" style="display:flex; gap:16px; align-items:center; background:var(--brand-soft-blue); padding:12px 14px; border:1px solid var(--brand-border); border-radius:6px;">
+                                        <div id="categoryFormImagePreview" style="width:68px; height:68px; border-radius:50%; background:#F1F4F7; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; border:2px solid transparent; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
+                                            <i class="fas fa-image" style="color:#94a3b8; font-size:24px;"></i>
+                                        </div>
+                                        <div style="flex:1;">
+                                            <label style="font-size:12px; font-weight:700; margin-bottom:4px; display:block;">Category Photo (Collection Page Circle)</label>
+                                            <div style="display:flex; gap:8px; align-items:center;">
+                                                <input name="imageUrl" id="categoryFormImageUrl" placeholder="Image URL (or upload from device)" style="font-size:12px; padding:6px 10px; flex:1;">
+                                                <label class="secondary-btn" style="cursor:pointer; margin:0; font-size:12px; padding:6px 12px; white-space:nowrap; display:inline-flex; align-items:center; gap:6px;">
+                                                    <i class="fas fa-upload"></i> Upload
+                                                    <input id="categoryFormFileInput" type="file" accept="image/*" style="display:none;">
+                                                </label>
+                                                <button type="button" id="categoryFormClearImageBtn" class="secondary-btn danger" style="font-size:12px; padding:6px 10px; display:none;" title="Remove Photo"><i class="fas fa-times"></i></button>
+                                            </div>
+                                            <span id="categoryFormUploadStatus" style="font-size:11px; color:var(--brand-blue); display:block; margin-top:3px; min-height:16px;"></span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="actions">
                                     <button class="primary-btn" type="submit"><i class="fas fa-save"></i> Save Category</button>
@@ -1854,12 +2019,113 @@
                     </details>
                     <div class="table-wrap"><table id="discountsTable"></table></div>
                 </section>
+
+                <section class="tab-panel hidden" id="settingsPanel">
+                    <div class="settings-grid">
+                        <div class="panel-section">
+                            <h2 style="margin: 0 0 14px; font-size: 17px; font-weight: 800; color: var(--brand-dark);"><i class="fab fa-whatsapp" style="color: #25D366;"></i> WhatsApp Order Message Template</h2>
+                            <form id="whatsappSettingsForm">
+                                <div class="form-grid" style="grid-template-columns: 1fr; gap: 12px;">
+                                    <label>Automatic WhatsApp Notifications
+                                        <select name="whatsappEnabled" id="whatsappEnabledSelect">
+                                            <option value="true">Enabled (Send on new order)</option>
+                                            <option value="false">Disabled</option>
+                                        </select>
+                                    </label>
+                                    <div>
+                                        <label for="whatsappTemplateTextarea">Message Template</label>
+                                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Click any tag below to insert it into your message:</div>
+                                        <div class="chip-container" id="placeholderChips">
+                                            <button type="button" class="placeholder-chip" data-insert="{customerName}">{customerName}</button>
+                                            <button type="button" class="placeholder-chip" data-insert="{orderId}">{orderId}</button>
+                                            <button type="button" class="placeholder-chip" data-insert="{total}">{total}</button>
+                                            <button type="button" class="placeholder-chip" data-insert="{payment}">{payment}</button>
+                                            <button type="button" class="placeholder-chip" data-insert="{area}">{area}</button>
+                                            <button type="button" class="placeholder-chip" data-insert="{address}">{address}</button>
+                                            <button type="button" class="placeholder-chip" data-insert="{items}">{items}</button>
+                                            <button type="button" class="placeholder-chip" data-insert="{trackingUrl}">{trackingUrl}</button>
+                                        </div>
+                                        <textarea id="whatsappTemplateTextarea" name="whatsappTemplate" rows="12" style="width: 100%; font-family: inherit; font-size: 13px; line-height: 1.5; padding: 10px; border-radius: 6px; border: 1px solid var(--brand-border); resize: vertical;" dir="rtl"></textarea>
+                                    </div>
+                                </div>
+                                <div class="actions" style="margin-top: 14px;">
+                                    <button class="primary-btn" type="submit"><i class="fas fa-save"></i> Save WhatsApp Settings</button>
+                                    <button class="secondary-btn" id="resetWhatsAppTemplateBtn" type="button"><i class="fas fa-undo"></i> Reset to Default</button>
+                                </div>
+                            </form>
+                            <div style="margin-top: 20px;">
+                                <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;"><i class="fas fa-eye"></i> Live Message Preview (Customer View):</div>
+                                <div class="wa-preview-card">
+                                    <div class="wa-bubble" id="waLivePreview"></div>
+                                    <div class="wa-bubble-time">12:00 PM ✓✓</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-section">
+                            <h2 style="margin: 0 0 14px; font-size: 17px; font-weight: 800; color: var(--brand-dark);"><i class="fas fa-truck" style="color: var(--brand-blue);"></i> Delivery Options & Pricing</h2>
+                            <form id="deliveryGlobalForm" style="margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--brand-border-subtle);">
+                                <div class="form-grid">
+                                    <label>Free Shipping Threshold ($ USD)
+                                        <input type="number" id="freeShippingThresholdInput" name="freeShippingThreshold" step="0.5" min="0" value="75" required>
+                                    </label>
+                                </div>
+                                <div class="actions" style="margin-top: 10px;">
+                                    <button class="primary-btn" type="button" id="saveDeliverySettingsBtn"><i class="fas fa-save"></i> Save Delivery Settings</button>
+                                    <button class="secondary-btn" type="button" id="resetDeliveryAreasBtn"><i class="fas fa-undo"></i> Reset to Default 26 Areas</button>
+                                </div>
+                            </form>
+
+                            <details class="panel-section" id="areaFormDetails" style="margin-bottom: 14px; background: var(--brand-soft-blue);">
+                                <summary style="font-weight: 700; cursor: pointer; color: var(--brand-blue);"><i class="fas fa-plus-circle"></i> Add / Edit Delivery Area</summary>
+                                <div class="panel-body" style="padding-top: 12px;">
+                                    <form id="deliveryAreaForm">
+                                        <input type="hidden" name="editingIndex" id="areaEditingIndex" value="-1">
+                                        <div class="form-grid">
+                                            <label>Area Code / Key
+                                                <input name="areaValue" id="areaValueInput" placeholder="e.g. beirut or matn" required>
+                                            </label>
+                                            <label>Display Name (Label)
+                                                <input name="areaLabel" id="areaLabelInput" placeholder="e.g. Beirut - بيروت" required>
+                                            </label>
+                                            <label>Arabic Display Name
+                                                <input name="areaLabelAr" id="areaLabelArInput" placeholder="بيروت" lang="ar" dir="rtl">
+                                            </label>
+                                            <label>Delivery Cost ($ USD)
+                                                <input type="number" name="areaCost" id="areaCostInput" step="0.25" min="0" placeholder="4.00" required>
+                                            </label>
+                                            <label>Status
+                                                <select name="areaActive" id="areaActiveSelect">
+                                                    <option value="true">Active (Visible on checkout)</option>
+                                                    <option value="false">Inactive (Hidden)</option>
+                                                </select>
+                                            </label>
+                                        </div>
+                                        <div class="actions" style="margin-top: 10px;">
+                                            <button class="primary-btn" type="submit" id="saveAreaBtn"><i class="fas fa-plus"></i> Save Area</button>
+                                            <button class="secondary-btn" type="button" id="cancelAreaBtn">Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </details>
+
+                            <div class="toolbar" style="margin-bottom: 10px;">
+                                <input id="deliveryAreaSearch" placeholder="Filter delivery areas..." style="max-width: 260px;">
+                                <span id="deliveryAreaCountBadge" style="font-size: 12px; color: var(--text-muted); align-self: center;"></span>
+                            </div>
+                            <div class="table-wrap">
+                                <table id="deliveryAreasTable"></table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </main>
         </section>
     </div>
 
     <script type="module">
         import { auth, db, functions, storage } from "./firebase-init.js";
+        import { clearAllCache, clearAllProductCache } from "./products-cache.js";
         import {
             getIdTokenResult,
             onAuthStateChanged,
@@ -1920,6 +2186,27 @@
         const sidebarCloseBtn = document.getElementById("sidebarCloseBtn");
         const sidebarBackdrop = document.getElementById("sidebarBackdrop");
 
+        const categoryPhotosSection = document.getElementById("categoryPhotosSection");
+        const catPhotoCategorySelect = document.getElementById("catPhotoCategorySelect");
+        const catPhotoPreviewCircle = document.getElementById("catPhotoPreviewCircle");
+        const catPhotoSelectedTitle = document.getElementById("catPhotoSelectedTitle");
+        const catPhotoSourceBadge = document.getElementById("catPhotoSourceBadge");
+        const catPhotoFileInput = document.getElementById("catPhotoFileInput");
+        const catPhotoUrlInput = document.getElementById("catPhotoUrlInput");
+        const catPhotoSaveUrlBtn = document.getElementById("catPhotoSaveUrlBtn");
+        const catPhotoRemoveBtn = document.getElementById("catPhotoRemoveBtn");
+        const catPhotoUploadStatus = document.getElementById("catPhotoUploadStatus");
+        const catPhotoCount = document.getElementById("catPhotoCount");
+        const catPhotoSearch = document.getElementById("catPhotoSearch");
+        const catPhotoGrid = document.getElementById("catPhotoGrid");
+        const quickCategoryPhotoBtn = document.getElementById("quickCategoryPhotoBtn");
+
+        const categoryFormImagePreview = document.getElementById("categoryFormImagePreview");
+        const categoryFormImageUrl = document.getElementById("categoryFormImageUrl");
+        const categoryFormFileInput = document.getElementById("categoryFormFileInput");
+        const categoryFormClearImageBtn = document.getElementById("categoryFormClearImageBtn");
+        const categoryFormUploadStatus = document.getElementById("categoryFormUploadStatus");
+
         // CMS Builder elements
         const cmsStackList = document.getElementById("cmsStackList");
         const cmsOpenAddSectionBtn = document.getElementById("cmsOpenAddSectionBtn");
@@ -1937,7 +2224,9 @@
         const cmsCurrentSectionType = document.getElementById("cmsCurrentSectionType");
         const cmsSectionActiveToggle = document.getElementById("cmsSectionActiveToggle");
         const cmsFieldTitle = document.getElementById("cmsFieldTitle");
+        const cmsFieldTitleAr = document.getElementById("cmsFieldTitleAr");
         const cmsFieldSubtitle = document.getElementById("cmsFieldSubtitle");
+        const cmsFieldSubtitleAr = document.getElementById("cmsFieldSubtitleAr");
         const cmsFieldBgColor = document.getElementById("cmsFieldBgColor");
         const cmsFieldAccentColor = document.getElementById("cmsFieldAccentColor");
         const cmsRepeaterList = document.getElementById("cmsRepeaterList");
@@ -2264,75 +2553,90 @@
                 loadHomepageCMS(),
                 loadOrders(),
                 loadUsers(),
-                loadDiscounts()
+                loadDiscounts(),
+                loadSettings()
             ]);
             renderDashboard();
         }
 
         /* ================= HOMEPAGE THEME CUSTOMIZER ENGINE ================= */
-        const BRAND_SWATCHES = ["#1D5F73", "#C2A26B", "#07111F", "#F4F8FA", "#FFFFFF"];
+        const BRAND_SWATCHES = ["#146B66", "#A2D8D2", "#07111F", "#F0F8F7", "#FFFFFF"];
 
         const SECTION_DEFAULTS = {
             hero_carousel: {
                 type: "hero_carousel",
                 title: "Hero Carousel",
+                title_ar: "",
                 subtitle: "",
+                subtitle_ar: "",
                 active: true,
                 bgColor: "#FFFFFF",
                 accentColor: "#C2A26B",
                 slides: [
                     {
                         headline: "Care You Can Trust at Home",
+                        headline_ar: "",
                         kicker: "Heliomed Essentials",
+                        kicker_ar: "",
                         copy: "Daily parapharmacy, beauty, wellness, and recovery essentials organized for fast decisions.",
+                        copy_ar: "",
                         primaryCtaText: "Shop Daily Care",
+                        primaryCtaText_ar: "",
                         primaryCtaUrl: "./collection.html?collection=parapharmacy",
                         secondaryCtaText: "Find by concern",
+                        secondaryCtaText_ar: "",
                         secondaryCtaUrl: "#concerns",
-                        bgColor: "#FFFFFF",
+                        bgColor: "#0b1f2c",
                         accentColor: "#C2A26B",
-                        headlineColor: "#07111F",
-                        copyColor: "#4D5B66",
-                        kickerColor: "#C2A26B",
+                        headlineColor: "#FFFFFF",
+                        copyColor: "#F4F8FA",
+                        kickerColor: "#F6D69E",
                         buttonBgColor: "#C2A26B",
-                        buttonTextColor: "#FFFFFF",
-                        linkColor: "#07111F",
+                        buttonTextColor: "#07111F",
+                        linkColor: "#FFFFFF",
                         linkLineColor: "#C2A26B",
-                        highlightsBgColor: "transparent",
-                        highlightsTextColor: "#07111F",
-                        highlightsLineColor: "#C2A26B",
+                        highlightsBgColor: "rgba(255,255,255,0.16)",
+                        highlightsTextColor: "#FFFFFF",
+                        highlightsLineColor: "rgba(255,255,255,0.3)",
                         imageUrl: "https://images.unsplash.com/photo-1563467410-57df8894e173?q=80&w=800&auto=format&fit=crop",
-                        highlights: ["Skin & beauty", "Wellness support", "Recovery care"]
+                        highlights: ["Skin & beauty", "Wellness support", "Recovery care"],
+                        highlights_ar: []
                     }
                 ]
             },
             trust_strip: {
                 type: "trust_strip",
                 title: "Trust Badges",
+                title_ar: "",
                 subtitle: "",
+                subtitle_ar: "",
                 active: true,
                 items: [
-                    { icon: "fas fa-shield-heart", title: "Expert-curated parapharmacy selection" },
-                    { icon: "fas fa-truck-fast", title: "Delivery across Lebanon" },
-                    { icon: "fas fa-money-bill-wave", title: "COD and Whish Money checkout" }
+                    { icon: "fas fa-shield-heart", title: "Expert-curated parapharmacy selection", title_ar: "" },
+                    { icon: "fas fa-truck-fast", title: "Delivery across Lebanon", title_ar: "" },
+                    { icon: "fas fa-money-bill-wave", title: "COD and Whish Money checkout", title_ar: "" }
                 ]
             },
             category_finder: {
                 type: "category_finder",
                 title: "Shop by Category",
+                title_ar: "",
                 subtitle: "Jump straight into the main Heliomed departments.",
+                subtitle_ar: "",
                 active: true,
                 cards: [
-                    { icon: "fas fa-capsules", title: "Vitamins & Supplements", subtitle: "Energy, immunity, sleep, and joint support.", targetUrl: "./collection.html?collection=supplements" },
-                    { icon: "fas fa-spa", title: "Beauty & Skin Care", subtitle: "Skincare, haircare, and cosmetics.", targetUrl: "./collection.html?collection=skin-care" },
-                    { icon: "fas fa-baby", title: "Mother & Baby", subtitle: "Gentle daily care for babies and mothers.", targetUrl: "./collection.html?collection=baby-care" },
-                    { icon: "fas fa-stethoscope", title: "Medical Devices", subtitle: "Home health essentials and diagnostics.", targetUrl: "./collection.html?collection=medical-supplies" }
+                    { icon: "fas fa-capsules", title: "Vitamins & Supplements", title_ar: "", subtitle: "Energy, immunity, sleep, and joint support.", subtitle_ar: "", targetUrl: "./collection.html?collection=supplements" },
+                    { icon: "fas fa-spa", title: "Beauty & Skin Care", title_ar: "", subtitle: "Skincare, haircare, and cosmetics.", subtitle_ar: "", targetUrl: "./collection.html?collection=skin-care" },
+                    { icon: "fas fa-baby", title: "Mother & Baby", title_ar: "", subtitle: "Gentle daily care for babies and mothers.", subtitle_ar: "", targetUrl: "./collection.html?collection=baby-care" },
+                    { icon: "fas fa-stethoscope", title: "Medical Devices", title_ar: "", subtitle: "Home health essentials and diagnostics.", subtitle_ar: "", targetUrl: "./collection.html?collection=medical-supplies" }
                 ]
             },
             split_promo: {
                 type: "split_promo",
                 title: "Featured Product Picks",
+                title_ar: "",
                 subtitle: "Curated selections from the live catalog",
+                subtitle_ar: "",
                 direction: "normal",
                 active: true,
                 bgColor: "#FFFFFF",
@@ -2340,25 +2644,31 @@
                 bannerTextColor: "dark",
                 imageUrl: "",
                 ctaText: "Shop Featured Picks",
+                ctaText_ar: "",
                 ctaUrl: "./collection.html?collection=offers",
                 productIds: []
             },
             collection_showcase: {
                 type: "collection_showcase",
                 title: "Collection Spotlight",
+                title_ar: "",
                 subtitle: "A focused shelf from one storefront collection.",
+                subtitle_ar: "",
                 active: true,
                 bgColor: "#FFFFFF",
                 accentColor: "#C2A26B",
                 collectionId: "",
                 ctaText: "Shop Collection",
+                ctaText_ar: "",
                 ctaUrl: "./collection.html",
                 productIds: []
             },
             brand_showcase: {
                 type: "brand_showcase",
                 title: "Popular Brands",
+                title_ar: "",
                 subtitle: "Trusted beauty, wellness, and home-care names",
+                subtitle_ar: "",
                 active: true,
                 tabs: [
                     {
@@ -2370,26 +2680,30 @@
             concern_masonry: {
                 type: "concern_masonry",
                 title: "Shop by Concern",
+                title_ar: "",
                 subtitle: "Start with what you need help with.",
+                subtitle_ar: "",
                 active: true,
                 bricks: [
-                    { size: "tall", title: "Repair Your Skin Barrier", subtitle: "Cleansers and recovery creams", bgColor: "#e5dde3", imageUrl: "", targetUrl: "./collection.html?collection=skin-care" },
-                    { size: "square", title: "Daily Wellness", subtitle: "Vitamins and supplements", bgColor: "#d6bcb1", imageUrl: "", targetUrl: "./collection.html?collection=supplements" },
-                    { size: "square", title: "Mother & Baby", subtitle: "Gentle everyday basics", bgColor: "#cfc2c6", imageUrl: "", targetUrl: "./collection.html?collection=baby-care" },
-                    { size: "wide_top", title: "Supports & Recovery", subtitle: "Braces and movement care", bgColor: "#d8c5bd", imageUrl: "", targetUrl: "./collection.html?collection=medical-supplies" },
-                    { size: "wide_bottom", title: "Beauty Basics", subtitle: "Hair, nails, and makeup", bgColor: "#cbb8b8", imageUrl: "", targetUrl: "./collection.html?collection=makeup" }
+                    { size: "tall", title: "Repair Your Skin Barrier", title_ar: "", subtitle: "Cleansers and recovery creams", subtitle_ar: "", bgColor: "#e5dde3", imageUrl: "", targetUrl: "./collection.html?collection=skin-care" },
+                    { size: "square", title: "Daily Wellness", title_ar: "", subtitle: "Vitamins and supplements", subtitle_ar: "", bgColor: "#d6bcb1", imageUrl: "", targetUrl: "./collection.html?collection=supplements" },
+                    { size: "square", title: "Mother & Baby", title_ar: "", subtitle: "Gentle everyday basics", subtitle_ar: "", bgColor: "#cfc2c6", imageUrl: "", targetUrl: "./collection.html?collection=baby-care" },
+                    { size: "wide_top", title: "Supports & Recovery", title_ar: "", subtitle: "Braces and movement care", subtitle_ar: "", bgColor: "#d8c5bd", imageUrl: "", targetUrl: "./collection.html?collection=medical-supplies" },
+                    { size: "wide_bottom", title: "Beauty Basics", title_ar: "", subtitle: "Hair, nails, and makeup", subtitle_ar: "", bgColor: "#cbb8b8", imageUrl: "", targetUrl: "./collection.html?collection=makeup" }
                 ]
             },
             brand_collection_grid: {
                 type: "brand_collection_grid",
                 title: "Brands & Collections",
+                title_ar: "",
                 subtitle: "Quick links into featured brands and storefront departments.",
+                subtitle_ar: "",
                 active: true,
                 bgColor: "#F4F8FA",
                 accentColor: "#C2A26B",
                 cards: [
-                    { sourceType: "collection", sourceId: "", title: "Featured Collection", subtitle: "Explore curated products.", imageUrl: "", targetUrl: "./collection.html" },
-                    { sourceType: "brand", sourceId: "", title: "Featured Brand", subtitle: "Shop trusted favorites.", imageUrl: "", targetUrl: "./brand.html" }
+                    { sourceType: "collection", sourceId: "", title: "Featured Collection", title_ar: "", subtitle: "Explore curated products.", subtitle_ar: "", imageUrl: "", targetUrl: "./collection.html" },
+                    { sourceType: "brand", sourceId: "", title: "Featured Brand", title_ar: "", subtitle: "Shop trusted favorites.", subtitle_ar: "", imageUrl: "", targetUrl: "./brand.html" }
                 ]
             }
         };
@@ -2469,16 +2783,22 @@
                 addText: "Add Slide",
                 createItem: () => ({
                     headline: "New Slide",
+                    headline_ar: "",
                     kicker: "Heliomed Care",
+                    kicker_ar: "",
                     copy: "Add focused campaign copy for this slide.",
+                    copy_ar: "",
                     primaryCtaText: "Shop Now",
+                    primaryCtaText_ar: "",
                     primaryCtaUrl: "./collection.html",
                     secondaryCtaText: "",
+                    secondaryCtaText_ar: "",
                     secondaryCtaUrl: "",
                     bgColor: "#FFFFFF",
                     accentColor: "#C2A26B",
                     imageUrl: "",
-                    highlights: ["Authentic products", "Fast delivery", "Parapharmacy support"]
+                    highlights: ["Authentic products", "Fast delivery", "Parapharmacy support"],
+                    highlights_ar: []
                 })
             },
             trust_strip: {
@@ -2486,14 +2806,14 @@
                 arrayKey: "items",
                 itemLabel: "Badge",
                 addText: "Add Badge",
-                createItem: () => ({ icon: "fas fa-check", title: "New trust badge" })
+                createItem: () => ({ icon: "fas fa-check", title: "New trust badge", title_ar: "" })
             },
             category_finder: {
                 title: "Care Tiles",
                 arrayKey: "cards",
                 itemLabel: "Tile",
                 addText: "Add Tile",
-                createItem: () => ({ icon: "fas fa-spa", title: "New Category", subtitle: "", targetUrl: "./collection.html" })
+                createItem: () => ({ icon: "fas fa-spa", title: "New Category", title_ar: "", subtitle: "", subtitle_ar: "", targetUrl: "./collection.html" })
             },
             split_promo: {
                 title: "Selected Products",
@@ -2521,14 +2841,14 @@
                 arrayKey: "bricks",
                 itemLabel: "Brick",
                 addText: "Add Brick",
-                createItem: () => ({ size: "square", title: "Concern Item", subtitle: "", bgColor: "#d6bcb1", imageUrl: "", targetUrl: "./collection.html" })
+                createItem: () => ({ size: "square", title: "Concern Item", title_ar: "", subtitle: "", subtitle_ar: "", bgColor: "#d6bcb1", imageUrl: "", targetUrl: "./collection.html" })
             },
             brand_collection_grid: {
                 title: "Tiles",
                 arrayKey: "cards",
                 itemLabel: "Tile",
                 addText: "Add Tile",
-                createItem: () => ({ sourceType: "collection", sourceId: "", title: "New Tile", subtitle: "", imageUrl: "", targetUrl: "./collection.html" })
+                createItem: () => ({ sourceType: "collection", sourceId: "", title: "New Tile", title_ar: "", subtitle: "", subtitle_ar: "", imageUrl: "", targetUrl: "./collection.html" })
             }
         };
 
@@ -2576,7 +2896,9 @@
                 return {
                     id,
                     title: row.item.title || id,
+                    title_ar: row.item.title_ar || "",
                     subtitle: row.level,
+                    subtitle_ar: "",
                     href: row.item.href || "./collection.html?collection=" + encodeURIComponent(id),
                     imageUrl: row.item.imageUrl || ""
                 };
@@ -2586,7 +2908,9 @@
                 .map(item => ({
                     id: item.id,
                     title: item.title || item.id,
+                    title_ar: item.title_ar || "",
                     subtitle: item.description || "Collection content",
+                    subtitle_ar: item.description_ar || "",
                     href: "./collection.html?collection=" + encodeURIComponent(item.id),
                     imageUrl: item.imageUrl || ""
                 }));
@@ -2603,7 +2927,9 @@
                 .map(item => ({
                     id: item.id,
                     title: item.title || item.id,
+                    title_ar: item.title_ar || "",
                     subtitle: item.description || "Brand content",
+                    subtitle_ar: item.description_ar || "",
                     href: "./brand.html?brand=" + encodeURIComponent(item.id),
                     imageUrl: item.imageUrl || ""
                 }));
@@ -2641,7 +2967,9 @@
             const source = getTileSourceOptions(card.sourceType).find(item => item.id === card.sourceId);
             if (!source) return;
             card.title = source.title;
+            card.title_ar = source.title_ar || card.title_ar || "";
             card.subtitle = source.subtitle;
+            card.subtitle_ar = source.subtitle_ar || card.subtitle_ar || "";
             card.imageUrl = source.imageUrl;
             card.targetUrl = source.href;
         }
@@ -2881,7 +3209,9 @@
             cmsSectionActiveToggle.checked = sec.active !== false;
 
             cmsFieldTitle.value = sec.title || "";
+            cmsFieldTitleAr.value = sec.title_ar || "";
             cmsFieldSubtitle.value = sec.subtitle || "";
+            cmsFieldSubtitleAr.value = sec.subtitle_ar || "";
             cmsFieldBgColor.value = sec.bgColor || "#FFFFFF";
             cmsFieldAccentColor.value = sec.accentColor || "#C2A26B";
 
@@ -2937,6 +3267,7 @@
                             </select>
                         </label>
                         <label>Banner CTA Text <input data-section-key="ctaText" value="${escapeHtml(sec.ctaText || '')}"></label>
+                        <label>Banner CTA Text (Arabic) <input data-section-key="ctaText_ar" value="${escapeHtml(sec.ctaText_ar || '')}" lang="ar" dir="rtl"></label>
                         <label class="wide">Banner CTA URL <input data-section-key="ctaUrl" value="${escapeHtml(sec.ctaUrl || '')}"></label>
                         <label class="wide">Banner Image URL (Optional - leave blank for solid color) <input data-section-key="imageUrl" value="${escapeHtml(sec.imageUrl || '')}" placeholder="Leave blank to use solid background color"></label>
                         <div class="wide">${renderMediaDropzone({ imageUrl: sec.imageUrl, target: "section", key: "imageUrl", label: "Upload banner image (or leave empty for solid color)" })}</div>
@@ -2960,6 +3291,7 @@
                                 </select>
                             </label>
                             <label>CTA Text <input data-section-key="ctaText" value="${escapeHtml(sec.ctaText || '')}"></label>
+                            <label>CTA Text (Arabic) <input data-section-key="ctaText_ar" value="${escapeHtml(sec.ctaText_ar || '')}" lang="ar" dir="rtl"></label>
                             <label>CTA URL <input data-section-key="ctaUrl" value="${escapeHtml(sec.ctaUrl || selected?.href || '')}"></label>
                         </div>
                     </fieldset>
@@ -3038,12 +3370,17 @@
                 return `
                     <div class="form-grid">
                         <label>Kicker / Subtitle <input data-key="kicker" value="${escapeHtml(item.kicker || '')}"></label>
+                        <label>Kicker / Subtitle (Arabic) <input data-key="kicker_ar" value="${escapeHtml(item.kicker_ar || '')}" lang="ar" dir="rtl"></label>
                         <label>Headline (H1) <input data-key="headline" value="${escapeHtml(item.headline || '')}"></label>
+                        <label>Headline (Arabic) <input data-key="headline_ar" value="${escapeHtml(item.headline_ar || '')}" lang="ar" dir="rtl"></label>
                         <label class="wide">Copy Description <textarea data-key="copy" style="min-height:65px;">${escapeHtml(item.copy || '')}</textarea></label>
+                        <label class="wide">Copy Description (Arabic) <textarea data-key="copy_ar" lang="ar" dir="rtl" style="min-height:65px;">${escapeHtml(item.copy_ar || '')}</textarea></label>
                         
                         <label>Primary Button Text <input data-key="primaryCtaText" value="${escapeHtml(item.primaryCtaText || '')}"></label>
+                        <label>Primary Button Text (Arabic) <input data-key="primaryCtaText_ar" value="${escapeHtml(item.primaryCtaText_ar || '')}" lang="ar" dir="rtl"></label>
                         <label>Primary Button URL <input data-key="primaryCtaUrl" value="${escapeHtml(item.primaryCtaUrl || '')}"></label>
                         <label>Secondary Link Text <input data-key="secondaryCtaText" value="${escapeHtml(item.secondaryCtaText || '')}"></label>
+                        <label>Secondary Link Text (Arabic) <input data-key="secondaryCtaText_ar" value="${escapeHtml(item.secondaryCtaText_ar || '')}" lang="ar" dir="rtl"></label>
                         <label>Secondary Link URL <input data-key="secondaryCtaUrl" value="${escapeHtml(item.secondaryCtaUrl || '')}"></label>
                         
                         <div class="cms-sub-group">
@@ -3055,11 +3392,11 @@
                                 </div>
                                 <div class="cms-color-field">
                                     <span>Headline (H1)</span>
-                                    <input data-key="headlineColor" type="color" value="${escapeHtml(item.headlineColor || '#07111F')}" title="Headline Text Color">
+                                    <input data-key="headlineColor" type="color" value="${escapeHtml(item.headlineColor || '#FFFFFF')}" title="Headline Text Color">
                                 </div>
                                 <div class="cms-color-field">
                                     <span>Copy Text</span>
-                                    <input data-key="copyColor" type="color" value="${escapeHtml(item.copyColor || '#4D5B66')}" title="Copy Paragraph Color">
+                                    <input data-key="copyColor" type="color" value="${escapeHtml(item.copyColor || '#F4F8FA')}" title="Copy Paragraph Color">
                                 </div>
                                 <div class="cms-color-field">
                                     <span>Kicker / Accent</span>
@@ -3071,11 +3408,11 @@
                                 </div>
                                 <div class="cms-color-field">
                                     <span>Button Text</span>
-                                    <input data-key="buttonTextColor" type="color" value="${escapeHtml(item.buttonTextColor || '#FFFFFF')}" title="Primary Button Text Color">
+                                    <input data-key="buttonTextColor" type="color" value="${escapeHtml(item.buttonTextColor || '#07111F')}" title="Primary Button Text Color">
                                 </div>
                                 <div class="cms-color-field">
                                     <span>Link Text</span>
-                                    <input data-key="linkColor" type="color" value="${escapeHtml(item.linkColor || '#07111F')}" title="Secondary Link Color">
+                                    <input data-key="linkColor" type="color" value="${escapeHtml(item.linkColor || '#FFFFFF')}" title="Secondary Link Color">
                                 </div>
                                 <div class="cms-color-field">
                                     <span>Link Underline</span>
@@ -3089,6 +3426,10 @@
                             <label style="margin-bottom:6px;">
                                 Highlights Tags (comma separated)
                                 <input data-key="highlights" data-transform="csv" value="${escapeHtml((item.highlights || []).join(', '))}" placeholder="Skin care, Wellness, Recovery">
+                            </label>
+                            <label style="margin-bottom:6px;">
+                                Highlights Tags (Arabic, comma separated)
+                                <input data-key="highlights_ar" data-transform="csv" value="${escapeHtml((item.highlights_ar || []).join(', '))}" placeholder="العناية بالبشرة، الصحة، التعافي" lang="ar" dir="rtl">
                             </label>
                             
                             <div style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:8px;">
@@ -3123,6 +3464,7 @@
                     <div class="form-grid">
                         <label>Icon Class <input data-key="icon" value="${escapeHtml(item.icon || '')}" placeholder="fas fa-truck-fast"></label>
                         <label>Badge Title <input data-key="title" value="${escapeHtml(item.title || '')}"></label>
+                        <label class="wide">Badge Title (Arabic) <input data-key="title_ar" value="${escapeHtml(item.title_ar || '')}" lang="ar" dir="rtl"></label>
                     </div>
                 `;
             }
@@ -3131,7 +3473,9 @@
                     <div class="form-grid">
                         <label>Icon Class <input data-key="icon" value="${escapeHtml(item.icon || '')}"></label>
                         <label>Card Title <input data-key="title" value="${escapeHtml(item.title || '')}"></label>
+                        <label>Card Title (Arabic) <input data-key="title_ar" value="${escapeHtml(item.title_ar || '')}" lang="ar" dir="rtl"></label>
                         <label class="wide">Subtitle <input data-key="subtitle" value="${escapeHtml(item.subtitle || '')}"></label>
+                        <label class="wide">Subtitle (Arabic) <input data-key="subtitle_ar" value="${escapeHtml(item.subtitle_ar || '')}" lang="ar" dir="rtl"></label>
                         <label class="wide">Target URL <input data-key="targetUrl" value="${escapeHtml(item.targetUrl || '')}"></label>
                     </div>
                 `;
@@ -3209,8 +3553,10 @@
                             </select>
                         </label>
                         <label>Title <input data-key="title" value="${escapeHtml(item.title || '')}"></label>
+                        <label>Title (Arabic) <input data-key="title_ar" value="${escapeHtml(item.title_ar || '')}" lang="ar" dir="rtl"></label>
                         <label>Target URL <input data-key="targetUrl" value="${escapeHtml(item.targetUrl || '')}"></label>
                         <label class="wide">Subtitle <input data-key="subtitle" value="${escapeHtml(item.subtitle || '')}"></label>
+                        <label class="wide">Subtitle (Arabic) <input data-key="subtitle_ar" value="${escapeHtml(item.subtitle_ar || '')}" lang="ar" dir="rtl"></label>
                         <label class="wide">Image URL <input data-key="imageUrl" value="${escapeHtml(item.imageUrl || '')}"></label>
                         <div class="wide">${renderMediaDropzone({ imageUrl: item.imageUrl, target: "item", key: "imageUrl", label: "Upload tile image" })}</div>
                     </div>
@@ -3227,7 +3573,9 @@
                         </select>
                     </label>
                     <label>Brick Title <input data-key="title" value="${escapeHtml(item.title || '')}"></label>
+                    <label>Brick Title (Arabic) <input data-key="title_ar" value="${escapeHtml(item.title_ar || '')}" lang="ar" dir="rtl"></label>
                     <label class="wide">Subtitle <input data-key="subtitle" value="${escapeHtml(item.subtitle || '')}"></label>
+                    <label class="wide">Subtitle (Arabic) <input data-key="subtitle_ar" value="${escapeHtml(item.subtitle_ar || '')}" lang="ar" dir="rtl"></label>
                     <label>Background Color <input data-key="bgColor" type="color" value="${escapeHtml(item.bgColor || '#e5dde3')}" style="height:42px;"><span class="cms-swatch-row" data-swatches-for="brickBgColor"></span></label>
                     <label>Target URL <input data-key="targetUrl" value="${escapeHtml(item.targetUrl || '')}"></label>
                     <label class="wide">Image URL <input data-key="imageUrl" value="${escapeHtml(item.imageUrl || '')}"></label>
@@ -3370,9 +3718,21 @@
                 markCustomizerDirty();
             }
         });
+        cmsFieldTitleAr.addEventListener("input", function () {
+            if (activeSectionIndex >= 0) {
+                homepageLayout.sections[activeSectionIndex].title_ar = this.value;
+                markCustomizerDirty();
+            }
+        });
         cmsFieldSubtitle.addEventListener("input", function () {
             if (activeSectionIndex >= 0) {
                 homepageLayout.sections[activeSectionIndex].subtitle = this.value;
+                markCustomizerDirty();
+            }
+        });
+        cmsFieldSubtitleAr.addEventListener("input", function () {
+            if (activeSectionIndex >= 0) {
+                homepageLayout.sections[activeSectionIndex].subtitle_ar = this.value;
                 markCustomizerDirty();
             }
         });
@@ -3751,15 +4111,372 @@
                 ...layoutForStorage,
                 updatedAt: serverTimestamp()
             });
+            await clearAllProductCache();
             cmsStatusInfo.textContent = "Published live to index.html!";
             showStatus("Homepage published successfully!");
         });
 
         /* ================= STOREFRONT & PRODUCT CONTROLS ================= */
+        const BASE_CATEGORY_TREE = [
+            {
+                title: "Parapharmacy",
+                slug: "parapharmacy",
+                children: [
+                    { title: "Skin Care", slug: "skin-care", children: [{ title: "Face Care", slug: "face-care" }, { title: "Body Care", slug: "body-care" }] },
+                    { title: "Hair Care", slug: "hair-care" },
+                    { title: "Face Care", slug: "face-care" },
+                    { title: "Dental Care", slug: "dental-care" },
+                    { title: "Body Care", slug: "body-care" },
+                    { title: "Nail Care", slug: "nail-care" },
+                    { title: "Foot Care", slug: "foot-care" },
+                    { title: "Baby Care", slug: "baby-care" },
+                    { title: "Mother Care", slug: "mother-care" },
+                    { title: "Kids Care", slug: "kids-care" },
+                    { title: "Men Care", slug: "men-care" },
+                    { title: "Geriatric Care", slug: "geriatric-care" },
+                    { title: "Nutrition", slug: "nutrition" },
+                    { title: "Supplements", slug: "supplements" }
+                ]
+            },
+            {
+                title: "Medical Supplies",
+                slug: "medical-supplies",
+                children: [
+                    { title: "Home Care", slug: "home-care" },
+                    { title: "Foot Care", slug: "foot-care" },
+                    { title: "Liposuction", slug: "liposuction" },
+                    {
+                        title: "Orthopedic",
+                        slug: "orthopedic",
+                        children: [
+                            { title: "Ankle Support", slug: "ankle-support" },
+                            { title: "Back Support", slug: "back-support" },
+                            { title: "Cervical Support", slug: "cervical-support" },
+                            { title: "Disk Trac", slug: "disk-trac" },
+                            { title: "Knee Support", slug: "knee-support" },
+                            { title: "Shoulder and Elbow", slug: "shoulder-and-elbow" },
+                            { title: "Wrist and Hand Braces", slug: "wrist-and-hand-braces" }
+                        ]
+                    },
+                    { title: "Pediatric", slug: "pediatric" },
+                    { title: "Vascular", slug: "vascular" },
+                    { title: "Pillows", slug: "pillows" },
+                    {
+                        title: "Disposable Materials",
+                        slug: "disposable-materials",
+                        children: [
+                            { title: "Gloves", slug: "gloves" },
+                            { title: "Guaze", slug: "guaze" },
+                            { title: "Needles", slug: "needles" },
+                            { title: "Suture", slug: "suture" },
+                            { title: "Blades", slug: "blades" },
+                            { title: "Medical Protective Apparel", slug: "medical-protective-apparel" },
+                            { title: "Wound Care", slug: "wound-care" },
+                            { title: "Drapes", slug: "drapes" }
+                        ]
+                    },
+                    { title: "First Aid", slug: "first-aid" },
+                    { title: "Diagnostics", slug: "diagnostics" },
+                    { title: "Supports", slug: "supports" },
+                    { title: "Surgical", slug: "surgical" }
+                ]
+            },
+            {
+                title: "Organic",
+                slug: "organic",
+                children: []
+            },
+            {
+                title: "Perfume",
+                slug: "perfume",
+                children: [
+                    { title: "Women", slug: "women" },
+                    { title: "Men", slug: "men" },
+                    { title: "Kids", slug: "kids" },
+                    { title: "Bundles", slug: "bundles" }
+                ]
+            },
+            {
+                title: "Makeup",
+                slug: "makeup",
+                children: [
+                    { title: "Face", slug: "face" },
+                    { title: "Face Makeup", slug: "face-makeup" },
+                    { title: "Eye", slug: "eye" },
+                    { title: "Eyes", slug: "eyes" },
+                    { title: "Lips", slug: "lips" },
+                    { title: "Nail", slug: "nail" },
+                    { title: "Nails", slug: "nails" },
+                    { title: "Tools and Accessories", slug: "tools-and-accessories" },
+                    { title: "Makeup Remover", slug: "makeup-remover" },
+                    { title: "Medical Makeup", slug: "medical-makeup" },
+                    { title: "Palettes", slug: "palettes" },
+                    { title: "Korean Products", slug: "korean-products" }
+                ]
+            }
+        ];
+
+        let categoryImagesMap = {};
+
+        async function loadCategoryImages() {
+            try {
+                const snap = await getDoc(doc(db, "settings", "categoryImages"));
+                categoryImagesMap = snap.exists() ? (snap.data() || {}) : {};
+            } catch (err) {
+                console.warn("Could not load category images map", err);
+                categoryImagesMap = {};
+            }
+            renderCategoryPhotoSection();
+            renderCategoriesAccordion();
+        }
+
+        function getAllCategoriesList() {
+            const map = new Map();
+
+            function addCat(title, slugVal, parent = null, img = "") {
+                const cleanSlug = slug(slugVal || title);
+                if (!cleanSlug || cleanSlug === "product") return;
+                const existing = map.get(cleanSlug);
+                const customImg = categoryImagesMap[cleanSlug] || "";
+                const effectiveImg = customImg || img || (existing ? existing.imageUrl : "");
+                const src = customImg ? "custom" : (img ? "category" : (existing ? existing.source : "none"));
+
+                if (!existing) {
+                    map.set(cleanSlug, {
+                        title: title || cleanSlug,
+                        slug: cleanSlug,
+                        parentTitle: parent ? (parent.title || parent.slug) : "",
+                        imageUrl: effectiveImg,
+                        source: src,
+                        fallbackUrl: ""
+                    });
+                } else {
+                    if (title && !existing.title) existing.title = title;
+                    if (parent && !existing.parentTitle) existing.parentTitle = parent.title || parent.slug;
+                    if (customImg) {
+                        existing.imageUrl = customImg;
+                        existing.source = "custom";
+                    } else if (img && !existing.imageUrl) {
+                        existing.imageUrl = img;
+                        existing.source = "category";
+                    }
+                }
+            }
+
+            function traverse(nodes, parent = null) {
+                if (!Array.isArray(nodes)) return;
+                nodes.forEach(node => {
+                    addCat(node.title, node.slug, parent, node.imageUrl || node.image || "");
+                    if (node.children && node.children.length) {
+                        traverse(node.children, node);
+                    }
+                });
+            }
+
+            traverse(BASE_CATEGORY_TREE);
+            traverse(categories);
+
+            products.forEach(p => {
+                if (p.category) addCat(p.category, p.category);
+                if (p.subcategory || p.subCategory) addCat(p.subcategory || p.subCategory, p.subcategory || p.subCategory, { title: p.category });
+                if (p.section) addCat(p.section, p.section, { title: p.category });
+            });
+
+            const list = Array.from(map.values());
+            list.forEach(c => {
+                if (!c.imageUrl) {
+                    const matched = products.find(p => {
+                        const pCat = slug(p.category || "");
+                        const pSub = slug(p.subcategory || p.subCategory || "");
+                        const pSec = slug(p.section || "");
+                        return pCat === c.slug || pSub === c.slug || pSec === c.slug;
+                    });
+                    if (matched && (matched.imageUrl || (matched.images && matched.images[0]))) {
+                        c.fallbackUrl = matched.imageUrl || matched.images[0];
+                        c.source = "product";
+                    }
+                }
+            });
+
+            return list.sort((a, b) => a.title.localeCompare(b.title));
+        }
+
+        async function saveCategoryImage(slugValue, imageUrl) {
+            if (!slugValue) return;
+            const cleanSlug = slug(slugValue);
+            try {
+                await setDoc(doc(db, "settings", "categoryImages"), {
+                    [cleanSlug]: imageUrl || "",
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+
+                categoryImagesMap[cleanSlug] = imageUrl || "";
+
+                const rootDoc = categories.find(c => c.slug === cleanSlug);
+                if (rootDoc) {
+                    await setDoc(doc(db, "categories", cleanSlug), {
+                        imageUrl: imageUrl || "",
+                        updatedAt: serverTimestamp()
+                    }, { merge: true });
+                } else {
+                    for (const root of categories) {
+                        let updated = false;
+                        const nextChildren = (root.children || []).map(child => {
+                            if (child.slug === cleanSlug) {
+                                updated = true;
+                                return { ...child, imageUrl: imageUrl || "" };
+                            }
+                            const nextSubChildren = (child.children || []).map(subChild => {
+                                if (subChild.slug === cleanSlug) {
+                                    updated = true;
+                                    return { ...subChild, imageUrl: imageUrl || "" };
+                                }
+                                return subChild;
+                            });
+                            return { ...child, children: nextSubChildren };
+                        });
+                        if (updated) {
+                            await setDoc(doc(db, "categories", root.slug), {
+                                ...root,
+                                children: nextChildren,
+                                updatedAt: serverTimestamp()
+                            });
+                            break;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Error saving category image:", err);
+                throw err;
+            }
+        }
+
+        async function uploadCategoryPhoto(slugValue, file) {
+            if (!file || !file.type.startsWith("image/")) {
+                showStatus("Please select a valid image file.");
+                return "";
+            }
+            if (!slugValue) {
+                showStatus("Please select a category first.");
+                return "";
+            }
+            const cleanSlug = slug(slugValue);
+            const storagePath = "categories/" + cleanSlug + "/" + Date.now() + "-" + safeFileName(file.name);
+            const imageRef = ref(storage, storagePath);
+            await uploadBytes(imageRef, file, {
+                contentType: file.type || "image/jpeg",
+                customMetadata: { categorySlug: cleanSlug }
+            });
+            const downloadUrl = await getDownloadURL(imageRef);
+            await saveCategoryImage(cleanSlug, downloadUrl);
+            return downloadUrl;
+        }
+
+        function selectCategoryInPhotoManager(slugValue) {
+            if (!catPhotoCategorySelect) return;
+            catPhotoCategorySelect.value = slugValue;
+            updateSelectedCategoryPhotoPreview();
+        }
+
+        function updateSelectedCategoryPhotoPreview() {
+            if (!catPhotoCategorySelect) return;
+            const selectedSlug = catPhotoCategorySelect.value;
+            const list = getAllCategoriesList();
+            const cat = list.find(c => c.slug === selectedSlug);
+
+            if (!cat) {
+                catPhotoSelectedTitle.textContent = "Select a category";
+                catPhotoPreviewCircle.innerHTML = '<i class="fas fa-image" style="font-size:30px; color:#94a3b8;"></i>';
+                catPhotoSourceBadge.textContent = "No Photo";
+                catPhotoSourceBadge.style.background = "#e2e8f0";
+                catPhotoSourceBadge.style.color = "#475569";
+                catPhotoUrlInput.value = "";
+                catPhotoRemoveBtn.style.display = "none";
+                return;
+            }
+
+            catPhotoSelectedTitle.textContent = cat.title;
+            const displayImg = cat.imageUrl || cat.fallbackUrl || "";
+
+            if (displayImg) {
+                catPhotoPreviewCircle.innerHTML = `<img src="${escapeHtml(displayImg)}" alt="${escapeHtml(cat.title)}" style="width:76%; height:76%; object-fit:contain; mix-blend-mode:multiply;">`;
+            } else {
+                catPhotoPreviewCircle.innerHTML = '<i class="fas fa-shapes" style="font-size:28px; color:#94a3b8;"></i>';
+            }
+
+            if (cat.source === "custom") {
+                catPhotoSourceBadge.textContent = "Custom Photo Saved";
+                catPhotoSourceBadge.style.background = "#dcfce7";
+                catPhotoSourceBadge.style.color = "#166534";
+                catPhotoRemoveBtn.style.display = "inline-block";
+            } else if (cat.source === "product") {
+                catPhotoSourceBadge.textContent = "Auto Product Fallback";
+                catPhotoSourceBadge.style.background = "#e0f2fe";
+                catPhotoSourceBadge.style.color = "#0369a1";
+                catPhotoRemoveBtn.style.display = "none";
+            } else {
+                catPhotoSourceBadge.textContent = "No Photo Yet";
+                catPhotoSourceBadge.style.background = "#f1f5f9";
+                catPhotoSourceBadge.style.color = "#64748b";
+                catPhotoRemoveBtn.style.display = "none";
+            }
+
+            catPhotoUrlInput.value = cat.imageUrl || "";
+        }
+
+        function renderCategoryPhotoSection() {
+            if (!catPhotoCategorySelect || !catPhotoGrid) return;
+            const list = getAllCategoriesList();
+            if (catPhotoCount) catPhotoCount.textContent = list.length;
+
+            const currentVal = catPhotoCategorySelect.value;
+            catPhotoCategorySelect.innerHTML = '<option value="">-- Choose Category or Subcategory --</option>' +
+                list.map(c => `<option value="${escapeHtml(c.slug)}">${escapeHtml(c.title)}${c.parentTitle ? ` (${escapeHtml(c.parentTitle)})` : ''}</option>`).join("");
+            if (currentVal && list.some(c => c.slug === currentVal)) {
+                catPhotoCategorySelect.value = currentVal;
+            }
+            updateSelectedCategoryPhotoPreview();
+
+            const term = (catPhotoSearch?.value || "").trim().toLowerCase();
+            const filtered = list.filter(c => !term || c.title.toLowerCase().includes(term) || (c.parentTitle && c.parentTitle.toLowerCase().includes(term)));
+
+            if (!filtered.length) {
+                catPhotoGrid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:24px; color:var(--text-muted); font-size:13px;">No categories match your search.</div>';
+                return;
+            }
+
+            catPhotoGrid.innerHTML = filtered.map(c => {
+                const isSelected = c.slug === catPhotoCategorySelect.value;
+                const displayImg = c.imageUrl || c.fallbackUrl || "";
+                const imgHtml = displayImg
+                    ? `<img src="${escapeHtml(displayImg)}" alt="${escapeHtml(c.title)}" style="width:76%; height:76%; object-fit:contain; mix-blend-mode:multiply;">`
+                    : '<i class="fas fa-shapes" style="font-size:24px; color:#94a3b8;"></i>';
+
+                let badge = '<span style="font-size:9px; font-weight:700; padding:1px 6px; border-radius:999px; background:#f1f5f9; color:#64748b;">No Photo</span>';
+                if (c.source === "custom") {
+                    badge = '<span style="font-size:9px; font-weight:700; padding:1px 6px; border-radius:999px; background:#dcfce7; color:#166534;">Custom</span>';
+                } else if (c.source === "product") {
+                    badge = '<span style="font-size:9px; font-weight:700; padding:1px 6px; border-radius:999px; background:#e0f2fe; color:#0369a1;">Product Auto</span>';
+                }
+
+                return `
+                    <div class="cat-photo-card" data-cat-slug="${escapeHtml(c.slug)}" style="border:1px solid ${isSelected ? 'var(--brand-blue)' : 'var(--brand-border)'}; background:${isSelected ? 'var(--brand-soft-blue)' : '#fff'}; border-radius:8px; padding:12px 8px; text-align:center; cursor:pointer; transition:all 0.2s ease; box-shadow:${isSelected ? '0 0 0 2px rgba(29,95,115,0.2)' : '0 1px 4px rgba(0,0,0,0.04)'};">
+                        <div style="width:72px; height:72px; border-radius:50%; background:#F1F4F7; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; overflow:hidden; border:2px solid ${isSelected ? 'var(--brand-blue)' : 'transparent'};">
+                            ${imgHtml}
+                        </div>
+                        <div style="font-size:11px; font-weight:800; text-transform:uppercase; color:#1a202c; line-height:1.2; margin-bottom:4px; max-height:28px; overflow:hidden;">${escapeHtml(c.title)}</div>
+                        ${c.parentTitle ? `<div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">${escapeHtml(c.parentTitle)}</div>` : ''}
+                        <div>${badge}</div>
+                    </div>
+                `;
+            }).join("");
+        }
+
         async function loadProducts() {
             const snapshot = await getDocs(query(collection(db, "medicines"), orderBy("title")));
             products = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
             renderProducts();
+            renderCategoryPhotoSection();
             const activeSection = homepageLayout.sections?.[activeSectionIndex];
             if (activeSection?.type === "brand_showcase") {
                 renderRepeaterItems(activeSection);
@@ -3771,7 +4488,7 @@
             categories = snapshot.docs.map(item => ({ id: item.id, ...item.data() }))
                 .sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0) || String(a.title || "").localeCompare(String(b.title || "")));
             renderCategoryParentOptions();
-            renderCategoriesAccordion();
+            await loadCategoryImages();
         }
         async function loadOrders() {
             const snapshot = await getDocs(collection(db, "orders"));
@@ -3797,7 +4514,7 @@
                 contentItems = [
                     ...colSnap.docs.map(item => ({ id: item.id, type: "collection", ...item.data() })),
                     ...brandSnap.docs.map(item => ({ id: item.id, type: "brand", ...item.data() }))
-                ];
+                ].sort((a, b) => String(a.type || "").localeCompare(String(b.type || "")) || String(a.title || a.id).localeCompare(String(b.title || b.id)));
             } catch (err) {
                 contentItems = [];
             }
@@ -3903,17 +4620,21 @@
                     const catPath = cat.slug;
                     const subcats = cat.children || [];
                     const openAttr = term ? 'open' : '';
+                    const catImg = categoryImagesMap[cat.slug] || cat.imageUrl || "";
+                    const catImgHtml = catImg ? `<span style="width:26px; height:26px; border-radius:50%; background:#EEF1F5; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; margin-right:8px; vertical-align:middle; border:1px solid var(--brand-border); flex-shrink:0;"><img src="${escapeHtml(catImg)}" style="width:76%; height:76%; object-fit:contain; mix-blend-mode:multiply;"></span>` : '';
                     return `
                     <details class="category-node" ${openAttr}>
                         <summary>
                             <div class="node-left">
                                 <i class="fas fa-chevron-right node-toggle-icon"></i>
+                                ${catImgHtml}
                                 <span class="category-level">Category</span>
                                 <strong style="font-size: 14px;">${escapeHtml(cat.title || cat.slug)}</strong>
                                 <span style="font-size: 11px; color: var(--text-muted);">(${subcats.length} subcategories)</span>
                                 ${cat.active === false ? '<span class="status-badge inactive">Inactive</span>' : ''}
                             </div>
                             <div class="node-actions">
+                                <button class="tiny-btn" type="button" data-category-photo="${escapeHtml(catPath)}"><i class="fas fa-camera"></i> Photo</button>
                                 <button class="tiny-btn" type="button" data-edit-category="${escapeHtml(catPath)}"><i class="fas fa-edit"></i> Edit</button>
                                 <button class="tiny-btn danger" type="button" data-delete-category="${escapeHtml(catPath)}"><i class="fas fa-trash"></i></button>
                             </div>
@@ -3923,17 +4644,21 @@
                             ${subcats.map(sub => {
                                 const subPath = `${cat.slug}/${sub.slug}`;
                                 const subSubcats = sub.children || [];
+                                const subImg = categoryImagesMap[sub.slug] || sub.imageUrl || "";
+                                const subImgHtml = subImg ? `<span style="width:24px; height:24px; border-radius:50%; background:#EEF1F5; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; margin-right:6px; vertical-align:middle; border:1px solid var(--brand-border); flex-shrink:0;"><img src="${escapeHtml(subImg)}" style="width:76%; height:76%; object-fit:contain; mix-blend-mode:multiply;"></span>` : '';
                                 return `
                                 <details class="category-node subcategory-node" ${openAttr}>
                                     <summary>
                                         <div class="node-left">
                                             <i class="fas fa-chevron-right node-toggle-icon"></i>
+                                            ${subImgHtml}
                                             <span class="category-level" style="background:var(--brand-soft-pink); color:var(--brand-pink);">Subcategory</span>
                                             <strong>${escapeHtml(sub.title || sub.slug)}</strong>
                                             <span style="font-size: 11px; color: var(--text-muted);">(${subSubcats.length} items)</span>
                                             ${sub.active === false ? '<span class="status-badge inactive">Inactive</span>' : ''}
                                         </div>
                                         <div class="node-actions">
+                                            <button class="tiny-btn" type="button" data-category-photo="${escapeHtml(subPath)}"><i class="fas fa-camera"></i> Photo</button>
                                             <button class="tiny-btn" type="button" data-edit-category="${escapeHtml(subPath)}"><i class="fas fa-edit"></i> Edit</button>
                                             <button class="tiny-btn danger" type="button" data-delete-category="${escapeHtml(subPath)}"><i class="fas fa-trash"></i></button>
                                         </div>
@@ -3942,15 +4667,19 @@
                                         ${subSubcats.length === 0 ? '<div style="font-size:11px; color:var(--text-muted); padding:4px 0;">No sub-subcategories.</div>' : ''}
                                         ${subSubcats.map(subSub => {
                                             const subSubPath = `${subPath}/${subSub.slug}`;
+                                            const subSubImg = categoryImagesMap[subSub.slug] || subSub.imageUrl || "";
+                                            const subSubImgHtml = subSubImg ? `<span style="width:22px; height:22px; border-radius:50%; background:#EEF1F5; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; margin-right:6px; vertical-align:middle; border:1px solid var(--brand-border); flex-shrink:0;"><img src="${escapeHtml(subSubImg)}" style="width:76%; height:76%; object-fit:contain; mix-blend-mode:multiply;"></span>` : '';
                                             return `
                                             <div class="sub-sub-item">
                                                 <div class="node-left">
+                                                    ${subSubImgHtml}
                                                     <span class="category-level" style="font-size:9px;">Sub-sub</span>
                                                     <span style="font-size: 13px; font-weight:600;">${escapeHtml(subSub.title || subSub.slug)}</span>
                                                     <span style="font-size: 11px; color: var(--text-muted);">${escapeHtml(subSub.href || '')}</span>
                                                     ${subSub.active === false ? '<span class="status-badge inactive">Inactive</span>' : ''}
                                                 </div>
                                                 <div class="node-actions">
+                                                    <button class="tiny-btn" type="button" data-category-photo="${escapeHtml(subSubPath)}"><i class="fas fa-camera"></i> Photo</button>
                                                     <button class="tiny-btn" type="button" data-edit-category="${escapeHtml(subSubPath)}"><i class="fas fa-edit"></i> Edit</button>
                                                     <button class="tiny-btn danger" type="button" data-delete-category="${escapeHtml(subSubPath)}"><i class="fas fa-trash"></i></button>
                                                 </div>
@@ -4045,6 +4774,7 @@
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
             document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("hidden", p.id !== tab + "Panel"));
             pageTitle.textContent = tab === "homepageCms" ? "Homepage Builder" : tab[0].toUpperCase() + tab.slice(1);
+            if (tab === "products") renderCategoryPhotoSection();
             closeSidebar();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -4066,6 +4796,18 @@
         });
 
         signOutBtn.addEventListener("click", () => signOut(auth));
+
+        const adminClearCacheBtn = document.getElementById("adminClearCacheBtn");
+        if (adminClearCacheBtn) {
+            adminClearCacheBtn.addEventListener("click", async () => {
+                statusNote.textContent = "Clearing all cache...";
+                await clearAllCache();
+                statusNote.textContent = "All cache cleared successfully";
+                setTimeout(() => {
+                    window.location.reload();
+                }, 400);
+            });
+        }
 
         onAuthStateChanged(auth, async function (user) {
             if (!user) {
@@ -4130,6 +4872,7 @@
                 updatedAt: serverTimestamp()
             };
             await setDoc(doc(db, "medicines", id), data, { merge: true });
+            await clearAllProductCache();
             clearProductForm();
             await loadProducts();
             renderDashboard();
@@ -4156,6 +4899,7 @@
             }
             if (remove && confirm("Delete this product?")) {
                 await deleteDoc(doc(db, "medicines", remove.dataset.deleteProduct));
+                await clearAllProductCache();
                 await loadProducts();
                 renderDashboard();
                 showStatus("Product deleted.");
@@ -4245,6 +4989,9 @@
             categoryForm.elements.displayInNavbar.value = "true";
             categoryForm.elements.sortOrder.value = "0";
             categoryLevel.value = "category";
+            if (categoryFormImageUrl) categoryFormImageUrl.value = "";
+            if (categoryFormImagePreview) categoryFormImagePreview.innerHTML = '<i class="fas fa-image" style="color:#94a3b8; font-size:24px;"></i>';
+            if (categoryFormClearImageBtn) categoryFormClearImageBtn.style.display = "none";
             renderCategoryParentOptions();
             updateCategoryParentControls();
         });
@@ -4257,7 +5004,9 @@
             const cleanSlug = slug(form.slug || form.title);
             const data = {
                 title: form.title,
+                title_ar: form.title_ar || "",
                 slug: cleanSlug,
+                imageUrl: form.imageUrl || "",
                 href: form.href || ("./collection.html?collection=" + cleanSlug),
                 active: boolFromForm(form.active),
                 displayInNavbar: boolFromForm(form.displayInNavbar),
@@ -4325,11 +5074,17 @@
                 await setDoc(doc(db, "categories", nextRoot.slug), { ...nextRoot, updatedAt: serverTimestamp() });
             }
 
+            await saveCategoryImage(cleanSlug, form.imageUrl || "");
+            await clearAllProductCache();
+
             clearForm(categoryForm);
             categoryForm.elements.active.value = "true";
             categoryForm.elements.displayInNavbar.value = "true";
             categoryForm.elements.sortOrder.value = "0";
             categoryLevel.value = "category";
+            if (categoryFormImageUrl) categoryFormImageUrl.value = "";
+            if (categoryFormImagePreview) categoryFormImagePreview.innerHTML = '<i class="fas fa-image" style="color:#94a3b8; font-size:24px;"></i>';
+            if (categoryFormClearImageBtn) categoryFormClearImageBtn.style.display = "none";
             renderCategoryParentOptions();
             updateCategoryParentControls();
             await loadCategories();
@@ -4337,6 +5092,20 @@
         });
 
         categoryAccordionContainer.addEventListener("click", async function (event) {
+            const photoBtn = event.target.closest("[data-category-photo]");
+            if (photoBtn) {
+                event.preventDefault();
+                const pathValue = photoBtn.dataset.categoryPhoto;
+                const found = findCategoryPath(pathValue);
+                const targetSlug = found?.item?.slug || pathValue.split("/").pop();
+                openTab("products");
+                if (categoryPhotosSection) categoryPhotosSection.open = true;
+                selectCategoryInPhotoManager(targetSlug);
+                renderCategoryPhotoSection();
+                categoryPhotosSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+                return;
+            }
+
             const edit = event.target.closest("[data-edit-category]");
             const remove = event.target.closest("[data-delete-category]");
             const target = edit || remove;
@@ -4354,18 +5123,28 @@
                 if (found.level === "subsubcategory" && found.parent) {
                     parentSubcategorySelect.value = found.parent.slug || "";
                 }
+                const catImg = categoryImagesMap[found.item.slug] || found.item.imageUrl || "";
                 fillForm(categoryForm, {
                     editingPath: found.path,
                     level: found.level,
                     title: found.item.title,
+                    title_ar: found.item.title_ar || "",
                     slug: found.item.slug,
                     href: found.item.href,
+                    imageUrl: catImg,
                     active: found.item.active === false ? "false" : "true",
                     displayInNavbar: found.item.displayInNavbar === false ? "false" : "true",
                     sortOrder: found.item.sortOrder ?? 0,
                     parentCategory: found.level === "category" ? "" : found.root.slug,
                     parentSubcategory: found.level === "subsubcategory" && found.parent ? found.parent.slug : ""
                 });
+                if (catImg && categoryFormImagePreview) {
+                    categoryFormImagePreview.innerHTML = `<img src="${escapeHtml(catImg)}" style="width:76%; height:76%; object-fit:contain; mix-blend-mode:multiply;">`;
+                    if (categoryFormClearImageBtn) categoryFormClearImageBtn.style.display = "inline-block";
+                } else if (categoryFormImagePreview) {
+                    categoryFormImagePreview.innerHTML = '<i class="fas fa-image" style="color:#94a3b8; font-size:24px;"></i>';
+                    if (categoryFormClearImageBtn) categoryFormClearImageBtn.style.display = "none";
+                }
                 updateCategoryParentControls();
                 document.getElementById("categoryFormDetails").open = true;
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -4381,10 +5160,148 @@
                     found.parent.children = (found.parent.children || []).filter(item => item.slug !== found.item.slug);
                     await setDoc(doc(db, "categories", found.root.slug), { ...found.root, updatedAt: serverTimestamp() });
                 }
+                await clearAllProductCache();
                 await loadCategories();
                 showStatus("Category deleted.");
             }
         });
+
+        if (catPhotoCategorySelect) {
+            catPhotoCategorySelect.addEventListener("change", () => {
+                updateSelectedCategoryPhotoPreview();
+                renderCategoryPhotoSection();
+            });
+        }
+        if (catPhotoSearch) {
+            catPhotoSearch.addEventListener("input", () => {
+                renderCategoryPhotoSection();
+            });
+        }
+        if (catPhotoGrid) {
+            catPhotoGrid.addEventListener("click", (e) => {
+                const card = e.target.closest("[data-cat-slug]");
+                if (card) {
+                    selectCategoryInPhotoManager(card.dataset.catSlug);
+                    renderCategoryPhotoSection();
+                }
+            });
+        }
+        if (catPhotoFileInput) {
+            catPhotoFileInput.addEventListener("change", async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const slugVal = catPhotoCategorySelect?.value;
+                if (!slugVal) {
+                    showStatus("Please select a category first.");
+                    catPhotoFileInput.value = "";
+                    return;
+                }
+                try {
+                    if (catPhotoUploadStatus) catPhotoUploadStatus.textContent = "Uploading to Firebase Storage...";
+                    await uploadCategoryPhoto(slugVal, file);
+                    if (catPhotoUploadStatus) catPhotoUploadStatus.textContent = "Photo uploaded and saved!";
+                    showStatus("Category photo saved.");
+                    renderCategoryPhotoSection();
+                    setTimeout(() => { if (catPhotoUploadStatus) catPhotoUploadStatus.textContent = ""; }, 3000);
+                } catch (err) {
+                    console.error(err);
+                    if (catPhotoUploadStatus) catPhotoUploadStatus.textContent = "Upload failed.";
+                    showStatus("Could not upload photo.");
+                }
+                catPhotoFileInput.value = "";
+            });
+        }
+        if (catPhotoSaveUrlBtn) {
+            catPhotoSaveUrlBtn.addEventListener("click", async () => {
+                const slugVal = catPhotoCategorySelect?.value;
+                if (!slugVal) {
+                    showStatus("Please select a category first.");
+                    return;
+                }
+                const url = (catPhotoUrlInput?.value || "").trim();
+                try {
+                    if (catPhotoUploadStatus) catPhotoUploadStatus.textContent = "Saving URL...";
+                    await saveCategoryImage(slugVal, url);
+                    if (catPhotoUploadStatus) catPhotoUploadStatus.textContent = "URL saved!";
+                    showStatus("Category photo saved.");
+                    renderCategoryPhotoSection();
+                    setTimeout(() => { if (catPhotoUploadStatus) catPhotoUploadStatus.textContent = ""; }, 3000);
+                } catch (err) {
+                    console.error(err);
+                    showStatus("Could not save URL.");
+                }
+            });
+        }
+        if (catPhotoRemoveBtn) {
+            catPhotoRemoveBtn.addEventListener("click", async () => {
+                const slugVal = catPhotoCategorySelect?.value;
+                if (!slugVal) return;
+                if (!confirm("Remove custom photo for this category?")) return;
+                try {
+                    await saveCategoryImage(slugVal, "");
+                    showStatus("Custom photo removed.");
+                    renderCategoryPhotoSection();
+                } catch (err) {
+                    console.error(err);
+                    showStatus("Could not remove photo.");
+                }
+            });
+        }
+        if (quickCategoryPhotoBtn) {
+            quickCategoryPhotoBtn.addEventListener("click", () => {
+                const typedCategory = (productForm?.elements?.category?.value || "").trim();
+                if (categoryPhotosSection) categoryPhotosSection.open = true;
+                if (typedCategory) {
+                    const clean = slug(typedCategory);
+                    selectCategoryInPhotoManager(clean);
+                    renderCategoryPhotoSection();
+                }
+                categoryPhotosSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+        }
+
+        if (categoryFormImageUrl) {
+            categoryFormImageUrl.addEventListener("input", () => {
+                const url = categoryFormImageUrl.value.trim();
+                if (url) {
+                    categoryFormImagePreview.innerHTML = `<img src="${escapeHtml(url)}" style="width:76%; height:76%; object-fit:contain; mix-blend-mode:multiply;">`;
+                    if (categoryFormClearImageBtn) categoryFormClearImageBtn.style.display = "inline-block";
+                } else {
+                    categoryFormImagePreview.innerHTML = '<i class="fas fa-image" style="color:#94a3b8; font-size:24px;"></i>';
+                    if (categoryFormClearImageBtn) categoryFormClearImageBtn.style.display = "none";
+                }
+            });
+        }
+        if (categoryFormClearImageBtn) {
+            categoryFormClearImageBtn.addEventListener("click", () => {
+                categoryFormImageUrl.value = "";
+                categoryFormImagePreview.innerHTML = '<i class="fas fa-image" style="color:#94a3b8; font-size:24px;"></i>';
+                categoryFormClearImageBtn.style.display = "none";
+            });
+        }
+        if (categoryFormFileInput) {
+            categoryFormFileInput.addEventListener("change", async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const catSlug = slug(categoryForm.elements.slug.value || categoryForm.elements.title.value || "category");
+                try {
+                    categoryFormUploadStatus.textContent = "Uploading image...";
+                    const storagePath = "categories/" + catSlug + "/" + Date.now() + "-" + safeFileName(file.name);
+                    const imageRef = ref(storage, storagePath);
+                    await uploadBytes(imageRef, file, { contentType: file.type || "image/jpeg" });
+                    const downloadUrl = await getDownloadURL(imageRef);
+                    categoryFormImageUrl.value = downloadUrl;
+                    categoryFormImagePreview.innerHTML = `<img src="${escapeHtml(downloadUrl)}" style="width:76%; height:76%; object-fit:contain; mix-blend-mode:multiply;">`;
+                    if (categoryFormClearImageBtn) categoryFormClearImageBtn.style.display = "inline-block";
+                    categoryFormUploadStatus.textContent = "Uploaded!";
+                    setTimeout(() => { categoryFormUploadStatus.textContent = ""; }, 2500);
+                } catch (err) {
+                    console.error(err);
+                    categoryFormUploadStatus.textContent = "Upload failed.";
+                }
+                categoryFormFileInput.value = "";
+            });
+        }
 
         ordersTable.addEventListener("change", async function (event) {
             const select = event.target.closest("[data-order-status]");
@@ -4482,6 +5399,325 @@
                 showStatus("Discount code deleted.");
             }
         });
+
+        const DEFAULT_WHATSAPP_TEMPLATE = `مرحباً {customerName} 👋
+شكراً لطلبك من Helio Med! 🩺
+
+تم استلام طلبك بنجاح وهو قيد التجهيز:
+📦 رقم الطلب: {orderId}
+💰 المجموع: {total} ({payment})
+📍 منطقة التوصيل: {area}
+🏢 العنوان: {address}
+
+🛒 تفاصيل الطلب:
+{items}
+
+🔗 تتبع حالة طلبك عبر الرابط:
+{trackingUrl}
+
+📍 يمكنك الرد على هذه الرسالة بموقعك الجغرافي (Location Pin) لتسهيل وتنسيق التوصيل.`;
+
+        const DEFAULT_DELIVERY_AREAS = [
+            { value: "akkar", label: "Akkar - عكار", cost: 5, active: true },
+            { value: "aley", label: "Aley - عاليه", cost: 4, active: true },
+            { value: "baabda", label: "Baabda - بعبدا", cost: 4, active: true },
+            { value: "baalbek", label: "Baalbek - بعلبك", cost: 6, active: true },
+            { value: "batroun", label: "Batroun - البترون", cost: 5, active: true },
+            { value: "beirut", label: "Beirut - بيروت", cost: 3, active: true },
+            { value: "bint-jbeil", label: "Bint Jbeil - بنت جبيل", cost: 6, active: true },
+            { value: "bsharri", label: "Bsharri - بشري", cost: 5, active: true },
+            { value: "byblos", label: "Byblos - جبيل", cost: 5, active: true },
+            { value: "chouf", label: "Chouf - الشوف", cost: 4, active: true },
+            { value: "danniyeh", label: "Danniyeh - الضنية", cost: 6, active: true },
+            { value: "hasbaya", label: "Hasbaya - حاصبيا", cost: 6, active: true },
+            { value: "hermel", label: "Hermel - الهرمل", cost: 6, active: true },
+            { value: "jezzine", label: "Jezzine - جزين", cost: 5, active: true },
+            { value: "keserwan", label: "Keserwan - كسروان", cost: 4, active: true },
+            { value: "koura", label: "Koura - الكورة", cost: 5, active: true },
+            { value: "marjeyoun", label: "Marjeyoun - مرجعيون", cost: 6, active: true },
+            { value: "matn", label: "Matn - المتن", cost: 4, active: true },
+            { value: "nabatieh", label: "Nabatieh - النبطية", cost: 5, active: true },
+            { value: "rashaya", label: "Rashaya - راشيا", cost: 6, active: true },
+            { value: "sidon", label: "Sidon - صيدا", cost: 4, active: true },
+            { value: "tripoli", label: "Tripoli - طرابلس", cost: 5, active: true },
+            { value: "tyre", label: "Tyre - صور", cost: 5, active: true },
+            { value: "western-bekaa", label: "Western Bekaa - البقاع الغربي", cost: 6, active: true },
+            { value: "zahleh", label: "Zahle - زحلة", cost: 5, active: true },
+            { value: "zgharta", label: "Zgharta - زغرتا", cost: 5, active: true }
+        ];
+
+        function inferAreaLabelAr(label) {
+            const parts = String(label || "").split(" - ");
+            return parts.length > 1 ? parts.slice(1).join(" - ").trim() : "";
+        }
+
+        function normalizeDeliveryArea(area) {
+            return {
+                ...area,
+                label_ar: area?.label_ar || inferAreaLabelAr(area?.label)
+            };
+        }
+
+        function defaultDeliveryAreas() {
+            return DEFAULT_DELIVERY_AREAS.map(normalizeDeliveryArea);
+        }
+
+        let whatsappSettings = {
+            whatsappEnabled: true,
+            whatsappTemplate: DEFAULT_WHATSAPP_TEMPLATE
+        };
+
+        let deliverySettings = {
+            freeShippingThreshold: 75,
+            areas: defaultDeliveryAreas()
+        };
+
+        async function loadSettings() {
+            try {
+                const [notifSnap, deliverySnap] = await Promise.all([
+                    getDoc(doc(db, "settings", "notifications")),
+                    getDoc(doc(db, "settings", "delivery"))
+                ]);
+                if (notifSnap.exists()) {
+                    const data = notifSnap.data();
+                    whatsappSettings = {
+                        whatsappEnabled: data.whatsappEnabled !== false,
+                        whatsappTemplate: data.whatsappTemplate || DEFAULT_WHATSAPP_TEMPLATE
+                    };
+                } else {
+                    whatsappSettings = {
+                        whatsappEnabled: true,
+                        whatsappTemplate: DEFAULT_WHATSAPP_TEMPLATE
+                    };
+                }
+                if (deliverySnap.exists()) {
+                    const data = deliverySnap.data();
+                    deliverySettings = {
+                        freeShippingThreshold: Number.isFinite(Number(data.freeShippingThreshold)) ? Number(data.freeShippingThreshold) : 75,
+                        areas: Array.isArray(data.areas) && data.areas.length > 0 ? data.areas.map(normalizeDeliveryArea) : defaultDeliveryAreas()
+                    };
+                } else {
+                    deliverySettings = {
+                        freeShippingThreshold: 75,
+                        areas: defaultDeliveryAreas()
+                    };
+                }
+            } catch (err) {
+                console.error("Failed to load settings:", err);
+            }
+            renderWhatsAppSettings();
+            renderDeliverySettings();
+        }
+
+        function renderWhatsAppSettings() {
+            const enabledSelect = document.getElementById("whatsappEnabledSelect");
+            const textarea = document.getElementById("whatsappTemplateTextarea");
+            if (enabledSelect) enabledSelect.value = whatsappSettings.whatsappEnabled ? "true" : "false";
+            if (textarea) textarea.value = whatsappSettings.whatsappTemplate;
+            updateWhatsAppPreview();
+        }
+
+        function updateWhatsAppPreview() {
+            const textarea = document.getElementById("whatsappTemplateTextarea");
+            const previewEl = document.getElementById("waLivePreview");
+            if (!textarea || !previewEl) return;
+            const template = textarea.value || DEFAULT_WHATSAPP_TEMPLATE;
+            const sampleVars = {
+                customerName: "Ahmad Khalil",
+                orderId: "HM-20260826-A1B2C",
+                total: "$35.00",
+                payment: "الدفع عند الاستلام (Cash on Delivery)",
+                area: "Matn - المتن",
+                address: "Jal El Dib، Main Street، بناية Al-Amir، طابق 2",
+                items: "• Panadol Extra (x2) - $20.00\n• Vitamin C 1000mg (x1) - $15.00",
+                trackingUrl: "https://heliomed-lb.com/track-order.html?order=HM-20260826-A1B2C",
+                siteUrl: "https://heliomed-lb.com"
+            };
+            const rendered = template.replace(/\{([a-zA-Z0-9_-]+)\}/g, (match, key) => {
+                return sampleVars[key] !== undefined ? sampleVars[key] : match;
+            });
+            previewEl.textContent = rendered;
+        }
+
+        function renderDeliverySettings() {
+            const thresholdInput = document.getElementById("freeShippingThresholdInput");
+            if (thresholdInput) thresholdInput.value = deliverySettings.freeShippingThreshold ?? 75;
+            renderDeliveryAreasTable();
+        }
+
+        function renderDeliveryAreasTable() {
+            const table = document.getElementById("deliveryAreasTable");
+            const searchInput = document.getElementById("deliveryAreaSearch");
+            const countBadge = document.getElementById("deliveryAreaCountBadge");
+            if (!table) return;
+
+            const term = (searchInput?.value || "").trim().toLowerCase();
+            const areas = deliverySettings.areas || [];
+            const filtered = areas.map((area, index) => ({ ...area, originalIndex: index })).filter(item => {
+                if (!term) return true;
+                return item.value.toLowerCase().includes(term)
+                    || item.label.toLowerCase().includes(term)
+                    || String(item.label_ar || "").toLowerCase().includes(term);
+            });
+
+            if (countBadge) {
+                countBadge.textContent = `${filtered.length} area(s)`;
+            }
+
+            table.innerHTML = '<thead><tr><th>Area Key</th><th>Display Name</th><th>Arabic Name</th><th>Cost ($)</th><th>Status</th><th>Actions</th></tr></thead><tbody>' +
+                filtered.map(area => `
+                    <tr>
+                        <td><code>${escapeHtml(area.value)}</code></td>
+                        <td><strong>${escapeHtml(area.label)}</strong></td>
+                        <td dir="rtl" lang="ar" style="text-align:right;"><strong>${escapeHtml(area.label_ar || "")}</strong></td>
+                        <td>
+                            <input class="inline-edit-input" type="number" step="0.25" min="0" value="${Number(area.cost || 0).toFixed(2)}" data-area-cost-index="${area.originalIndex}">
+                        </td>
+                        <td>
+                            <span class="status-badge ${area.active !== false ? 'active' : 'inactive'}">${area.active !== false ? 'Active' : 'Inactive'}</span>
+                        </td>
+                        <td>
+                            <button class="tiny-btn" type="button" data-edit-area="${area.originalIndex}"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="tiny-btn danger" type="button" data-delete-area="${area.originalIndex}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join("") + '</tbody>';
+        }
+
+        document.getElementById("placeholderChips")?.addEventListener("click", (event) => {
+            const chip = event.target.closest("[data-insert]");
+            if (!chip) return;
+            const tag = chip.dataset.insert;
+            const textarea = document.getElementById("whatsappTemplateTextarea");
+            if (!textarea) return;
+            const start = textarea.selectionStart || 0;
+            const end = textarea.selectionEnd || 0;
+            const text = textarea.value;
+            textarea.value = text.slice(0, start) + tag + text.slice(end);
+            textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+            textarea.focus();
+            updateWhatsAppPreview();
+        });
+
+        document.getElementById("whatsappTemplateTextarea")?.addEventListener("input", updateWhatsAppPreview);
+
+        document.getElementById("resetWhatsAppTemplateBtn")?.addEventListener("click", () => {
+            if (confirm("Reset WhatsApp template to the standard default?")) {
+                document.getElementById("whatsappTemplateTextarea").value = DEFAULT_WHATSAPP_TEMPLATE;
+                updateWhatsAppPreview();
+            }
+        });
+
+        document.getElementById("whatsappSettingsForm")?.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const enabled = document.getElementById("whatsappEnabledSelect").value === "true";
+            const template = document.getElementById("whatsappTemplateTextarea").value.trim() || DEFAULT_WHATSAPP_TEMPLATE;
+            try {
+                await setDoc(doc(db, "settings", "notifications"), {
+                    whatsappEnabled: enabled,
+                    whatsappTemplate: template,
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+                whatsappSettings = { whatsappEnabled: enabled, whatsappTemplate: template };
+                showStatus("WhatsApp settings saved successfully.");
+            } catch (err) {
+                console.error(err);
+                showStatus("Failed to save WhatsApp settings.");
+            }
+        });
+
+        document.getElementById("saveDeliverySettingsBtn")?.addEventListener("click", async () => {
+            const threshold = Number(document.getElementById("freeShippingThresholdInput").value || 75);
+            deliverySettings.freeShippingThreshold = threshold;
+            try {
+                await setDoc(doc(db, "settings", "delivery"), {
+                    freeShippingThreshold: threshold,
+                    areas: deliverySettings.areas,
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+                if (window.HeliomedCart?.setDeliverySettings) {
+                    window.HeliomedCart.setDeliverySettings(deliverySettings);
+                }
+                showStatus("Delivery options & prices saved successfully.");
+            } catch (err) {
+                console.error(err);
+                showStatus("Failed to save delivery settings.");
+            }
+        });
+
+        document.getElementById("deliveryAreasTable")?.addEventListener("input", (event) => {
+            const input = event.target.closest("[data-area-cost-index]");
+            if (!input) return;
+            const index = Number(input.dataset.areaCostIndex);
+            if (deliverySettings.areas[index]) {
+                deliverySettings.areas[index].cost = Math.max(0, Number(input.value || 0));
+            }
+        });
+
+        document.getElementById("deliveryAreasTable")?.addEventListener("click", (event) => {
+            const editBtn = event.target.closest("[data-edit-area]");
+            const deleteBtn = event.target.closest("[data-delete-area]");
+            if (editBtn) {
+                const index = Number(editBtn.dataset.editArea);
+                const area = deliverySettings.areas[index];
+                if (area) {
+                    document.getElementById("areaEditingIndex").value = String(index);
+                    document.getElementById("areaValueInput").value = area.value;
+                    document.getElementById("areaLabelInput").value = area.label;
+                    document.getElementById("areaLabelArInput").value = area.label_ar || "";
+                    document.getElementById("areaCostInput").value = area.cost;
+                    document.getElementById("areaActiveSelect").value = area.active !== false ? "true" : "false";
+                    document.getElementById("saveAreaBtn").innerHTML = '<i class="fas fa-check"></i> Update Area';
+                    document.getElementById("areaFormDetails").open = true;
+                }
+            }
+            if (deleteBtn && confirm("Remove this delivery area?")) {
+                const index = Number(deleteBtn.dataset.deleteArea);
+                deliverySettings.areas.splice(index, 1);
+                renderDeliveryAreasTable();
+            }
+        });
+
+        document.getElementById("deliveryAreaForm")?.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const index = Number(document.getElementById("areaEditingIndex").value);
+            const val = slug(document.getElementById("areaValueInput").value.trim().toLowerCase());
+            const label = document.getElementById("areaLabelInput").value.trim();
+            const label_ar = document.getElementById("areaLabelArInput").value.trim();
+            const cost = Math.max(0, Number(document.getElementById("areaCostInput").value || 0));
+            const active = document.getElementById("areaActiveSelect").value === "true";
+            if (!val || !label) return;
+
+            const areaObj = { value: val, label, label_ar, cost, active };
+            if (index >= 0 && index < deliverySettings.areas.length) {
+                deliverySettings.areas[index] = areaObj;
+            } else {
+                deliverySettings.areas.push(areaObj);
+            }
+
+            document.getElementById("deliveryAreaForm").reset();
+            document.getElementById("areaEditingIndex").value = "-1";
+            document.getElementById("saveAreaBtn").innerHTML = '<i class="fas fa-plus"></i> Save Area';
+            document.getElementById("areaFormDetails").open = false;
+            renderDeliveryAreasTable();
+        });
+
+        document.getElementById("cancelAreaBtn")?.addEventListener("click", () => {
+            document.getElementById("deliveryAreaForm").reset();
+            document.getElementById("areaEditingIndex").value = "-1";
+            document.getElementById("saveAreaBtn").innerHTML = '<i class="fas fa-plus"></i> Save Area';
+            document.getElementById("areaFormDetails").open = false;
+        });
+
+        document.getElementById("resetDeliveryAreasBtn")?.addEventListener("click", () => {
+            if (confirm("Reset delivery areas to the default 26 Lebanese governorates/districts?")) {
+                deliverySettings.areas = defaultDeliveryAreas();
+                deliverySettings.freeShippingThreshold = 75;
+                renderDeliverySettings();
+            }
+        });
+
+        document.getElementById("deliveryAreaSearch")?.addEventListener("input", renderDeliveryAreasTable);
     </script>
 </body>
 </html>

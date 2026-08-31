@@ -4,9 +4,13 @@ import { describe, it } from "node:test";
 import {
     CheckoutError,
     fingerprintCheckout,
+    getDeliveryAreaDetails,
+    normalizePhoneForMatch,
     parseCheckoutInput,
+    parseTrackingInput,
     parseStatusUpdate,
-    priceCheckout
+    priceCheckout,
+    resolveDeliveryConfig
 } from "../src/domain.js";
 
 const validCheckout = () => ({
@@ -93,6 +97,23 @@ describe("parseCheckoutInput", () => {
         // When / Then
         assert.throws(
             () => parseCheckoutInput(input),
+            (error) => error instanceof CheckoutError && error.code === "invalid-argument"
+        );
+    });
+});
+
+describe("parseTrackingInput", () => {
+    it("normalizes the order id and accepts a matching phone payload", () => {
+        const parsed = parseTrackingInput({ orderId: "hm-20260820-abcde", phone: "+961 70 123 456" });
+
+        assert.deepEqual(parsed, { orderId: "HM-20260820-ABCDE", phone: "+961 70 123 456" });
+        assert.equal(normalizePhoneForMatch(parsed.phone), "70123456");
+        assert.equal(normalizePhoneForMatch("70 123 456"), "70123456");
+    });
+
+    it("rejects untrusted tracking fields", () => {
+        assert.throws(
+            () => parseTrackingInput({ orderId: "HM-20260820-ABCDE", phone: "+961 70 123 456", userId: "someone" }),
             (error) => error instanceof CheckoutError && error.code === "invalid-argument"
         );
     });
@@ -207,6 +228,42 @@ describe("fingerprintCheckout", () => {
         assert.equal(first, second);
         assert.notEqual(first, changed);
         assert.match(first, /^[a-f0-9]{64}$/);
+    });
+});
+
+describe("resolveDeliveryConfig & dynamic pricing", () => {
+    it("uses custom delivery areas, prices, and threshold when configured", () => {
+        const customSettings = {
+            freeShippingThreshold: 50,
+            areas: [
+                { value: "custom-zone-1", label: "Custom Zone 1", cost: 2.50, active: true },
+                { value: "custom-zone-2", label: "Custom Zone 2", cost: 7.00, active: true },
+                { value: "inactive-zone", label: "Inactive Zone", cost: 10.00, active: false }
+            ]
+        };
+
+        const config = resolveDeliveryConfig(customSettings);
+        assert.equal(config.freeShippingCents, 5000);
+        assert.equal(config.costs.get("custom-zone-1"), 250);
+        assert.equal(config.costs.get("custom-zone-2"), 700);
+        assert.equal(config.costs.has("inactive-zone"), false);
+
+        const details = getDeliveryAreaDetails("custom-zone-1", customSettings);
+        assert.deepEqual(details, { value: "custom-zone-1", label: "Custom Zone 1", cost: 2.5 });
+
+        const checkout = parseCheckoutInput({
+            ...validCheckout(),
+            discountCode: "",
+            deliveryArea: "custom-zone-1",
+            address: { ...validCheckout().address, area: "custom-zone-1" }
+        }, customSettings);
+        const priced = priceCheckout({
+            checkout,
+            medicines,
+            discount: null,
+            deliveryConfig: customSettings
+        });
+        assert.equal(priced.moneyCents.delivery, 250);
     });
 });
 

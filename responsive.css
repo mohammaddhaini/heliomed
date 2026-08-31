@@ -4,6 +4,12 @@ body {
     overflow-x: clip;
 }
 
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+    font-size: 16px;
+}
+
 .navbar-greeting {
     display: inline-flex;
     align-items: center;
@@ -27,7 +33,7 @@ body {
     white-space: nowrap;
 }
 
-.compact-nav a:hover { color: var(--brand-blue, #1D5F73); }
+.compact-nav a:hover { color: var(--brand-blue, #146B66); }
 
 @media (max-width: 900px) {
     html,
@@ -65,10 +71,16 @@ body {
         word-break: normal;
     }
 
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+
     .header:not(.mobile-nav-open):not(.mobile-category-open) {
-        flex-wrap: wrap;
-        gap: 10px !important;
-        padding: 12px 14px !important;
+        flex-wrap: nowrap;
+        gap: 8px !important;
+        padding: 10px 14px !important;
     }
 
     .mobile-nav-toggle {
@@ -81,10 +93,40 @@ body {
         height: auto;
     }
 
-    .header-icons,
     .header-actions {
         min-width: 0;
-        flex-wrap: wrap;
+        flex-wrap: nowrap !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    .header-icons {
+        min-width: 0;
+        flex-wrap: nowrap !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    .header-search-btn {
+        display: inline-flex !important;
+    }
+
+    .language-desktop {
+        display: none !important;
+    }
+
+    .language-toggle-btn {
+        display: inline-flex !important;
+    }
+
+    .language-switcher {
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+        min-height: 34px !important;
+        box-shadow: none !important;
     }
 
     .navbar-greeting {
@@ -113,12 +155,7 @@ body {
     }
 
     .search-box {
-        min-width: 0;
-    }
-
-    .search-box input {
-        min-width: 0;
-        max-width: 100%;
+        display: none !important;
     }
 
     .cart-layout,

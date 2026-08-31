@@ -23,6 +23,18 @@ let collectionCatalog = [];
 let brandCatalog = [];
 let contentCatalogPromise = null;
 
+function t(key, params) {
+    return window.HeliomedI18n && typeof window.HeliomedI18n.t === "function"
+        ? window.HeliomedI18n.t(key, params)
+        : key;
+}
+
+function contentValue(record, key, fallback = "") {
+    return window.HeliomedI18n && typeof window.HeliomedI18n.contentValue === "function"
+        ? window.HeliomedI18n.contentValue(record, key, fallback)
+        : (record && record[key]) || fallback;
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
     const root = document.getElementById("homepage-dynamic-root");
     if (!root) {
@@ -90,6 +102,11 @@ window.addEventListener("message", async function (event) {
         }
         return;
     }
+});
+
+window.addEventListener("heliomed:language-change", function () {
+    if (!activeLayout || !Array.isArray(activeLayout.sections) || !activeLayout.sections.length) return;
+    renderLayout(activeLayout, { preview: isPreviewMode });
 });
 
 function detectPreviewMode() {
@@ -181,7 +198,9 @@ function ensureContentCatalog() {
             return {
                 id: item.id,
                 title: item.title || item.id,
+                title_ar: item.title_ar || "",
                 subtitle: item.description || "Collection",
+                subtitle_ar: item.description_ar || "",
                 href: "./collection.html?collection=" + encodeURIComponent(item.id),
                 imageUrl: item.imageUrl || ""
             };
@@ -191,7 +210,9 @@ function ensureContentCatalog() {
             return {
                 id: item.id,
                 title: item.title || item.id,
+                title_ar: item.title_ar || "",
                 subtitle: item.description || "Brand",
+                subtitle_ar: item.description_ar || "",
                 href: "./collection.html?collection=" + encodeURIComponent(brandSlug || item.id),
                 imageUrl: item.imageUrl || ""
             };
@@ -222,6 +243,7 @@ function collectCategoryOptions(item, level, target) {
         target.push({
             id,
             title: item.title || id,
+            title_ar: item.title_ar || "",
             subtitle: level,
             href: item.href || "./collection.html?collection=" + encodeURIComponent(id),
             imageUrl: item.imageUrl || ""
@@ -485,29 +507,47 @@ function renderHeroCarousel(sec) {
     if (!slides.length) return null;
 
     const initial = slides[0];
+    const initialHeadline = contentValue(initial, "headline", "");
+    const initialKicker = contentValue(initial, "kicker", "Heliomed Essentials");
+    const initialCopy = contentValue(initial, "copy", "");
+    const initialPrimaryCta = contentValue(initial, "primaryCtaText", "Shop Daily Care");
+    const initialSecondaryCta = contentValue(initial, "secondaryCtaText", "");
+    const initialHighlights = contentValue(initial, "highlights", []);
     const heroEl = document.createElement("section");
     heroEl.className = "hero dynamic-hero";
     heroEl.id = "shop";
     applyHeroColors(heroEl, initial, sec);
 
+    slides.forEach(s => {
+        if (s.imageUrl) {
+            const pre = new Image();
+            pre.src = s.imageUrl;
+            if (pre.decode) pre.decode().catch(() => {});
+        }
+    });
+
     heroEl.innerHTML = `
-        <div class="slider-arrow left"><i class="fas fa-chevron-left"></i></div>
         <div class="hero-image">
-            <img${initial.imageUrl ? ` src="${escapeHtml(initial.imageUrl)}"` : ' hidden'} alt="${escapeHtml(initial.headline || 'Hero banner')}">
+            <button type="button" class="slider-arrow left" aria-label="${escapeHtml(t('aria.previousSlide', 'Previous slide'))}"><i class="fas fa-chevron-left"></i></button>
+            ${slides.map((s, idx) => `
+                <div class="hero-slide-bg ${idx === 0 ? 'active' : ''}" data-slide-index="${idx}">
+                    ${s.imageUrl ? `<img src="${escapeHtml(s.imageUrl)}" alt="${escapeHtml(contentValue(s, 'headline', 'Hero banner'))}" ${idx === 0 ? 'fetchpriority="high"' : 'loading="eager"'}>` : ''}
+                </div>
+            `).join('')}
+            <button type="button" class="slider-arrow right" aria-label="${escapeHtml(t('aria.nextSlide', 'Next slide'))}"><i class="fas fa-chevron-right"></i></button>
         </div>
         <div class="hero-content">
-            <div class="hero-kicker">${escapeHtml(initial.kicker || 'Heliomed Essentials')}</div>
-            <h1>${escapeHtml(initial.headline || '')}</h1>
-            <p>${escapeHtml(initial.copy || '')}</p>
+            <div class="hero-kicker">${escapeHtml(initialKicker)}</div>
+            <h1>${escapeHtml(initialHeadline)}</h1>
+            <p>${escapeHtml(initialCopy)}</p>
             <div class="hero-actions">
-                <a href="${escapeHtml(initial.primaryCtaUrl || '#')}" class="hero-btn">${escapeHtml(initial.primaryCtaText || 'Shop Daily Care')}</a>
-                ${initial.secondaryCtaText ? `<a href="${escapeHtml(initial.secondaryCtaUrl || '#')}" class="hero-link">${escapeHtml(initial.secondaryCtaText)}</a>` : ''}
+                <a href="${escapeHtml(initial.primaryCtaUrl || '#')}" class="hero-btn">${escapeHtml(initialPrimaryCta)}</a>
+                ${initialSecondaryCta ? `<a href="${escapeHtml(initial.secondaryCtaUrl || '#')}" class="hero-link">${escapeHtml(initialSecondaryCta)}</a>` : ''}
             </div>
             <div class="hero-highlights">
-                ${(initial.highlights || []).map(tag => `<span>${escapeHtml(tag)}</span>`).join('')}
+                ${(initialHighlights || []).map(tag => `<span>${escapeHtml(tag)}</span>`).join('')}
             </div>
         </div>
-        <div class="slider-arrow right"><i class="fas fa-chevron-right"></i></div>
     `;
 
     heroEl._slidesData = slides;
@@ -516,18 +556,18 @@ function renderHeroCarousel(sec) {
 }
 
 function applyHeroColors(heroEl, slide, section) {
-    const bgColor = slide.bgColor || section.bgColor || "#FFFFFF";
-    const accentColor = slide.accentColor || section.accentColor || "#C2A26B";
-    const kickerColor = slide.kickerColor || accentColor;
-    const headlineColor = slide.headlineColor || "#07111F";
-    const copyColor = slide.copyColor || "#4D5B66";
+    const bgColor = (slide.bgColor && slide.bgColor !== "#0b1f2c") ? slide.bgColor : (section.bgColor || "#ffffff");
+    const accentColor = slide.accentColor || section.accentColor || "#A2D8D2";
+    const kickerColor = slide.kickerColor || "var(--brand-blue)";
+    const headlineColor = slide.headlineColor && slide.headlineColor !== "#FFFFFF" ? slide.headlineColor : "var(--brand-dark)";
+    const copyColor = slide.copyColor && slide.copyColor !== "#F4F8FA" && slide.copyColor !== "rgba(255, 255, 255, 0.95)" ? slide.copyColor : "#334155";
     const buttonBg = slide.buttonBgColor || accentColor;
-    const buttonText = slide.buttonTextColor || "#FFFFFF";
-    const linkColor = slide.linkColor || "#07111F";
+    const buttonText = slide.buttonTextColor || "#07111F";
+    const linkColor = slide.linkColor && slide.linkColor !== "#FFFFFF" ? slide.linkColor : "var(--brand-blue)";
     const linkLine = slide.linkLineColor || accentColor;
-    const pillBg = slide.highlightsBgColor || "transparent";
-    const pillText = slide.highlightsTextColor || "#07111F";
-    const pillLine = slide.highlightsLineColor || "transparent";
+    const pillBg = slide.highlightsBgColor && !slide.highlightsBgColor.includes("255,255,255") ? slide.highlightsBgColor : "#F0F8F7";
+    const pillText = slide.highlightsTextColor && slide.highlightsTextColor !== "#FFFFFF" ? slide.highlightsTextColor : "var(--brand-dark)";
+    const pillLine = slide.highlightsLineColor && !slide.highlightsLineColor.includes("255,255,255") ? slide.highlightsLineColor : "var(--brand-border)";
 
     heroEl.style.backgroundColor = bgColor;
     heroEl.style.setProperty("--hero-bg", bgColor);
@@ -556,7 +596,7 @@ function renderTrustStrip(sec) {
             ${items.map(item => `
                 <div class="care-strip-item">
                     <i class="${escapeHtml(item.icon || 'fas fa-check')}"></i>
-                    <span>${escapeHtml(item.title)}</span>
+                    <span>${escapeHtml(contentValue(item, "title", ""))}</span>
                 </div>
             `).join('')}
         </div>
@@ -573,15 +613,15 @@ function renderCategoryFinder(sec) {
     finderEl.innerHTML = `
         <div class="care-finder-inner">
             <div class="care-finder-copy">
-                <h2>${escapeHtml(sec.title || 'Shop by Category')}</h2>
-                <p>${escapeHtml(sec.subtitle || '')}</p>
+                <h2>${escapeHtml(contentValue(sec, "title", "Shop by Category"))}</h2>
+                <p>${escapeHtml(contentValue(sec, "subtitle", ""))}</p>
             </div>
             <div class="care-finder-grid">
                 ${cards.map(card => `
                     <div class="care-finder-tile" data-href="${escapeHtml(card.targetUrl || '#')}">
                         <i class="${escapeHtml(card.icon || 'fas fa-stethoscope')}"></i>
-                        <strong>${escapeHtml(card.title)}</strong>
-                        <span>${escapeHtml(card.subtitle || '')}</span>
+                        <strong>${escapeHtml(contentValue(card, "title", ""))}</strong>
+                        <span>${escapeHtml(contentValue(card, "subtitle", ""))}</span>
                     </div>
                 `).join('')}
             </div>
@@ -600,15 +640,18 @@ function renderSplitPromo(sec) {
     const bannerBg = sec.bannerBgColor || sec.bgColor || "#FFFFFF";
     const hasImage = Boolean(sec.imageUrl);
     const textTheme = sec.bannerTextColor || (hasImage ? "light" : "dark");
+    const sectionTitle = contentValue(sec, "title", "Special Promotion");
+    const sectionSubtitle = contentValue(sec, "subtitle", "");
+    const ctaText = contentValue(sec, "ctaText", "Shop Now");
 
     promoEl.innerHTML = `
         <div class="cc-split-layout ${isReverse ? 'is-reversed' : ''}">
             <div class="cc-split-banner ${hasImage ? 'has-image' : 'is-solid'} theme-${escapeHtml(textTheme)}" style="background-color: ${escapeHtml(bannerBg)};">
-                ${hasImage ? `<img src="${escapeHtml(sec.imageUrl)}" alt="${escapeHtml(sec.title || 'Promotion')}">` : ''}
+                ${hasImage ? `<img src="${escapeHtml(sec.imageUrl)}" alt="${escapeHtml(sectionTitle || 'Promotion')}">` : ''}
                 <div class="banner-overlay">
-                    <h2>${escapeHtml(sec.title || 'Special Promotion')}</h2>
-                    ${sec.subtitle ? `<h3 style="font-weight: 700; text-transform: uppercase; margin-bottom: 20px; font-size:14px;">${escapeHtml(sec.subtitle)}</h3>` : ''}
-                    <a href="${escapeHtml(sec.ctaUrl || '#')}" class="${textTheme === 'dark' ? 'hero-btn' : 'cc-btn-outline'}">${escapeHtml(sec.ctaText || 'Shop Now')}</a>
+                    <h2>${escapeHtml(sectionTitle)}</h2>
+                    ${sectionSubtitle ? `<h3 style="font-weight: 700; text-transform: uppercase; margin-bottom: 20px; font-size:14px;">${escapeHtml(sectionSubtitle)}</h3>` : ''}
+                    <a href="${escapeHtml(sec.ctaUrl || '#')}" class="${textTheme === 'dark' ? 'hero-btn' : 'cc-btn-outline'}">${escapeHtml(ctaText)}</a>
                 </div>
             </div>
             <div class="cc-split-products">
@@ -625,12 +668,15 @@ function renderCollectionShowcase(sec) {
     if (!products.length && !isPreviewMode) return null;
 
     const sectionEl = document.createElement("section");
+    const sectionTitle = contentValue(sec, "title", contentValue(collection, "title", "Collection Spotlight"));
+    const sectionSubtitle = contentValue(sec, "subtitle", contentValue(collection, "subtitle", ""));
+    const ctaText = contentValue(sec, "ctaText", "Shop Collection");
     sectionEl.className = "cc-container dynamic-collection-showcase";
     sectionEl.style.backgroundColor = sec.bgColor || "";
     sectionEl.innerHTML = `
         <div class="cc-cat-header">
-            <h2>${escapeHtml(sec.title || collection?.title || 'Collection Spotlight')}</h2>
-            <p>${escapeHtml(sec.subtitle || collection?.subtitle || '')}</p>
+            <h2>${escapeHtml(sectionTitle)}</h2>
+            <p>${escapeHtml(sectionSubtitle)}</p>
         </div>
         ${products.length ? `
             <div class="cc-cat-grid">
@@ -641,7 +687,7 @@ function renderCollectionShowcase(sec) {
                 No products found in this collection.
             </div>
         `}
-        ${(sec.ctaText || collection?.href) ? `<div style="text-align:center; margin-top:20px;"><a class="hero-btn" href="${escapeHtml(sec.ctaUrl || collection?.href || '#')}">${escapeHtml(sec.ctaText || 'Shop Collection')}</a></div>` : ""}
+        ${(sec.ctaText || sec.ctaText_ar || collection?.href) ? `<div style="text-align:center; margin-top:20px;"><a class="hero-btn" href="${escapeHtml(sec.ctaUrl || collection?.href || '#')}">${escapeHtml(ctaText)}</a></div>` : ""}
     `;
     return sectionEl;
 }
@@ -655,8 +701,8 @@ function renderBrandCollectionGrid(sec) {
     sectionEl.innerHTML = `
         <div class="care-finder-inner">
             <div class="care-finder-copy">
-                <h2>${escapeHtml(sec.title || 'Brands & Collections')}</h2>
-                <p>${escapeHtml(sec.subtitle || '')}</p>
+                <h2>${escapeHtml(contentValue(sec, "title", "Brands & Collections"))}</h2>
+                <p>${escapeHtml(contentValue(sec, "subtitle", ""))}</p>
             </div>
             <div class="care-finder-grid">
                 ${cards.map(card => {
@@ -713,8 +759,8 @@ function resolveTileCard(card) {
     const source = sourceCatalog.find(item => item.id === card.sourceId);
     return {
         ...card,
-        title: card.title || source?.title || "Storefront Link",
-        subtitle: card.subtitle || source?.subtitle || "",
+        title: contentValue(card, "title", contentValue(source, "title", "Storefront Link")),
+        subtitle: contentValue(card, "subtitle", contentValue(source, "subtitle", "")),
         imageUrl: card.imageUrl || source?.imageUrl || "",
         targetUrl: card.targetUrl || source?.href || "#"
     };
@@ -737,8 +783,8 @@ function renderBrandShowcase(sec) {
 
     brandEl.innerHTML = `
         <div class="cc-cat-header">
-            <h2>${escapeHtml(sec.title || 'Popular Brands')}</h2>
-            <p>${escapeHtml(sec.subtitle || '')}</p>
+            <h2>${escapeHtml(contentValue(sec, "title", "Popular Brands"))}</h2>
+            <p>${escapeHtml(contentValue(sec, "subtitle", ""))}</p>
         </div>
         <ul class="cc-cat-tabs">
             ${tabs.map((tab, idx) => `
@@ -748,11 +794,11 @@ function renderBrandShowcase(sec) {
         <div class="cc-cat-grid">
             ${initialProducts.length 
                 ? initialProducts.map(p => renderProductCard(p, false)).join('') 
-                : '<div style="grid-column: 1 / -1; text-align:center; padding:36px 16px; color:#64748b; font-size:14px; font-weight:600;">No products available for this brand.</div>'}
+                : '<div style="grid-column: 1 / -1; text-align:center; padding:36px 16px; color:#64748b; font-size:14px; font-weight:600;">' + escapeHtml(t("card.noProductsBrand")) + '</div>'}
         </div>
         <div class="cc-brand-show-all-wrap" style="text-align:center; margin-top:28px;">
             <a class="cc-brand-show-all-btn hero-btn" href="${escapeHtml(initialBrandUrl)}">
-                Show all in ${escapeHtml(initialBrandName || 'Brand')} &rarr;
+                ${escapeHtml(t("card.showAllIn", { name: initialBrandName || 'Brand' }))} &rarr;
             </a>
         </div>
     `;
@@ -795,8 +841,8 @@ function renderConcernMasonry(sec) {
     masonryEl.style.backgroundColor = sec.bgColor || "";
     masonryEl.innerHTML = `
         <div class="cc-cat-header">
-            <h2>${escapeHtml(sec.title || 'Shop by Concern')}</h2>
-            <p>${escapeHtml(sec.subtitle || '')}</p>
+            <h2>${escapeHtml(contentValue(sec, "title", "Shop by Concern"))}</h2>
+            <p>${escapeHtml(contentValue(sec, "subtitle", ""))}</p>
         </div>
         <div class="cc-brick-section">
             <div class="cc-brick-col-left">
@@ -823,7 +869,7 @@ function renderProductCard(product, includeTrustBadge) {
             <a class="cc-pc-link" href="${escapeHtml(productUrl)}">
                 <div class="cc-pc-img-wrapper">
                     ${product.badge ? `<span class="cc-pc-badge">${escapeHtml(product.badge)}</span>` : ''}
-                    ${product.imageUrl ? `<img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.title || 'Product')}" loading="lazy">` : '<div class="cc-pc-placeholder">Image coming soon</div>'}
+                    ${product.imageUrl ? `<img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.title || 'Product')}" loading="lazy">` : '<div class="cc-pc-placeholder">' + escapeHtml(t("product.imageComingSoon")) + '</div>'}
                     ${includeTrustBadge ? '<div class="cc-pc-trust-badge"><i class="fas fa-check"></i></div>' : ''}
                 </div>
                 <div class="cc-pc-brand">${escapeHtml(product.brand || 'Heliomed')}</div>
@@ -836,21 +882,23 @@ function renderProductCard(product, includeTrustBadge) {
                 ` : ''}
             </a>
             <div class="card-actions">
-                <a class="quick-add" href="${escapeHtml(productUrl)}">Details</a>
-                <button class="add-card-btn" type="button" data-product-id="${escapeHtml(product.id || '')}" ${showPrice ? '' : 'disabled'}>Add</button>
-                <button class="wishlist-btn" type="button" data-product-id="${escapeHtml(product.id || '')}" aria-label="Toggle wishlist"><i class="${isWishlisted ? 'fas' : 'far'} fa-heart"></i></button>
+                <a class="quick-add" href="${escapeHtml(productUrl)}">${escapeHtml(t("card.details"))}</a>
+                <button class="add-card-btn" type="button" data-product-id="${escapeHtml(product.id || '')}" ${showPrice ? '' : 'disabled'}>${escapeHtml(t("card.add"))}</button>
+                <button class="wishlist-btn" type="button" data-product-id="${escapeHtml(product.id || '')}" aria-label="${escapeHtml(t("aria.toggleWishlist"))}"><i class="${isWishlisted ? 'fas' : 'far'} fa-heart"></i></button>
             </div>
         </div>
     `;
 }
 
 function renderBrick(brick, className) {
+    const title = contentValue(brick, "title", "");
+    const subtitle = contentValue(brick, "subtitle", "");
     return `
         <a href="${escapeHtml(brick.targetUrl || '#')}" class="cc-brick-block ${escapeHtml(className)}" style="background: ${escapeHtml(brick.bgColor || '#e5dde3')}; text-decoration:none;">
-            ${brick.imageUrl ? `<img src="${escapeHtml(brick.imageUrl)}" alt="${escapeHtml(brick.title)}">` : ''}
+            ${brick.imageUrl ? `<img src="${escapeHtml(brick.imageUrl)}" alt="${escapeHtml(title)}">` : ''}
             <div class="cc-brick-content">
-                <h3>${escapeHtml(brick.title)}</h3>
-                <p>${escapeHtml(brick.subtitle || '')}</p>
+                <h3>${escapeHtml(title)}</h3>
+                <p>${escapeHtml(subtitle)}</p>
             </div>
         </a>
     `;
@@ -882,45 +930,54 @@ function initHeroSliders() {
     function applySlide(index) {
         const slide = slides[index];
         if (!slide) return;
+        const slideKicker = contentValue(slide, "kicker", "Heliomed Essentials");
+        const slideHeadline = contentValue(slide, "headline", "");
+        const slideCopy = contentValue(slide, "copy", "");
+        const primaryCtaText = contentValue(slide, "primaryCtaText", "Shop Daily Care");
+        const secondaryCtaText = contentValue(slide, "secondaryCtaText", "");
+        const slideHighlights = contentValue(slide, "highlights", []);
         currentHeroIndex = index;
 
-        hero.classList.add("is-fading");
-        window.clearTimeout(heroFadeTimer);
+        const allSlideBgs = hero.querySelectorAll(".hero-slide-bg");
+        allSlideBgs.forEach((bg, idx) => {
+            bg.classList.toggle("active", idx === index);
+        });
 
+        const contentEl = hero.querySelector(".hero-content");
+        if (contentEl) contentEl.classList.add("is-fading");
+
+        window.clearTimeout(heroFadeTimer);
         heroFadeTimer = window.setTimeout(() => {
             applyHeroColors(hero, slide, sectionData);
 
             const kicker = hero.querySelector(".hero-kicker");
-            if (kicker) kicker.textContent = slide.kicker || "Heliomed Essentials";
+            if (kicker) kicker.textContent = slideKicker;
 
             const h1 = hero.querySelector(".hero-content h1");
-            if (h1) h1.textContent = slide.headline || "";
+            if (h1) h1.textContent = slideHeadline;
 
             const copy = hero.querySelector(".hero-content p");
-            if (copy) copy.textContent = slide.copy || "";
+            if (copy) copy.textContent = slideCopy;
 
             const btn = hero.querySelector(".hero-btn");
             if (btn) {
-                btn.textContent = slide.primaryCtaText || "Shop Daily Care";
+                btn.textContent = primaryCtaText;
                 btn.href = slide.primaryCtaUrl || "#";
             }
 
             const link = hero.querySelector(".hero-link");
             if (link) {
-                link.textContent = slide.secondaryCtaText || "";
+                link.textContent = secondaryCtaText;
                 link.href = slide.secondaryCtaUrl || "#";
             }
 
             const highlights = hero.querySelector(".hero-highlights");
             if (highlights) {
-                highlights.innerHTML = (slide.highlights || []).map(tag => `<span>${escapeHtml(tag)}</span>`).join("");
+                highlights.innerHTML = (slideHighlights || []).map(tag => `<span>${escapeHtml(tag)}</span>`).join("");
             }
 
-            const img = hero.querySelector(".hero-image img");
-            applyHeroImage(img, slide);
-
-            hero.classList.remove("is-fading");
-        }, 180);
+            if (contentEl) contentEl.classList.remove("is-fading");
+        }, 160);
     }
 
     function startTimer() {
@@ -972,13 +1029,13 @@ function initBrandTabs() {
                 const tabProds = resolveTabProducts(data);
                 grid.innerHTML = tabProds.length 
                     ? tabProds.map(p => renderProductCard(p, false)).join("")
-                    : '<div style="grid-column: 1 / -1; text-align:center; padding:36px 16px; color:#64748b; font-size:14px; font-weight:600;">No products available for this brand.</div>';
+                    : '<div style="grid-column: 1 / -1; text-align:center; padding:36px 16px; color:#64748b; font-size:14px; font-weight:600;">' + escapeHtml(t("card.noProductsBrand")) + '</div>';
 
                 if (showAllBtn) {
                     const brandName = data.brandName || "";
                     const brandSlug = String(brandName || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
                     showAllBtn.href = brandName ? `./collection.html?collection=${encodeURIComponent(brandSlug || brandName)}` : "./collection.html";
-                    showAllBtn.innerHTML = `Show all in ${escapeHtml(brandName || 'Brand')} &rarr;`;
+                    showAllBtn.innerHTML = `${escapeHtml(t("card.showAllIn", { name: brandName || 'Brand' }))} &rarr;`;
                 }
             }, { signal: controller.signal });
         });
@@ -1040,12 +1097,12 @@ function initCartDelegation() {
 
             if (item && window.HeliomedCart) {
                 window.HeliomedCart.addItem(item, 1);
-                addBtn.textContent = "Added";
-                setTimeout(() => { addBtn.textContent = "Add"; }, 1200);
+                addBtn.textContent = t("card.added");
+                setTimeout(() => { addBtn.textContent = t("card.add"); }, 1200);
 
                 const toast = document.querySelector(".toast-message");
                 if (toast) {
-                    toast.textContent = (item.title || "Product") + " added to cart.";
+                    toast.textContent = t("card.addedToCart", { title: item.title || t("product.stickyProduct") });
                     toast.classList.add("show");
                     setTimeout(() => toast.classList.remove("show"), 2200);
                 }
@@ -1079,7 +1136,7 @@ function initCartDelegation() {
 
                 const toast = document.querySelector(".toast-message");
                 if (toast) {
-                    toast.textContent = (item.title || "Product") + (saved ? " added to wishlist." : " removed from wishlist.");
+                    toast.textContent = t(saved ? "card.addedToWishlist" : "card.removedFromWishlist", { title: item.title || t("product.stickyProduct") });
                     toast.classList.add("show");
                     setTimeout(() => toast.classList.remove("show"), 2200);
                 }
@@ -1122,7 +1179,7 @@ function getDefaultHomepageLayout() {
                 subtitle: "",
                 active: true,
                 bgColor: "#FFFFFF",
-                accentColor: "#C2A26B",
+                accentColor: "#A2D8D2",
                 slides: [
                     {
                         headline: "Care You Can Trust at Home",
@@ -1133,17 +1190,17 @@ function getDefaultHomepageLayout() {
                         secondaryCtaText: "Find by concern",
                         secondaryCtaUrl: "#concerns",
                         bgColor: "#FFFFFF",
-                        accentColor: "#C2A26B",
+                        accentColor: "#A2D8D2",
                         headlineColor: "#07111F",
                         copyColor: "#4D5B66",
-                        kickerColor: "#C2A26B",
-                        buttonBgColor: "#C2A26B",
-                        buttonTextColor: "#FFFFFF",
+                        kickerColor: "#146B66",
+                        buttonBgColor: "#A2D8D2",
+                        buttonTextColor: "#07111F",
                         linkColor: "#07111F",
-                        linkLineColor: "#C2A26B",
+                        linkLineColor: "#A2D8D2",
                         highlightsBgColor: "transparent",
                         highlightsTextColor: "#07111F",
-                        highlightsLineColor: "#C2A26B",
+                        highlightsLineColor: "#A2D8D2",
                         imageUrl: "https://images.unsplash.com/photo-1563467410-57df8894e173?q=80&w=800&auto=format&fit=crop",
                         highlights: ["Supplements & Vitamins", "Skin & Beauty", "Recovery Care"]
                     }
@@ -1203,7 +1260,7 @@ function getDefaultHomepageLayout() {
                 subtitle: "Explore our full catalog of vitamins, wellness, and care essentials",
                 active: true,
                 bgColor: "#FFFFFF",
-                accentColor: "#C2A26B",
+                accentColor: "#A2D8D2",
                 collectionId: "",
                 ctaText: "Browse All Products",
                 ctaUrl: "./collection.html?collection=parapharmacy",

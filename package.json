@@ -6,7 +6,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node --test product-url.test.js hero-image.test.mjs",
+    "test": "node --test product-url.test.js hero-image.test.mjs i18n.test.js test-products-cache.test.js header.test.js",
     "generate:products": "node generate-product-pages.js",
     "build": "node build-site.js"
   },

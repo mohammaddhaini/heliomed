@@ -1,19 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/x-icon" href="icon.ico?v=2">
+    <script>
+        (function () {
+            const lang = localStorage.getItem("heliomed_lang") === "ar" ? "ar" : "en";
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        }());
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart | Heliomed</title>
     <meta name="description" content="Review your Heliomed cart.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
     <style>
         :root {
-            --brand-blue: #1D5F73;
-            --brand-pink: #C2A26B;
+            --pearl-aqua: #A2D8D2;
+            --pearl-aqua-deep: #146B66;
+            --pearl-aqua-hover: #0E5652;
+            --pearl-aqua-soft: #F0F8F7;
+            --pearl-aqua-border: #CCE8E5;
+
+            --brand-blue: #146B66;
+            --brand-blue-hover: #0E5652;
+            --brand-pink: #A2D8D2;
             --brand-dark: #07111F;
-            --brand-soft-blue: #FBF7F0;
-            --brand-soft-pink: #F8F2E8;
-            --brand-border: #E8DCC8;
+            --brand-soft-blue: #F0F8F7;
+            --brand-soft-pink: #F0F8F7;
+            --brand-border: #CCE8E5;
         }
         * { box-sizing: border-box; }
         body {
@@ -23,7 +41,8 @@
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
         a { color: inherit; text-decoration: none; }
-        button, input { font: inherit; }
+        button, input, select, textarea { font: inherit; }
+        input, select, textarea { font-size: 16px; }
         .header {
             position: sticky;
             top: 0;
@@ -342,6 +361,8 @@
     </style>
     <link rel="stylesheet" href="./responsive.css">
     <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./rtl.css">
+    <script src="./i18n.js"></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -350,16 +371,16 @@
                 <img src="heliomed-logo.png" alt="Heliomed logo">
             </div>
     
-            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-navigation" aria-expanded="false">
+            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" data-i18n-aria="common.openMenu" aria-controls="primary-navigation" aria-expanded="false">
                 <span class="hamburger-bar"></span>
                 <span class="hamburger-bar"></span>
                 <span class="hamburger-bar"></span>
             </button>
     
-            <ul class="nav-links" id="primary-navigation">
+            <ul class="nav-links" id="primary-navigation" data-i18n-static-text>
                 <li class="nav-panel-header" aria-hidden="true">
-                    <span class="nav-panel-title">MENU</span>
-                    <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
+                    <span class="nav-panel-title" data-i18n="nav.menu">MENU</span>
+                    <button class="nav-panel-close" type="button" aria-label="Close menu" data-i18n-aria="common.closeMenu"><i class="fas fa-times"></i></button>
                 </li>
                 <li class="nav-item">
                     <a href="./collection.html?collection=parapharmacy" class="nav-trigger">PARAPHARMACY <i class="fas fa-chevron-down"></i></a>
@@ -480,16 +501,16 @@
     
             <div class="header-actions">
                 <div class="search-box">
-                    <input type="text" placeholder="Search for products">
+                    <input type="text" placeholder="Search for products" data-i18n-placeholder="common.searchPlaceholder">
                     <i class="fas fa-search"></i>
                 </div>
                 <div class="header-icons">
-                    <a href="./account.html" aria-label="Open account"><i class="far fa-user"></i></a>
-                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist">
+                    <a href="./account.html" aria-label="Open account" data-i18n-aria="common.openAccount"><i class="far fa-user"></i></a>
+                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist" data-i18n-aria="common.openWishlist">
                         <i class="far fa-heart"></i>
                         <span class="wishlist-count">0</span>
                     </a>
-                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart">
+                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart" data-i18n-aria="common.shoppingCart">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
                     </a>
@@ -499,42 +520,41 @@
 
     <main>
         <div class="page-title">
-            <h1>Cart</h1>
-            <a class="continue-link" href="./search.html">Continue shopping</a>
+            <h1 data-i18n="cart.title">Cart</h1>
+            <a class="continue-link" href="./search.html" data-i18n="cart.continueShopping">Continue shopping</a>
         </div>
 
         <div class="empty-cart" id="emptyCart">
-            <h2>Your cart is empty</h2>
-            <p>Add products from the listing or product detail page.</p>
-            <a class="continue-link" href="./search.html">Browse products</a>
+            <h2 data-i18n="cart.emptyTitle">Your cart is empty</h2>
+            <p data-i18n="cart.emptyBody">Add products from the listing or product detail page.</p>
+            <a class="continue-link" href="./search.html" data-i18n="cart.browseProducts">Browse products</a>
         </div>
 
         <section class="cart-layout" id="cartLayout">
-            <div class="cart-panel" id="cartItems" aria-label="Cart items"></div>
-            <aside class="summary-panel" aria-label="Cart summary">
-                <h2>Order Summary</h2>
+            <div class="cart-panel" id="cartItems" aria-label="Cart items" data-i18n-aria="cart.items"></div>
+            <aside class="summary-panel" aria-label="Cart summary" data-i18n-aria="cart.summary">
+                <h2 data-i18n="cart.summaryTitle">Order Summary</h2>
                 <div class="summary-line">
-                    <span>Items</span>
+                    <span data-i18n="cart.itemsLabel">Items</span>
                     <strong id="summaryCount">0</strong>
                 </div>
                 <div class="summary-line">
-                    <span>Subtotal</span>
+                    <span data-i18n="cart.subtotal">Subtotal</span>
                     <strong id="summarySubtotal">$0.00</strong>
                 </div>
                 <div class="summary-line total">
-                    <span>Total</span>
+                    <span data-i18n="cart.total">Total</span>
                     <span id="summaryTotal">$0.00</span>
                 </div>
-                <a class="checkout-btn" href="./checkout.html">Checkout</a>
-                <button class="clear-btn" id="clearCart" type="button">Clear cart</button>
+                <a class="checkout-btn" href="./checkout.html" data-i18n="cart.checkout">Checkout</a>
+                <button class="clear-btn" id="clearCart" type="button" data-i18n="cart.clearCart">Clear cart</button>
             </aside>
         </section>
         <section class="cart-extra-section" id="crossSellSection" hidden>
-            <h2>Complete Your Care Routine</h2>
+            <h2 data-i18n="cart.crossSellTitle">Complete Your Care Routine</h2>
             <div class="cross-grid" id="crossSellGrid"></div>
         </section>
     </main>
-
     <script src="./cart.js"></script>
     <script src="./product-url.js"></script>
     <script src="./wishlist.js"></script>
@@ -551,6 +571,10 @@
         const summaryTotal = document.getElementById("summaryTotal");
         const crossSellSection = document.getElementById("crossSellSection");
         const crossSellGrid = document.getElementById("crossSellGrid");
+
+        function t(key, fallback) {
+            return window.HeliomedI18n?.t ? window.HeliomedI18n.t(key, fallback) : fallback;
+        }
 
         function escapeHtml(value) {
             return String(value ?? "").replace(/[&<>"']/g, function (char) {
@@ -572,7 +596,7 @@
                 const lineTotal = Number(item.price || 0) * Number(item.quantity || 1);
                 const image = item.imageUrl
                     ? '<img src="' + escapeHtml(item.imageUrl) + '" alt="' + escapeHtml(item.title) + '">'
-                    : '<div class="cart-placeholder">Image coming soon</div>';
+                    : '<div class="cart-placeholder">' + escapeHtml(t("common.imageComingSoon", "Image coming soon")) + '</div>';
                 const title = item.url
                     ? '<a href="' + escapeHtml(item.url) + '">' + escapeHtml(item.title) + '</a>'
                     : escapeHtml(item.title);
@@ -587,12 +611,12 @@
                         '</div>' +
                     '</div>' +
                     '<div class="qty-control">' +
-                        '<button type="button" class="qty-minus" aria-label="Decrease quantity">-</button>' +
-                        '<input class="qty-input" type="number" min="1" value="' + escapeHtml(item.quantity) + '" aria-label="Quantity">' +
-                        '<button type="button" class="qty-plus" aria-label="Increase quantity">+</button>' +
+                        '<button type="button" class="qty-minus" aria-label="' + escapeHtml(t("cart.decreaseQuantity", "Decrease quantity")) + '">-</button>' +
+                        '<input class="qty-input" type="number" min="1" value="' + escapeHtml(item.quantity) + '" aria-label="' + escapeHtml(t("cart.quantity", "Quantity")) + '">' +
+                        '<button type="button" class="qty-plus" aria-label="' + escapeHtml(t("cart.increaseQuantity", "Increase quantity")) + '">+</button>' +
                     '</div>' +
                     '<div class="line-total">' + window.HeliomedCart.formatMoney(lineTotal) + '</div>' +
-                    '<button class="remove-btn" type="button" aria-label="Remove item"><i class="fas fa-times"></i></button>' +
+                    '<button class="remove-btn" type="button" aria-label="' + escapeHtml(t("cart.removeItem", "Remove item")) + '"><i class="fas fa-times"></i></button>' +
                 '</article>';
             }).join("");
         }

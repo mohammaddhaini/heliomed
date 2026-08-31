@@ -1,19 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/x-icon" href="icon.ico?v=2">
+    <script>
+        (function () {
+            const lang = localStorage.getItem("heliomed_lang") === "ar" ? "ar" : "en";
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        }());
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishlist | Heliomed</title>
     <meta name="description" content="Your saved Heliomed products.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
     <style>
         :root {
-            --brand-blue: #1D5F73;
-            --brand-pink: #C2A26B;
+            --pearl-aqua: #A2D8D2;
+            --pearl-aqua-deep: #146B66;
+            --pearl-aqua-hover: #0E5652;
+            --pearl-aqua-soft: #F0F8F7;
+            --pearl-aqua-border: #CCE8E5;
+
+            --brand-blue: #146B66;
+            --brand-blue-hover: #0E5652;
+            --brand-pink: #A2D8D2;
             --brand-dark: #07111F;
-            --brand-soft-blue: #FBF7F0;
-            --brand-soft-pink: #F8F2E8;
-            --brand-border: #E8DCC8;
+            --brand-soft-blue: #F0F8F7;
+            --brand-soft-pink: #F0F8F7;
+            --brand-border: #CCE8E5;
         }
         * { box-sizing: border-box; }
         body {
@@ -190,6 +208,8 @@
     </style>
     <link rel="stylesheet" href="./responsive.css">
     <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./rtl.css">
+    <script src="./i18n.js"></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -200,16 +220,16 @@
                 </a>
             </div>
     
-            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-navigation" aria-expanded="false">
+            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" data-i18n-aria="common.openMenu" aria-controls="primary-navigation" aria-expanded="false">
                 <span class="hamburger-bar"></span>
                 <span class="hamburger-bar"></span>
                 <span class="hamburger-bar"></span>
             </button>
     
-            <ul class="nav-links" id="primary-navigation">
+            <ul class="nav-links" id="primary-navigation" data-i18n-static-text>
                 <li class="nav-panel-header" aria-hidden="true">
-                    <span class="nav-panel-title">MENU</span>
-                    <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
+                    <span class="nav-panel-title" data-i18n="nav.menu">MENU</span>
+                    <button class="nav-panel-close" type="button" aria-label="Close menu" data-i18n-aria="common.closeMenu"><i class="fas fa-times"></i></button>
                 </li>
                 <li class="nav-item">
                     <a href="./collection.html?collection=parapharmacy" class="nav-trigger">PARAPHARMACY <i class="fas fa-chevron-down"></i></a>
@@ -330,16 +350,16 @@
     
             <div class="header-actions">
                 <div class="search-box">
-                    <input type="text" placeholder="Search for products">
+                    <input type="text" placeholder="Search for products" data-i18n-placeholder="common.searchPlaceholder">
                     <i class="fas fa-search"></i>
                 </div>
                 <div class="header-icons">
-                    <a href="./account.html" aria-label="Open account"><i class="far fa-user"></i></a>
-                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist">
+                    <a href="./account.html" aria-label="Open account" data-i18n-aria="common.openAccount"><i class="far fa-user"></i></a>
+                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist" data-i18n-aria="common.openWishlist">
                         <i class="far fa-heart"></i>
                         <span class="wishlist-count">0</span>
                     </a>
-                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart">
+                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart" data-i18n-aria="common.shoppingCart">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
                     </a>
@@ -349,22 +369,25 @@
 
     <main>
         <div class="page-title">
-            <h1>Wishlist</h1>
-            <a class="continue-link" href="./search.html">Continue shopping</a>
+            <h1 data-i18n="wishlist.title">Wishlist</h1>
+            <a class="continue-link" href="./search.html" data-i18n="cart.continueShopping">Continue shopping</a>
         </div>
         <div class="empty" id="emptyState">
-            <h2>Your wishlist is empty</h2>
-            <p>Save products with the heart button.</p>
+            <h2 data-i18n="wishlist.emptyTitle">Your wishlist is empty</h2>
+            <p data-i18n="wishlist.emptyBody">Save products with the heart button.</p>
         </div>
-        <section class="wishlist-grid" id="wishlistGrid" aria-label="Wishlist products"></section>
+        <section class="wishlist-grid" id="wishlistGrid" aria-label="Wishlist products" data-i18n-aria="wishlist.products"></section>
     </main>
-
     <script src="./product-url.js"></script>
     <script src="./cart.js"></script>
     <script src="./wishlist.js"></script>
     <script>
         const wishlistGrid = document.getElementById("wishlistGrid");
         const emptyState = document.getElementById("emptyState");
+
+        function t(key, fallback) {
+            return window.HeliomedI18n?.t ? window.HeliomedI18n.t(key, fallback) : fallback;
+        }
 
         function escapeHtml(value) {
             return String(value ?? "").replace(/[&<>"']/g, function (char) {
@@ -378,7 +401,7 @@
             wishlistGrid.innerHTML = items.map(function (item) {
                 const image = item.imageUrl
                     ? '<img src="' + escapeHtml(item.imageUrl) + '" alt="' + escapeHtml(item.title) + '">'
-                    : '<div class="wish-placeholder">Image coming soon</div>';
+                    : '<div class="wish-placeholder">' + escapeHtml(t("common.imageComingSoon", "Image coming soon")) + '</div>';
                 const title = item.url
                     ? '<a href="' + escapeHtml(item.url) + '">' + escapeHtml(item.title) + '</a>'
                     : escapeHtml(item.title);
@@ -389,8 +412,8 @@
                         '<div class="wish-title">' + title + '</div>' +
                         '<div class="wish-price">' + escapeHtml(item.newPrice || window.HeliomedCart.formatMoney(item.price)) + '</div>' +
                         '<div class="wish-actions">' +
-                            '<button class="add-btn" type="button">Add to cart</button>' +
-                            '<button class="remove-btn" type="button" aria-label="Remove from wishlist"><i class="fas fa-times"></i></button>' +
+                            '<button class="add-btn" type="button">' + escapeHtml(t("wishlist.addToCart", "Add to cart")) + '</button>' +
+                            '<button class="remove-btn" type="button" aria-label="' + escapeHtml(t("wishlist.remove", "Remove from wishlist")) + '"><i class="fas fa-times"></i></button>' +
                         '</div>' +
                     '</div>' +
                 '</article>';
@@ -404,8 +427,8 @@
             if (!item) return;
             if (event.target.closest(".add-btn")) {
                 window.HeliomedCart.addItem(item, 1);
-                event.target.textContent = "Added";
-                window.setTimeout(function () { event.target.textContent = "Add to cart"; }, 1000);
+                event.target.textContent = t("wishlist.added", "Added");
+                window.setTimeout(function () { event.target.textContent = t("wishlist.addToCart", "Add to cart"); }, 1000);
             }
             if (event.target.closest(".remove-btn")) {
                 window.HeliomedWishlist.removeItem(item.id);

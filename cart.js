@@ -4,6 +4,7 @@
     var STORAGE_KEY = "heliomedCart";
     var DISCOUNT_KEY = "heliomedDiscount";
     var DELIVERY_KEY = "heliomedDeliveryArea";
+    var DELIVERY_SETTINGS_KEY = "heliomedDeliverySettings";
     var FREE_SHIPPING_THRESHOLD = 75;
     var DELIVERY_AREAS = [
         { value: "akkar", label: "Akkar - عكار", cost: 5 },
@@ -33,6 +34,12 @@
         { value: "zahleh", label: "Zahle - زحلة", cost: 5 },
         { value: "zgharta", label: "Zgharta - زغرتا", cost: 5 }
     ];
+
+    function t(key, params) {
+        return window.HeliomedI18n && typeof window.HeliomedI18n.t === "function"
+            ? window.HeliomedI18n.t(key, params)
+            : key;
+    }
 
     function escapeHtml(value) {
         return String(value ?? "").replace(/[&<>"']/g, function (char) {
@@ -166,16 +173,55 @@
     }
 
     function getDeliveryAreas() {
+        try {
+            var raw = JSON.parse(localStorage.getItem(DELIVERY_SETTINGS_KEY) || "null");
+            if (raw && Array.isArray(raw.areas) && raw.areas.length > 0) {
+                var activeAreas = raw.areas.filter(function (item) { return item && item.active !== false; }).map(function (item) {
+                    var fallbackLabel = String(item.label || item.name || item.value || "").trim();
+                    var localizedLabel = window.HeliomedI18n && typeof window.HeliomedI18n.contentValue === "function"
+                        ? window.HeliomedI18n.contentValue(item, "label", fallbackLabel)
+                        : fallbackLabel;
+                    return {
+                        value: String(item.value || item.id || "").trim().toLowerCase(),
+                        label: String(localizedLabel || fallbackLabel).trim(),
+                        cost: Number(item.cost ?? item.price ?? 0)
+                    };
+                });
+                if (activeAreas.length > 0) return activeAreas;
+            }
+        } catch (e) {}
         return DELIVERY_AREAS.slice();
     }
 
+    function getFreeShippingThreshold() {
+        try {
+            var raw = JSON.parse(localStorage.getItem(DELIVERY_SETTINGS_KEY) || "null");
+            if (raw && Number.isFinite(Number(raw.freeShippingThreshold))) {
+                return Number(raw.freeShippingThreshold);
+            }
+        } catch (e) {}
+        return FREE_SHIPPING_THRESHOLD;
+    }
+
+    function setDeliverySettings(settings) {
+        if (!settings || typeof settings !== "object") {
+            localStorage.removeItem(DELIVERY_SETTINGS_KEY);
+        } else {
+            localStorage.setItem(DELIVERY_SETTINGS_KEY, JSON.stringify(settings));
+        }
+        window.dispatchEvent(new CustomEvent("heliomed-delivery-change", { detail: { settings: settings } }));
+        window.dispatchEvent(new CustomEvent("heliomed-cart-change", { detail: { items: readCart() } }));
+    }
+
     function getDeliveryArea() {
+        var areas = getDeliveryAreas();
         var stored = localStorage.getItem(DELIVERY_KEY) || "beirut";
-        return DELIVERY_AREAS.find(function (area) { return area.value === stored; }) || DELIVERY_AREAS[0];
+        return areas.find(function (area) { return area.value === stored; }) || areas[0] || DELIVERY_AREAS[0];
     }
 
     function setDeliveryArea(value) {
-        var area = DELIVERY_AREAS.find(function (item) { return item.value === value; }) || DELIVERY_AREAS[0];
+        var areas = getDeliveryAreas();
+        var area = areas.find(function (item) { return item.value === value; }) || areas[0] || DELIVERY_AREAS[0];
         localStorage.setItem(DELIVERY_KEY, area.value);
         window.dispatchEvent(new CustomEvent("heliomed-cart-change", { detail: { items: readCart() } }));
         return area;
@@ -210,7 +256,8 @@
         var subtotal = getSubtotal();
         var area = getDeliveryArea();
         var discount = readDiscount();
-        var deliveryCost = subtotal >= FREE_SHIPPING_THRESHOLD || (discount && discount.freeShipping === true) ? 0 : Number(area.cost || 0);
+        var threshold = getFreeShippingThreshold();
+        var deliveryCost = subtotal >= threshold || (discount && discount.freeShipping === true) ? 0 : Number(area.cost || 0);
         var discountAmount = getDiscountAmount(subtotal, deliveryCost);
         var total = Math.max(0, subtotal + deliveryCost - discountAmount);
         return {
@@ -220,8 +267,8 @@
             discount: discount,
             discountAmount: discountAmount,
             total: total,
-            freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
-            freeShippingRemaining: Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal)
+            freeShippingThreshold: threshold,
+            freeShippingRemaining: Math.max(0, threshold - subtotal)
         };
     }
 
@@ -246,13 +293,13 @@
         drawer.setAttribute("aria-hidden", "true");
         drawer.innerHTML = [
             '<div class="cart-drawer-overlay" data-cart-drawer-close></div>',
-            '<aside class="cart-drawer-panel" role="dialog" aria-modal="true" aria-label="Shopping Cart">',
+            '<aside class="cart-drawer-panel" role="dialog" aria-modal="true" aria-label="' + escapeAttr(t("aria.cartPanel")) + '">',
             '    <div class="cart-drawer-header">',
             '        <div class="cart-drawer-title-wrap">',
-            '            <h2 class="cart-drawer-title">Your Cart</h2>',
+            '            <h2 class="cart-drawer-title">' + escapeHtml(t("cart.title")) + '</h2>',
             '            <span class="cart-drawer-badge" id="cart-drawer-count">0</span>',
             '        </div>',
-            '        <button type="button" class="cart-drawer-close-btn" data-cart-drawer-close aria-label="Close cart panel">',
+            '        <button type="button" class="cart-drawer-close-btn" data-cart-drawer-close aria-label="' + escapeAttr(t("aria.closeCart")) + '">',
             '            <i class="fas fa-times"></i>',
             '        </button>',
             '    </div>',
@@ -260,13 +307,13 @@
             '    <div class="cart-drawer-body" id="cart-drawer-body"></div>',
             '    <div class="cart-drawer-footer" id="cart-drawer-footer">',
             '        <div class="cart-drawer-subtotal-row">',
-            '            <span class="cart-drawer-subtotal-label">Subtotal</span>',
+            '            <span class="cart-drawer-subtotal-label">' + escapeHtml(t("cart.subtotal")) + '</span>',
             '            <span class="cart-drawer-subtotal-val" id="cart-drawer-subtotal">$0.00</span>',
             '        </div>',
-            '        <p class="cart-drawer-note">Taxes and shipping calculated at checkout.</p>',
+            '        <p class="cart-drawer-note">' + escapeHtml(t("cart.note")) + '</p>',
             '        <div class="cart-drawer-actions">',
-            '            <a href="./cart.html" class="cart-drawer-btn cart-drawer-btn-secondary">Go to cart</a>',
-            '            <a href="./checkout.html" class="cart-drawer-btn cart-drawer-btn-primary">Proceed to checkout <i class="fas fa-arrow-right"></i></a>',
+            '            <a href="./cart.html" class="cart-drawer-btn cart-drawer-btn-secondary">' + escapeHtml(t("cart.goToCart")) + '</a>',
+            '            <a href="./checkout.html" class="cart-drawer-btn cart-drawer-btn-primary">' + escapeHtml(t("cart.checkout")) + ' <i class="fas fa-arrow-right"></i></a>',
             '        </div>',
             '    </div>',
             '</aside>'
@@ -331,17 +378,17 @@
         var shippingElem = document.getElementById("cart-drawer-shipping");
         if (shippingElem) {
             if (items.length === 0) {
-                shippingElem.innerHTML = '<div class="cart-drawer-shipping-text">Free delivery on orders over <strong>$' + FREE_SHIPPING_THRESHOLD.toFixed(2) + '</strong></div>';
+                shippingElem.innerHTML = '<div class="cart-drawer-shipping-text">' + escapeHtml(t("cart.freeOverAmount", { amount: "$" + FREE_SHIPPING_THRESHOLD.toFixed(2) })) + '</div>';
             } else if (subtotal >= FREE_SHIPPING_THRESHOLD) {
                 shippingElem.innerHTML = [
-                    '<div class="cart-drawer-shipping-text unlocked"><i class="fas fa-check-circle"></i> You have unlocked <strong>FREE Delivery</strong>!</div>',
+                    '<div class="cart-drawer-shipping-text unlocked"><i class="fas fa-check-circle"></i> ' + escapeHtml(t("cart.freeUnlockedFull")) + '</div>',
                     '<div class="cart-drawer-progress-track"><div class="cart-drawer-progress-fill unlocked" style="width: 100%;"></div></div>'
                 ].join("");
             } else {
                 var remaining = FREE_SHIPPING_THRESHOLD - subtotal;
                 var percent = Math.min(100, Math.max(0, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100)));
                 shippingElem.innerHTML = [
-                    '<div class="cart-drawer-shipping-text">Add <strong>' + formatMoney(remaining) + '</strong> more for <strong>FREE Delivery</strong>!</div>',
+                    '<div class="cart-drawer-shipping-text">' + escapeHtml(t("cart.addMoreFull", { amount: formatMoney(remaining) })) + '</div>',
                     '<div class="cart-drawer-progress-track"><div class="cart-drawer-progress-fill" style="width: ' + percent + '%;"></div></div>'
                 ].join("");
             }
@@ -359,9 +406,9 @@
                 bodyElem.innerHTML = [
                     '<div class="cart-drawer-empty">',
                     '    <div class="cart-drawer-empty-icon"><i class="fas fa-shopping-bag"></i></div>',
-                    '    <h3 class="cart-drawer-empty-title">Your cart is empty</h3>',
-                    '    <p class="cart-drawer-empty-desc">Discover our range of parapharmacy, skincare, and wellness essentials.</p>',
-                    '    <a href="./collection.html" class="cart-drawer-empty-btn" data-cart-drawer-close>Start Shopping</a>',
+                    '    <h3 class="cart-drawer-empty-title">' + escapeHtml(t("cart.emptyTitle")) + '</h3>',
+                    '    <p class="cart-drawer-empty-desc">' + escapeHtml(t("cart.emptyCopy")) + '</p>',
+                    '    <a href="./collection.html" class="cart-drawer-empty-btn" data-cart-drawer-close>' + escapeHtml(t("cart.startShopping")) + '</a>',
                     '</div>'
                 ].join("\n");
             } else {
@@ -385,12 +432,12 @@
                         '        </div>',
                         '        <div class="cart-drawer-item-bottom">',
                         '            <div class="cart-drawer-qty-control">',
-                        '                <button type="button" class="cart-drawer-qty-btn" data-qty-action="minus" data-id="' + escapeAttr(item.id) + '" aria-label="Decrease quantity"><i class="fas fa-minus"></i></button>',
+                        '                <button type="button" class="cart-drawer-qty-btn" data-qty-action="minus" data-id="' + escapeAttr(item.id) + '" aria-label="' + escapeAttr(t("aria.decreaseQuantity")) + '"><i class="fas fa-minus"></i></button>',
                         '                <span class="cart-drawer-qty-num">' + Number(item.quantity || 1) + '</span>',
-                        '                <button type="button" class="cart-drawer-qty-btn" data-qty-action="plus" data-id="' + escapeAttr(item.id) + '" aria-label="Increase quantity"><i class="fas fa-plus"></i></button>',
+                        '                <button type="button" class="cart-drawer-qty-btn" data-qty-action="plus" data-id="' + escapeAttr(item.id) + '" aria-label="' + escapeAttr(t("aria.increaseQuantity")) + '"><i class="fas fa-plus"></i></button>',
                         '            </div>',
-                        '            <button type="button" class="cart-drawer-remove-btn" data-remove-id="' + escapeAttr(item.id) + '" aria-label="Remove ' + escapeAttr(item.title) + '">',
-                        '                <i class="far fa-trash-alt"></i> Remove',
+                        '            <button type="button" class="cart-drawer-remove-btn" data-remove-id="' + escapeAttr(item.id) + '" aria-label="' + escapeAttr(t("cart.remove") + " " + item.title) + '">',
+                        '                <i class="far fa-trash-alt"></i> ' + escapeHtml(t("cart.remove")),
                         '            </button>',
                         '        </div>',
                         '    </div>',
@@ -459,6 +506,7 @@
         getDeliveryArea: getDeliveryArea,
         getDeliveryAreas: getDeliveryAreas,
         getDiscount: readDiscount,
+        getFreeShippingThreshold: getFreeShippingThreshold,
         getItems: readCart,
         getSummary: getSummary,
         getSubtotal: getSubtotal,
@@ -469,6 +517,7 @@
         renderCartDrawer: renderCartDrawer,
         removeItem: removeItem,
         setDeliveryArea: setDeliveryArea,
+        setDeliverySettings: setDeliverySettings,
         setDiscount: setDiscount,
         slug: slug,
         toggleDrawer: toggleDrawer,
@@ -505,5 +554,12 @@
 
     window.addEventListener("storage", function (event) {
         if (event.key === STORAGE_KEY) updateCounters();
+    });
+
+    window.addEventListener("heliomed:language-change", function () {
+        var drawer = document.getElementById("cart-drawer");
+        if (drawer) drawer.remove();
+        initCartDrawer();
+        renderCartDrawer();
     });
 })();

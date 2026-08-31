@@ -1,20 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/x-icon" href="icon.ico?v=2">
+    <script>
+        (function () {
+            var lang = localStorage.getItem("heliomed_lang") === "ar" ? "ar" : "en";
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        })();
+    </script>
     <link rel="icon" type="image/ico" href="icon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Detail | Heliomed</title>
     <meta name="description" content="Heliomed product detail.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
     <style>
         :root {
-            --brand-blue: #1D5F73;
-            --brand-pink: #C2A26B;
+            --pearl-aqua: #A2D8D2;
+            --pearl-aqua-deep: #146B66;
+            --pearl-aqua-hover: #0E5652;
+            --pearl-aqua-soft: #F0F8F7;
+            --pearl-aqua-border: #CCE8E5;
+
+            --brand-blue: #146B66;
+            --brand-blue-hover: #0E5652;
+            --brand-pink: #A2D8D2;
             --brand-dark: #07111F;
-            --brand-soft-blue: #FBF7F0;
-            --brand-soft-pink: #F8F2E8;
-            --brand-border: #E8DCC8;
+            --brand-soft-blue: #F0F8F7;
+            --brand-soft-pink: #F0F8F7;
+            --brand-border: #CCE8E5;
         }
 
         * { box-sizing: border-box; }
@@ -381,6 +399,7 @@
             border-right: 1px solid var(--brand-border);
             text-align: center;
             font-weight: 900;
+            font-size: 16px;
             outline: none;
         }
         .add-cart {
@@ -504,6 +523,8 @@
             padding: 12px;
             outline: none;
             font: inherit;
+            font-size: 16px;
+            border-radius: 4px;
         }
         .review-form textarea {
             min-height: 96px;
@@ -732,6 +753,8 @@
     </style>
     <link rel="stylesheet" href="./responsive.css">
     <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./rtl.css">
+    <script src="./i18n.js"></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -748,7 +771,7 @@
                 <span class="hamburger-bar"></span>
             </button>
     
-            <ul class="nav-links" id="primary-navigation">
+            <ul class="nav-links" id="primary-navigation" data-i18n-static-text>
                 <li class="nav-panel-header" aria-hidden="true">
                     <span class="nav-panel-title">MENU</span>
                     <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
@@ -891,7 +914,7 @@
 
     <main>
         <nav class="breadcrumb" aria-label="Breadcrumb">
-            <a href="./search.html">Products</a>
+            <a href="./search.html" data-i18n="product.products">Products</a>
             <span>/</span>
             <span id="breadcrumbName">Product detail</span>
         </nav>
@@ -904,7 +927,7 @@
                 <div class="main-image">
                     <span class="discount-badge" id="badge"></span>
                     <img id="mainImage" src="" alt="">
-                    <button class="zoom-trigger" id="zoomTrigger" type="button" aria-label="Zoom product image"><i class="fas fa-magnifying-glass-plus"></i></button>
+                    <button class="zoom-trigger" id="zoomTrigger" type="button" aria-label="Zoom product image" data-i18n-aria="aria.zoomProduct"><i class="fas fa-magnifying-glass-plus"></i></button>
                 </div>
             </div>
 
@@ -929,38 +952,38 @@
                 <div class="option-group" id="variantGroup">
                     <div class="option-label">
                         <span id="variantLabel">Size</span>
-                        <button class="size-guide-link" id="sizeGuideToggle" type="button">Size guide</button>
+                        <button class="size-guide-link" id="sizeGuideToggle" type="button" data-i18n="product.sizeGuide">Size guide</button>
                     </div>
                     <div class="variant-options" id="variantOptions"></div>
                 </div>
                 <div class="size-guide-panel" id="sizeGuidePanel"></div>
 
                 <div class="purchase-row">
-                    <div class="quantity" aria-label="Quantity selector">
-                        <button type="button" id="decreaseQty" aria-label="Decrease quantity">-</button>
-                        <input id="quantity" type="number" min="1" value="1" aria-label="Quantity">
-                        <button type="button" id="increaseQty" aria-label="Increase quantity">+</button>
+                    <div class="quantity" aria-label="Quantity selector" data-i18n-aria="aria.quantitySelector">
+                        <button type="button" id="decreaseQty" aria-label="Decrease quantity" data-i18n-aria="aria.decreaseQuantity">-</button>
+                        <input id="quantity" type="number" min="1" value="1" aria-label="Quantity" data-i18n-aria="aria.quantity">
+                        <button type="button" id="increaseQty" aria-label="Increase quantity" data-i18n-aria="aria.increaseQuantity">+</button>
                     </div>
-                    <button class="add-cart" id="addToCart" type="button">Add to cart</button>
-                    <button class="buy-now" id="buyNow" type="button">Buy now</button>
+                    <button class="add-cart" id="addToCart" type="button" data-i18n="product.addToCart">Add to cart</button>
+                    <button class="buy-now" id="buyNow" type="button" data-i18n="product.buyNow">Buy now</button>
                 </div>
 
                 <div class="payment-note">
-                    <span><i class="fas fa-money-bill-wave"></i> Cash on Delivery available</span>
-                    <span><i class="fas fa-wallet"></i> Whish payment available at checkout</span>
+                    <span><i class="fas fa-money-bill-wave"></i> <span data-i18n="product.cashDelivery">Cash on Delivery available</span></span>
+                    <span><i class="fas fa-wallet"></i> <span data-i18n="product.whish">Whish payment available at checkout</span></span>
                 </div>
 
                 <div class="details">
                     <details class="detail-section" open>
-                        <summary>Details</summary>
+                        <summary data-i18n="product.details">Details</summary>
                         <p id="detailsText"></p>
                     </details>
                     <details class="detail-section">
-                        <summary>Usage</summary>
+                        <summary data-i18n="product.usage">Usage</summary>
                         <p id="usageText"></p>
                     </details>
                     <details class="detail-section">
-                        <summary>Warnings</summary>
+                        <summary data-i18n="product.warnings">Warnings</summary>
                         <p id="warningsText"></p>
                     </details>
                 </div>
@@ -969,7 +992,7 @@
 
         <section class="product-section" id="reviews">
             <div class="section-head">
-                <h2>Reviews</h2>
+                <h2 data-i18n="product.reviews">Reviews</h2>
             </div>
             <div class="review-shell">
                 <div class="review-score">
@@ -978,11 +1001,11 @@
                     <p id="scoreText">No reviews yet.</p>
                 </div>
                 <form class="review-form" id="reviewForm">
-                    <strong>Write a review</strong>
+                    <strong data-i18n="product.writeReview">Write a review</strong>
                     <p class="review-eligibility-note" id="reviewEligibilityNote">Sign in to check whether this product is ready for review.</p>
-                    <div class="rating-picker" id="ratingPicker" aria-label="Choose rating"></div>
-                    <input id="reviewName" type="text" placeholder="Your name" required>
-                    <textarea id="reviewText" placeholder="Your review" required></textarea>
+                    <div class="rating-picker" id="ratingPicker" aria-label="Choose rating" data-i18n-aria="aria.chooseRating"></div>
+                    <input id="reviewName" type="text" placeholder="Your name" data-i18n-placeholder="product.yourName" required>
+                    <textarea id="reviewText" placeholder="Your review" data-i18n-placeholder="product.yourReview" required></textarea>
                     <button class="submit-review" type="submit">Submit review</button>
                 </form>
             </div>
@@ -991,8 +1014,8 @@
 
         <section class="product-section" id="relatedSection" hidden>
             <div class="section-head">
-                <h2>You May Also Like</h2>
-                <a class="review-link" href="./search.html">View products</a>
+                <h2 data-i18n="product.youMayLike">You May Also Like</h2>
+                <a class="review-link" href="./search.html" data-i18n="product.viewProducts">View products</a>
             </div>
             <div class="related-grid" id="relatedGrid"></div>
         </section>
@@ -1000,18 +1023,18 @@
         <section class="product-section" id="brandSection" hidden>
             <div class="section-head">
                 <h2 id="brandSectionTitle">More From This Brand</h2>
-                <a class="review-link" id="brandSearchLink" href="./search.html">View brand</a>
+                <a class="review-link" id="brandSearchLink" href="./search.html" data-i18n="product.viewBrand">View brand</a>
             </div>
             <div class="related-grid" id="brandGrid"></div>
         </section>
     </main>
 
     <div class="toast" id="toast" aria-live="polite"></div>
-    <div class="zoom-modal" id="zoomModal" aria-modal="true" role="dialog" aria-label="Product image zoom">
-        <button class="zoom-close" id="zoomClose" type="button" aria-label="Close image zoom">x</button>
+    <div class="zoom-modal" id="zoomModal" aria-modal="true" role="dialog" aria-label="Product image zoom" data-i18n-aria="aria.productZoom">
+        <button class="zoom-close" id="zoomClose" type="button" aria-label="Close image zoom" data-i18n-aria="aria.closeProductZoom">x</button>
         <img id="zoomImage" src="" alt="">
     </div>
-    <div class="sticky-cart" id="stickyCart" aria-label="Sticky add to cart">
+    <div class="sticky-cart" id="stickyCart" aria-label="Sticky add to cart" data-i18n-aria="aria.stickyCart">
         <div class="sticky-copy">
             <div class="sticky-title" id="stickyTitle">Product</div>
             <div class="sticky-price" id="stickyPrice">$0.00</div>
@@ -1028,6 +1051,9 @@
         import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
         import { httpsCallable } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-functions.js";
         import { fetchProductLazy, fetchQueryLazy, getCachedQuery } from "./products-cache.js";
+
+        const t = (key, params) => window.HeliomedI18n?.t ? window.HeliomedI18n.t(key, params) : key;
+        const tp = (key, count, params) => window.HeliomedI18n?.tp ? window.HeliomedI18n.tp(key, count, params) : t(key, params);
 
         const params = new URLSearchParams(window.location.search);
         const productId = params.get("product") || params.get("id") || window.__PRERENDERED_PRODUCT_ID__ || "";
@@ -1074,6 +1100,10 @@
         const brandGrid = document.getElementById("brandGrid");
         const brandSectionTitle = document.getElementById("brandSectionTitle");
         const brandSearchLink = document.getElementById("brandSearchLink");
+
+        emptyState.textContent = t("product.notFound");
+        reviewEligibilityNote.textContent = t("product.reviewEligibilityDefault");
+        reviewForm.querySelector(".submit-review").textContent = t("product.submitReview");
         const zoomModal = document.getElementById("zoomModal");
         const zoomImage = document.getElementById("zoomImage");
         const stickyTitle = document.getElementById("stickyTitle");
@@ -1206,11 +1236,11 @@
             Array.from(reviewForm.elements).forEach(function (field) { field.disabled = true; });
 
             if (!currentProduct || !currentUser) {
-                reviewEligibilityNote.textContent = "Sign in to review products you purchased after their order is marked Delivered / paid.";
+                reviewEligibilityNote.textContent = t("product.signInToReview");
                 return;
             }
 
-            reviewEligibilityNote.textContent = "Checking your delivered orders...";
+            reviewEligibilityNote.textContent = t("product.checkingOrders");
             try {
                 const orderSnapshot = await getDocs(query(collection(db, "orders"), where("userId", "==", currentUser.uid)));
                 eligibleOrder = orderSnapshot.docs.map(function (orderDoc) {
@@ -1221,7 +1251,7 @@
                 }) || null;
 
                 if (!eligibleOrder) {
-                    reviewEligibilityNote.textContent = "You can review this product after purchasing it and after the order is marked Delivered / paid.";
+                    reviewEligibilityNote.textContent = t("product.purchaseFirst");
                     return;
                 }
 
@@ -1236,8 +1266,8 @@
                     ? null
                     : { id: reviewSnapshot.docs[0].id, ...reviewSnapshot.docs[0].data() };
                 reviewEligibilityNote.textContent = existingReview
-                    ? "Verified purchase. You can update your review."
-                    : "Verified purchase. Your delivered order allows you to review this product.";
+                    ? t("product.verifiedCanUpdate")
+                    : t("product.verifiedCanReview");
                 reviewEligibilityNote.classList.add("is-eligible");
                 Array.from(reviewForm.elements).forEach(function (field) { field.disabled = false; });
                 document.getElementById("reviewName").value = reviewerName;
@@ -1245,12 +1275,12 @@
                 if (existingReview) {
                     selectedRating = Number(existingReview.rating || 5);
                     document.getElementById("reviewText").value = existingReview.text || "";
-                    reviewForm.querySelector(".submit-review").textContent = "Update review";
+                    reviewForm.querySelector(".submit-review").textContent = t("product.updateReview");
                     renderRatingPicker();
                 }
             } catch (error) {
                 console.error("Could not check review eligibility.", error);
-                reviewEligibilityNote.textContent = "Could not check your delivered orders right now. Please try again later.";
+                reviewEligibilityNote.textContent = t("product.couldNotCheckOrders");
             }
         }
 
@@ -1355,15 +1385,15 @@
         function sizeGuideText(product) {
             const blob = [product.title, product.category, product.section].join(" ");
             if (/support|brace|knee|wrist|ankle|back|neck/i.test(blob)) {
-                return "Measure the body area comfortably, then choose the size that matches the product pack. If you are between sizes, choose the larger support for comfort.";
+                return t("product.sizeGuideSupport");
             }
             if (/cream|gel|serum|sunscreen|skincare|skin/i.test(blob)) {
-                return "Size refers to pack volume. Choose smaller sizes for trial or travel, and larger sizes for daily routines.";
+                return t("product.sizeGuideSkincare");
             }
             if (/caps|tablet|supplement|vitamin|mineral/i.test(blob)) {
-                return "Size refers to capsule, tablet, or serving count. Check suggested use before choosing the pack.";
+                return t("product.sizeGuideSupplement");
             }
-            return "Choose the option that matches the product packaging. Confirm directions and size details on the label before use.";
+            return t("product.sizeGuideDefault");
         }
 
         function renderVariants(product) {
@@ -1375,7 +1405,7 @@
                     return String(value || "").toLowerCase() === requested;
                 });
             }) || variants[0] || null;
-            variantLabel.textContent = /support|brace/i.test(product.title + " " + product.category) ? "Size" : "Option";
+            variantLabel.textContent = /support|brace/i.test(product.title + " " + product.category) ? t("product.size") : t("product.option");
             variantOptions.innerHTML = variants.map(function (variant, index) {
                 const price = variantPrice(variant, product);
                 const selected = selectedVariant && variant.name === selectedVariant.name && variant.sku === selectedVariant.sku;
@@ -1398,8 +1428,8 @@
             const hasPrice = Boolean(variantPrice(variant, product).newPrice);
             availability.classList.toggle("is-out", soldOut);
             availability.innerHTML = soldOut
-                ? '<i class="fas fa-circle-xmark"></i> Out of stock'
-                : '<i class="fas fa-check-circle"></i> In stock' + (Number(inventory) > 0 ? ' (' + Number(inventory) + ')' : '');
+                ? '<i class="fas fa-circle-xmark"></i> ' + escapeHtml(t("product.outOfStock"))
+                : '<i class="fas fa-check-circle"></i> ' + escapeHtml(t("product.inStock")) + (Number(inventory) > 0 ? ' (' + Number(inventory) + ')' : '');
             addToCart.disabled = soldOut || !hasPrice;
             buyNow.disabled = soldOut || !hasPrice;
             stickyAdd.disabled = soldOut || !hasPrice;
@@ -1410,23 +1440,23 @@
                 ? reviews.reduce(function (total, review) { return total + Number(review.rating || 0); }, 0) / reviews.length
                 : 0;
             ratingStars.innerHTML = starsHtml(average);
-            reviewCountLink.textContent = reviews.length ? reviews.length + " review" + (reviews.length === 1 ? "" : "s") : "No reviews yet";
+            reviewCountLink.textContent = reviews.length ? tp("product.review", reviews.length) : t("product.noReviewsYet");
             scoreNumber.textContent = reviews.length ? average.toFixed(1) : "0.0";
             scoreStars.innerHTML = starsHtml(average);
-            scoreText.textContent = reviews.length ? "Based on " + reviews.length + " customer review" + (reviews.length === 1 ? "" : "s") + "." : "No reviews yet.";
+            scoreText.textContent = reviews.length ? tp("product.basedOnReviews", reviews.length) : t("product.noReviewsYet");
             reviewsList.innerHTML = reviews.length ? reviews.map(function (review) {
                 return '<article class="review-card">' +
-                    '<strong>' + escapeHtml(review.name) + (review.verifiedPurchase ? ' · Verified purchase' : '') + '</strong>' +
+                    '<strong>' + escapeHtml(review.name) + (review.verifiedPurchase ? ' · ' + escapeHtml(t("product.verifiedPurchase")) : '') + '</strong>' +
                     '<div class="stars">' + starsHtml(review.rating) + '</div>' +
                     '<p>' + escapeHtml(review.text) + '</p>' +
                 '</article>';
-            }).join("") : '<article class="review-card"><strong>No reviews yet</strong><p>Be the first to review this product.</p></article>';
+            }).join("") : '<article class="review-card"><strong>' + escapeHtml(t("product.noReviewsYet")) + '</strong><p>' + escapeHtml(t("product.firstReview")) + '</p></article>';
         }
 
         function renderRatingPicker() {
             ratingPicker.innerHTML = Array.from({ length: 5 }, function (_, index) {
                 const value = index + 1;
-                return '<button type="button" data-rating="' + value + '" aria-label="' + value + ' stars">' +
+                return '<button type="button" data-rating="' + value + '" aria-label="' + escapeHtml(t("product.stars", { count: value })) + '">' +
                     (value <= selectedRating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>') +
                 '</button>';
             }).join("");
@@ -1462,7 +1492,7 @@
                 relatedSection.hidden = false;
             }
             if (sameBrand.length) {
-                brandSectionTitle.textContent = "More From " + brand;
+                brandSectionTitle.textContent = t("product.moreFrom", { brand });
                 brandSearchLink.href = "./search.html?q=" + encodeURIComponent(brand);
                 brandGrid.innerHTML = sameBrand.map(productCard).join("");
                 brandSection.hidden = false;
@@ -1547,7 +1577,7 @@
                 loadRecommendations();
             } catch (error) {
                 console.error(error);
-                emptyState.textContent = "Could not load this product right now.";
+                emptyState.textContent = t("product.couldNotLoadProduct");
                 emptyState.classList.add("visible");
             }
         }
@@ -1603,7 +1633,7 @@
                 price: Number(price.newValue || parseMoney(price.newPrice)),
                 url: variantUrl
             }, selectedQuantity, { openDrawer: shouldOpenDrawer !== false });
-            showToast((currentProduct?.title || "Product") + " added to cart.");
+            showToast(t("product.addedToCart", { title: currentProduct?.title || t("product.stickyProduct") }));
             return true;
         }
         addToCart.addEventListener("click", function () { addCurrentToCart(true); });
@@ -1650,7 +1680,7 @@
         reviewForm.addEventListener("submit", async function (event) {
             event.preventDefault();
             if (!currentProduct || !currentUser || !eligibleOrder) {
-                showToast("Only delivered purchases can be reviewed.");
+                showToast(t("product.reviewDeliveredOnly"));
                 return;
             }
             const name = reviewerName || document.getElementById("reviewName").value.trim();
@@ -1667,12 +1697,12 @@
                 const wasExisting = Boolean(existingReview);
                 const result = await submitProductReviewCall(reviewData);
                 existingReview = result.data;
-                showToast(wasExisting ? "Review updated." : "Review submitted.");
+                showToast(wasExisting ? t("product.reviewUpdated") : t("product.reviewSubmitted"));
                 await loadReviews();
                 await checkReviewEligibility();
             } catch (error) {
                 console.error("Could not save review.", error);
-                showToast("Could not save your review.");
+                showToast(t("product.reviewSaveError"));
             }
         });
         document.querySelector(".search-box i").addEventListener("click", function () {
@@ -1684,6 +1714,27 @@
                 event.preventDefault();
                 const query = event.currentTarget.value.trim();
                 window.location.href = "./search.html" + (query ? "?q=" + encodeURIComponent(query) : "");
+            }
+        });
+
+        window.addEventListener("heliomed:language-change", function () {
+            renderRatingPicker();
+            reviewForm.querySelector(".submit-review").textContent = existingReview
+                ? t("product.updateReview")
+                : t("product.submitReview");
+            if (!currentUser) reviewEligibilityNote.textContent = t("product.signInToReview");
+            else if (eligibleOrder) reviewEligibilityNote.textContent = existingReview
+                ? t("product.verifiedCanUpdate")
+                : t("product.verifiedCanReview");
+            else reviewEligibilityNote.textContent = t("product.purchaseFirst");
+            if (!currentProduct) {
+                emptyState.textContent = t("product.notFound");
+                return;
+            }
+            renderVariants(currentProduct);
+            renderReviews();
+            if (!brandSection.hidden) {
+                brandSectionTitle.textContent = t("product.moreFrom", { brand: getBrand(currentProduct.title) });
             }
         });
 

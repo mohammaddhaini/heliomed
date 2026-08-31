@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import { CheckoutError } from "../src/domain.js";
-import { createOrder, updateOrderStatus } from "../src/order-service.js";
+import { createOrder, trackOrder, updateOrderStatus } from "../src/order-service.js";
 import { MemoryFirestore } from "./memory-firestore.js";
 
 const checkoutData = () => ({
@@ -90,6 +90,21 @@ function oneUnitCheckout(index) {
 }
 
 describe("createOrder", () => {
+    it("creates a guest order without Firebase auth", async () => {
+        // Given
+        const db = firestore();
+
+        // When
+        const order = await createOrder({ db, auth: null, data: checkoutData(), ...dependencies });
+
+        // Then
+        assert.equal(order.id, "HM-20260820-ABCDE");
+        assert.equal(order.userId, "");
+        assert.equal(order.customer.email, "");
+        assert.equal(order.customer.phone, "+961 70 123 456");
+        assert.deepEqual(db.read("orders/HM-20260820-ABCDE"), order);
+    });
+
     it("atomically creates an authoritative order and decrements selected variant stock", async () => {
         // Given
         const db = firestore();
@@ -201,6 +216,35 @@ describe("createOrder", () => {
         });
         assert.deepEqual(replay, orders[2]);
         assert.equal(db.read("checkoutThrottle/user-1").openOrderCount, 3);
+    });
+});
+
+describe("trackOrder", () => {
+    it("returns an order when the order number and customer phone match", async () => {
+        // Given
+        const db = firestore();
+        const created = await createOrder({ db, auth: null, data: checkoutData(), ...dependencies });
+
+        // When
+        const tracked = await trackOrder({
+            db,
+            data: { orderId: created.id.toLowerCase(), phone: "70 123 456" }
+        });
+
+        // Then
+        assert.deepEqual(tracked, created);
+    });
+
+    it("rejects tracking when the phone number does not match", async () => {
+        // Given
+        const db = firestore();
+        const created = await createOrder({ db, auth: null, data: checkoutData(), ...dependencies });
+
+        // When / Then
+        await assert.rejects(
+            trackOrder({ db, data: { orderId: created.id, phone: "+961 70 000 000" } }),
+            (error) => error instanceof CheckoutError && error.code === "permission-denied"
+        );
     });
 });
 
@@ -318,5 +362,54 @@ describe("updateOrderStatus", () => {
             }),
             (error) => error instanceof CheckoutError && error.code === "failed-precondition"
         );
+    });
+
+    it("decrements guest open order count when a guest order is delivered", async () => {
+        // Given
+        const db = firestore({
+            "admins/admin-1": { active: true },
+            "medicines/pain-relief": {
+                ...firestore().read("medicines/pain-relief"),
+                inventory: 10,
+                variants: [
+                    { name: "Small", sku: "PR-S", newPriceValue: 10, newPrice: "$10.00", inventory: 10, available: true }
+                ]
+            }
+        });
+        const orders = [];
+        for (let index = 0; index < 3; index += 1) {
+            orders.push(await createOrder({
+                db,
+                auth: null,
+                data: oneUnitCheckout(index),
+                ...laterDependencies(index)
+            }));
+        }
+        await assert.rejects(
+            createOrder({
+                db,
+                auth: null,
+                data: oneUnitCheckout(3),
+                ...laterDependencies(3)
+            }),
+            (error) => error instanceof CheckoutError && error.code === "resource-exhausted"
+        );
+
+        // When
+        await updateOrderStatus({
+            db,
+            auth: { uid: "admin-1", token: { email: "admin@example.test" } },
+            data: { orderId: orders[0].id, status: "Delivered / paid" },
+            now: dependencies.now
+        });
+        const fourth = await createOrder({
+            db,
+            auth: null,
+            data: oneUnitCheckout(4),
+            ...laterDependencies(4)
+        });
+
+        // Then
+        assert.equal(fourth.id, "HM-20260820-ABC04");
     });
 });

@@ -1,19 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/x-icon" href="icon.ico?v=2">
+    <script>
+        (function () {
+            const lang = localStorage.getItem("heliomed_lang") === "ar" ? "ar" : "en";
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        }());
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account | Heliomed</title>
     <meta name="description" content="Manage your Heliomed profile, address and orders.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
     <style>
         :root {
-            --brand-blue: #1D5F73;
-            --brand-pink: #C2A26B;
+            --pearl-aqua: #A2D8D2;
+            --pearl-aqua-deep: #146B66;
+            --pearl-aqua-hover: #0E5652;
+            --pearl-aqua-soft: #F0F8F7;
+            --pearl-aqua-border: #CCE8E5;
+
+            --brand-blue: #146B66;
+            --brand-blue-hover: #0E5652;
+            --brand-pink: #A2D8D2;
             --brand-dark: #07111F;
-            --brand-soft-blue: #FBF7F0;
-            --brand-soft-pink: #F8F2E8;
-            --brand-border: #E8DCC8;
+            --brand-soft-blue: #F0F8F7;
+            --brand-soft-pink: #F0F8F7;
+            --brand-border: #CCE8E5;
         }
         * { box-sizing: border-box; }
         body {
@@ -177,6 +195,8 @@
             padding: 12px;
             outline: none;
             background: #fff;
+            font-size: 16px;
+            border-radius: 4px;
         }
         textarea { min-height: 82px; resize: vertical; }
         .save-btn {
@@ -247,6 +267,8 @@
     </style>
     <link rel="stylesheet" href="./responsive.css">
     <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./rtl.css">
+    <script src="./i18n.js"></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -257,16 +279,16 @@
                 </a>
             </div>
     
-            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-navigation" aria-expanded="false">
+            <button class="mobile-nav-toggle" type="button" aria-label="Open menu" data-i18n-aria="common.openMenu" aria-controls="primary-navigation" aria-expanded="false">
                 <span class="hamburger-bar"></span>
                 <span class="hamburger-bar"></span>
                 <span class="hamburger-bar"></span>
             </button>
     
-            <ul class="nav-links" id="primary-navigation">
+            <ul class="nav-links" id="primary-navigation" data-i18n-static-text>
                 <li class="nav-panel-header" aria-hidden="true">
-                    <span class="nav-panel-title">MENU</span>
-                    <button class="nav-panel-close" type="button" aria-label="Close menu"><i class="fas fa-times"></i></button>
+                    <span class="nav-panel-title" data-i18n="nav.menu">MENU</span>
+                    <button class="nav-panel-close" type="button" aria-label="Close menu" data-i18n-aria="common.closeMenu"><i class="fas fa-times"></i></button>
                 </li>
                 <li class="nav-item">
                     <a href="./collection.html?collection=parapharmacy" class="nav-trigger">PARAPHARMACY <i class="fas fa-chevron-down"></i></a>
@@ -387,16 +409,16 @@
     
             <div class="header-actions">
                 <div class="search-box">
-                    <input type="text" placeholder="Search for products">
+                    <input type="text" placeholder="Search for products" data-i18n-placeholder="common.searchPlaceholder">
                     <i class="fas fa-search"></i>
                 </div>
                 <div class="header-icons">
-                    <a href="./account.html" aria-label="Open account"><i class="far fa-user"></i></a>
-                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist">
+                    <a href="./account.html" aria-label="Open account" data-i18n-aria="common.openAccount"><i class="far fa-user"></i></a>
+                    <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist" data-i18n-aria="common.openWishlist">
                         <i class="far fa-heart"></i>
                         <span class="wishlist-count">0</span>
                     </a>
-                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart">
+                    <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart" data-i18n-aria="common.shoppingCart">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
                     </a>
@@ -405,47 +427,47 @@
         </header>
 
     <main>
-        <h1>Account</h1>
+        <h1 data-i18n="account.title">Account</h1>
         <section class="auth-panel" id="authPanel">
-            <div class="auth-choice" role="tablist" aria-label="Account access">
-                <button class="auth-choice-btn active" id="showLoginBtn" type="button" aria-controls="loginBox" aria-selected="true">Log in</button>
-                <button class="auth-choice-btn" id="showSignupBtn" type="button" aria-controls="signupBox" aria-selected="false">Create account</button>
+            <div class="auth-choice" role="tablist" aria-label="Account access" data-i18n-aria="account.access">
+                <button class="auth-choice-btn active" id="showLoginBtn" type="button" aria-controls="loginBox" aria-selected="true" data-i18n="account.login">Log in</button>
+                <button class="auth-choice-btn" id="showSignupBtn" type="button" aria-controls="signupBox" aria-selected="false" data-i18n="account.createAccount">Create account</button>
             </div>
             <div class="auth-grid">
                 <div class="auth-box" id="loginBox">
-                    <h2>Log In</h2>
+                    <h2 data-i18n="account.loginHeading">Log In</h2>
                     <form id="loginForm">
                         <label>
-                            Email
+                            <span data-i18n="account.email">Email</span>
                             <input name="email" type="email" autocomplete="email" required>
                         </label>
                         <label>
-                            Password
+                            <span data-i18n="account.password">Password</span>
                             <input name="password" type="password" autocomplete="current-password" required>
                         </label>
-                        <button class="auth-btn" type="submit">Log in</button>
+                        <button class="auth-btn" type="submit" data-i18n="account.login">Log in</button>
                     </form>
                 </div>
                 <div class="auth-box" id="signupBox" hidden>
-                    <h2>Create Account</h2>
+                    <h2 data-i18n="account.createHeading">Create Account</h2>
                     <form id="signupForm">
                         <label>
-                            Full name
+                            <span data-i18n="account.fullName">Full name</span>
                             <input name="name" autocomplete="name" required>
                         </label>
                         <label>
-                            Phone number
+                            <span data-i18n="account.phone">Phone number</span>
                             <input name="phone" autocomplete="tel" required>
                         </label>
                         <label>
-                            Email
+                            <span data-i18n="account.email">Email</span>
                             <input name="email" type="email" autocomplete="email" required>
                         </label>
                         <label>
-                            Password
+                            <span data-i18n="account.password">Password</span>
                             <input name="password" type="password" autocomplete="new-password" minlength="6" required>
                         </label>
-                        <button class="auth-btn" type="submit">Create account</button>
+                        <button class="auth-btn" type="submit" data-i18n="account.createAccount">Create account</button>
                     </form>
                 </div>
             </div>
@@ -453,10 +475,9 @@
         </section>
         <div class="account-status" id="accountStatus" hidden>
             <span id="accountEmail"></span>
-            <button class="signout-btn" id="signOutBtn" type="button">Sign out</button>
+            <button class="signout-btn" id="signOutBtn" type="button" data-i18n="account.signOut">Sign out</button>
         </div>
     </main>
-
     <script src="./cart.js"></script>
     <script src="./wishlist.js"></script>
     <script type="module">
@@ -486,12 +507,16 @@
         const signOutBtn = document.getElementById("signOutBtn");
         let currentUser = null;
 
+        function t(key, fallback) {
+            return window.HeliomedI18n?.t ? window.HeliomedI18n.t(key, fallback) : fallback;
+        }
+
         function friendlyAuthError(error) {
             const code = error?.code || "";
-            if (code.includes("invalid-credential")) return "Wrong email or password.";
-            if (code.includes("email-already-in-use")) return "This email already has an account.";
-            if (code.includes("weak-password")) return "Password must be at least 6 characters.";
-            return "Could not complete this action.";
+            if (code.includes("invalid-credential")) return t("account.error.invalidCredential", "Wrong email or password.");
+            if (code.includes("email-already-in-use")) return t("account.error.emailInUse", "This email already has an account.");
+            if (code.includes("weak-password")) return t("account.error.weakPassword", "Password must be at least 6 characters.");
+            return t("account.error.generic", "Could not complete this action.");
         }
 
         function maybeGoNext() {
@@ -523,7 +548,7 @@
             const form = new FormData(loginForm);
             try {
                 await signInWithEmailAndPassword(auth, form.get("email"), form.get("password"));
-                authNote.textContent = "Logged in.";
+                authNote.textContent = t("account.status.loggedIn", "Logged in.");
             } catch (error) {
                 authNote.textContent = friendlyAuthError(error);
             }
@@ -535,7 +560,7 @@
             const form = new FormData(signupForm);
             const phone = String(form.get("phone") || "").trim();
             if (!phone) {
-                authNote.textContent = "Phone number is required.";
+                authNote.textContent = t("account.error.phoneRequired", "Phone number is required.");
                 return;
             }
             try {
@@ -549,7 +574,7 @@
                 };
                 await setDoc(doc(db, "userProfiles", credential.user.uid), profile, { merge: true });
                 localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-                authNote.textContent = "Account created.";
+                authNote.textContent = t("account.status.created", "Account created.");
                 maybeGoNext();
             } catch (error) {
                 authNote.textContent = friendlyAuthError(error);
@@ -558,14 +583,14 @@
 
         signOutBtn.addEventListener("click", async function () {
             await signOut(auth);
-            authNote.textContent = "Signed out.";
+            authNote.textContent = t("account.status.signedOut", "Signed out.");
         });
 
         onAuthStateChanged(auth, async function (user) {
             currentUser = user;
             authPanel.hidden = !!user;
             accountStatus.hidden = !user;
-            accountEmail.textContent = user ? "Signed in as " + (user.email || "account without email") : "";
+            accountEmail.textContent = user ? t("account.status.signedInAs", "Signed in as") + " " + (user.email || t("account.status.noEmail", "account without email")) : "";
             if (!user) return;
         });
 
