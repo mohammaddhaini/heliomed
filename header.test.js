@@ -39,6 +39,14 @@ test("rtl.css aligns search drawer and language switcher for Arabic", () => {
     assert.match(css, /html\[dir="rtl"\]\s+\.search-slide-clear-btn/);
 });
 
+test("rtl.css configures desktop RTL header with non-overflowing nav triggers and flex constraints", () => {
+    const css = read("rtl.css");
+    assert.match(css, /html\[dir="rtl"\]\s+\.nav-trigger\s*\{[\s\S]*?white-space:\s*normal/);
+    assert.match(css, /html\[dir="rtl"\]\s+\.header-actions\s*\{[\s\S]*?min-width:\s*max-content/);
+    assert.match(css, /html\[dir="rtl"\]\s+\.search-box\s*\{[\s\S]*?display:\s*none/);
+});
+
+
 test("header.js implements injection, slide bar open/close, and opposite language switch", () => {
     const js = read("header.js");
     assert.match(js, /function\s+injectResponsiveSearchButton\s*\(/);

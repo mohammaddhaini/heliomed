@@ -1480,9 +1480,22 @@
 
         function renderRecommendations() {
             const brand = getBrand(currentProduct.title);
+            const currentCats = new Set([
+                currentProduct.category,
+                ...(Array.isArray(currentProduct.categories) ? currentProduct.categories : []),
+                ...(Array.isArray(currentProduct.categorySlugs) ? currentProduct.categorySlugs : [])
+            ].filter(Boolean));
+
             const sameCategory = allProducts.filter(function (product) {
-                return product.id !== currentProduct.id && product.category && product.category === currentProduct.category;
+                if (product.id === currentProduct.id) return false;
+                const prodCats = [
+                    product.category,
+                    ...(Array.isArray(product.categories) ? product.categories : []),
+                    ...(Array.isArray(product.categorySlugs) ? product.categorySlugs : [])
+                ].filter(Boolean);
+                return prodCats.some(function (c) { return currentCats.has(c); });
             }).slice(0, 4);
+
             const sameBrand = allProducts.filter(function (product) {
                 return product.id !== currentProduct.id && (product.brand || getBrand(product.title)) === brand;
             }).slice(0, 4);

@@ -933,7 +933,9 @@
         }
 
         function getSearchBlob(product) {
-            return [product.title, product.section, product.category, product.badge, product.brand, product.searchText, product.imageQuery].join(" ").toLowerCase();
+            const extraCats = Array.isArray(product.categories) ? product.categories.join(" ") : "";
+            const extraCols = Array.isArray(product.collections) ? product.collections.join(" ") : "";
+            return [product.title, product.section, product.category, extraCats, extraCols, product.badge, product.brand, product.searchText, product.imageQuery].join(" ").toLowerCase();
         }
 
         function normalizeVariant(variant) {
@@ -997,6 +999,10 @@
         function matchesFacet(product, group) {
             const values = selected[group];
             if (!values.size) return true;
+            if (group === "category") {
+                const cats = [product.category, ...(Array.isArray(product.categories) ? product.categories : [])].filter(Boolean);
+                return cats.some(function (c) { return values.has(c); });
+            }
             return values.has(product[fieldMap[group]]);
         }
 
@@ -1021,9 +1027,17 @@
             const field = fieldMap[group];
             const counts = new Map();
             filteredProducts({ exclude: group }).forEach(function (product) {
-                const value = product[field];
-                if (!value) return;
-                counts.set(value, (counts.get(value) || 0) + 1);
+                if (group === "category") {
+                    const cats = [product.category, ...(Array.isArray(product.categories) ? product.categories : [])].filter(Boolean);
+                    const uniqueCats = new Set(cats);
+                    uniqueCats.forEach(function (val) {
+                        counts.set(val, (counts.get(val) || 0) + 1);
+                    });
+                } else {
+                    const value = product[field];
+                    if (!value) return;
+                    counts.set(value, (counts.get(value) || 0) + 1);
+                }
             });
             selected[group].forEach(function (value) {
                 if (!counts.has(value)) counts.set(value, 0);

@@ -284,8 +284,12 @@ function normalizeProduct(product) {
         title: product.title || "",
         brand: product.brand || "",
         category: product.category || "",
+        categories: Array.isArray(product.categories) ? product.categories : (product.category ? [product.category] : []),
+        categorySlugs: Array.isArray(product.categorySlugs) ? product.categorySlugs : [],
+        collections: Array.isArray(product.collections) ? product.collections : [],
         section: product.section || "",
         badge: product.badge || "",
+        searchText: product.searchText || "",
         oldPrice: product.oldPrice || firstVariant.oldPrice || "",
         newPrice: product.newPrice || firstVariant.newPrice || "",
         oldPriceValue: Number(product.oldPriceValue || firstVariant.oldPriceValue || 0),
@@ -314,12 +318,17 @@ function productHasVisiblePrice(product) {
 }
 
 function buildSearchEntry(product, index) {
+    const extraCats = Array.isArray(product.categories) ? product.categories.join(" ") : "";
+    const extraCols = Array.isArray(product.collections) ? product.collections.join(" ") : "";
     const blob = [
         product.title,
         product.brand,
         product.category,
+        extraCats,
+        extraCols,
         product.section,
         product.badge,
+        product.searchText,
         product.description,
         product.usage,
         product.warnings
@@ -329,7 +338,7 @@ function buildSearchEntry(product, index) {
         index,
         title: normalizeSearchText(product.title),
         brand: normalizeSearchText(product.brand),
-        category: normalizeSearchText(product.category),
+        category: normalizeSearchText([product.category, extraCats].join(" ")),
         section: normalizeSearchText(product.section),
         badge: normalizeSearchText(product.badge),
         blob: normalizeSearchText(blob)
@@ -502,6 +511,16 @@ function renderSection(sec, index) {
     return sectionEl;
 }
 
+function isHeroWritingEnabled(slide = {}, sec = {}) {
+    if (sec.showText === false || sec.showWriting === false || sec.enableWriting === false) {
+        return false;
+    }
+    if (slide.showText === false || slide.showWriting === false || slide.enableWriting === false) {
+        return false;
+    }
+    return true;
+}
+
 function renderHeroCarousel(sec) {
     const slides = sec.slides || [];
     if (!slides.length) return null;
@@ -518,11 +537,25 @@ function renderHeroCarousel(sec) {
     heroEl.id = "shop";
     applyHeroColors(heroEl, initial, sec);
 
+    const isWritingEnabled = isHeroWritingEnabled(initial, sec);
+    heroEl.classList.toggle("hero-text-hidden", !isWritingEnabled);
+
     slides.forEach(s => {
         if (s.imageUrl) {
             const pre = new Image();
             pre.src = s.imageUrl;
             if (pre.decode) pre.decode().catch(() => {});
+        }
+    });
+
+    heroEl.addEventListener("click", (e) => {
+        if (heroEl.classList.contains("hero-text-hidden")) {
+            if (e.target.closest(".slider-arrow")) return;
+            const currentSlide = heroEl._slidesData?.[currentHeroIndex];
+            const url = currentSlide?.primaryCtaUrl;
+            if (url && url !== "#") {
+                window.location.href = url;
+            }
         }
     });
 
@@ -556,18 +589,47 @@ function renderHeroCarousel(sec) {
 }
 
 function applyHeroColors(heroEl, slide, section) {
-    const bgColor = (slide.bgColor && slide.bgColor !== "#0b1f2c") ? slide.bgColor : (section.bgColor || "#ffffff");
+    const bgColor = slide.bgColor || section.bgColor || "#07111F";
     const accentColor = slide.accentColor || section.accentColor || "#A2D8D2";
-    const kickerColor = slide.kickerColor || "var(--brand-blue)";
-    const headlineColor = slide.headlineColor && slide.headlineColor !== "#FFFFFF" ? slide.headlineColor : "var(--brand-dark)";
-    const copyColor = slide.copyColor && slide.copyColor !== "#F4F8FA" && slide.copyColor !== "rgba(255, 255, 255, 0.95)" ? slide.copyColor : "#334155";
-    const buttonBg = slide.buttonBgColor || accentColor;
+
+    let headlineColor = slide.headlineColor;
+    if (!headlineColor || headlineColor === "#07111F" || headlineColor === "var(--brand-dark)") {
+        headlineColor = "#FFFFFF";
+    }
+
+    let copyColor = slide.copyColor;
+    if (!copyColor || copyColor === "#4D5B66" || copyColor === "#334155" || copyColor === "var(--brand-dark)") {
+        copyColor = "rgba(255, 255, 255, 0.92)";
+    }
+
+    let kickerColor = slide.kickerColor;
+    if (!kickerColor || kickerColor === "#146B66" || kickerColor === "var(--brand-blue)") {
+        kickerColor = accentColor || "#A2D8D2";
+    }
+
+    const buttonBg = slide.buttonBgColor || accentColor || "#A2D8D2";
     const buttonText = slide.buttonTextColor || "#07111F";
-    const linkColor = slide.linkColor && slide.linkColor !== "#FFFFFF" ? slide.linkColor : "var(--brand-blue)";
-    const linkLine = slide.linkLineColor || accentColor;
-    const pillBg = slide.highlightsBgColor && !slide.highlightsBgColor.includes("255,255,255") ? slide.highlightsBgColor : "#F0F8F7";
-    const pillText = slide.highlightsTextColor && slide.highlightsTextColor !== "#FFFFFF" ? slide.highlightsTextColor : "var(--brand-dark)";
-    const pillLine = slide.highlightsLineColor && !slide.highlightsLineColor.includes("255,255,255") ? slide.highlightsLineColor : "var(--brand-border)";
+
+    let linkColor = slide.linkColor;
+    if (!linkColor || linkColor === "#07111F" || linkColor === "var(--brand-blue)") {
+        linkColor = "#FFFFFF";
+    }
+    const linkLine = slide.linkLineColor || accentColor || "#A2D8D2";
+
+    let pillBg = slide.highlightsBgColor;
+    if (!pillBg || pillBg === "transparent" || pillBg === "#F0F8F7" || pillBg === "#F8F2E8") {
+        pillBg = "rgba(255, 255, 255, 0.16)";
+    }
+
+    let pillText = slide.highlightsTextColor;
+    if (!pillText || pillText === "#07111F" || pillText === "var(--brand-dark)") {
+        pillText = "#FFFFFF";
+    }
+
+    let pillLine = slide.highlightsLineColor;
+    if (!pillLine || pillLine === "var(--brand-border)" || pillLine === "#CCE8E5") {
+        pillLine = "rgba(255, 255, 255, 0.28)";
+    }
 
     heroEl.style.backgroundColor = bgColor;
     heroEl.style.setProperty("--hero-bg", bgColor);
@@ -735,12 +797,55 @@ function resolveSectionProducts(section) {
 
     if (section.collectionId) {
         const colId = String(section.collectionId).trim().toLowerCase();
+        const colCompact = colId.replace(/[^a-z0-9]/g, "");
+
+        const colObj = (collectionCatalog || []).find(item => item.id === section.collectionId) ||
+                       (categoriesCatalog || []).find(item => item.slug === colId || item.id === colId);
+
+        const matchTokens = new Set([colId, colCompact].filter(Boolean));
+        if (colObj) {
+            const addTokens = (item) => {
+                if (!item) return;
+                if (item.title) {
+                    matchTokens.add(String(item.title).toLowerCase().trim());
+                    matchTokens.add(String(item.title).toLowerCase().replace(/[^a-z0-9]/g, ""));
+                }
+                if (item.slug) {
+                    matchTokens.add(String(item.slug).toLowerCase().trim());
+                    matchTokens.add(String(item.slug).toLowerCase().replace(/[^a-z0-9]/g, ""));
+                }
+                if (Array.isArray(item.children)) item.children.forEach(addTokens);
+            };
+            addTokens(colObj);
+        }
+
         const collectionMatches = productCatalog
             .filter(product => {
-                const category = String(product.category || "").toLowerCase();
-                const sectionName = String(product.section || "").toLowerCase();
+                const belongings = [
+                    product.category,
+                    product.section,
+                    ...(Array.isArray(product.categories) ? product.categories : []),
+                    ...(Array.isArray(product.categorySlugs) ? product.categorySlugs : []),
+                    ...(Array.isArray(product.collections) ? product.collections : [])
+                ].filter(Boolean);
+
+                for (const item of belongings) {
+                    const norm = String(item).toLowerCase().trim();
+                    const compact = norm.replace(/[^a-z0-9]/g, "");
+                    for (const token of matchTokens) {
+                        if (!token) continue;
+                        if (norm === token || compact === token) return true;
+                        if (token.length >= 3 && (norm.includes(token) || token.includes(norm) || compact.includes(token) || token.includes(compact))) return true;
+                    }
+                }
+
                 const title = String(product.title || "").toLowerCase();
-                return category.includes(colId) || sectionName.includes(colId) || title.includes(colId);
+                const titleCompact = title.replace(/[^a-z0-9]/g, "");
+                for (const token of matchTokens) {
+                    if (!token) continue;
+                    if (token.length >= 3 && (title.includes(token) || titleCompact.includes(token))) return true;
+                }
+                return false;
             })
             .filter(product => product.available !== false)
             .slice(0, 4);
@@ -948,6 +1053,8 @@ function initHeroSliders() {
 
         window.clearTimeout(heroFadeTimer);
         heroFadeTimer = window.setTimeout(() => {
+            const isWritingEnabled = isHeroWritingEnabled(slide, sectionData);
+            hero.classList.toggle("hero-text-hidden", !isWritingEnabled);
             applyHeroColors(hero, slide, sectionData);
 
             const kicker = hero.querySelector(".hero-kicker");
@@ -1178,10 +1285,12 @@ function getDefaultHomepageLayout() {
                 title: "Hero Carousel",
                 subtitle: "",
                 active: true,
-                bgColor: "#FFFFFF",
+                showText: true,
+                bgColor: "#07111F",
                 accentColor: "#A2D8D2",
                 slides: [
                     {
+                        showText: true,
                         headline: "Care You Can Trust at Home",
                         kicker: "Heliomed Essentials",
                         copy: "Daily parapharmacy, beauty, wellness, and recovery essentials organized for fast decisions.",
@@ -1189,18 +1298,18 @@ function getDefaultHomepageLayout() {
                         primaryCtaUrl: "./collection.html?collection=parapharmacy",
                         secondaryCtaText: "Find by concern",
                         secondaryCtaUrl: "#concerns",
-                        bgColor: "#FFFFFF",
+                        bgColor: "#07111F",
                         accentColor: "#A2D8D2",
-                        headlineColor: "#07111F",
-                        copyColor: "#4D5B66",
-                        kickerColor: "#146B66",
+                        headlineColor: "#FFFFFF",
+                        copyColor: "rgba(255, 255, 255, 0.92)",
+                        kickerColor: "#A2D8D2",
                         buttonBgColor: "#A2D8D2",
                         buttonTextColor: "#07111F",
-                        linkColor: "#07111F",
+                        linkColor: "#FFFFFF",
                         linkLineColor: "#A2D8D2",
-                        highlightsBgColor: "transparent",
-                        highlightsTextColor: "#07111F",
-                        highlightsLineColor: "#A2D8D2",
+                        highlightsBgColor: "rgba(255, 255, 255, 0.16)",
+                        highlightsTextColor: "#FFFFFF",
+                        highlightsLineColor: "rgba(255, 255, 255, 0.28)",
                         imageUrl: "https://images.unsplash.com/photo-1563467410-57df8894e173?q=80&w=800&auto=format&fit=crop",
                         highlights: ["Supplements & Vitamins", "Skin & Beauty", "Recovery Care"]
                     }
@@ -1297,7 +1406,11 @@ function initPreviewSelection() {
             event.target.closest(".wishlist-btn")
         );
 
-        if (!isInteractiveControl && event.target.closest("a, button")) {
+        if (isInteractiveControl) {
+            return;
+        }
+
+        if (event.target.closest("a, button")) {
             event.preventDefault();
         }
 

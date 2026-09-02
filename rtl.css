@@ -354,3 +354,70 @@ html[dir="rtl"] .search-slide-clear-btn {
         box-shadow: none !important;
     }
 }
+
+@media (min-width: 901px) {
+    html[dir="rtl"] .header {
+        padding: 12px clamp(14px, 2vw, 24px);
+        gap: clamp(8px, 1.2vw, 16px);
+        justify-content: space-between;
+    }
+
+    html[dir="rtl"] .logo {
+        flex-shrink: 0;
+    }
+
+    html[dir="rtl"] .logo img {
+        width: clamp(118px, 8.5vw, 140px);
+    }
+
+    html[dir="rtl"] .nav-links {
+        flex: 1 1 auto;
+        min-width: 0;
+        justify-content: center;
+        gap: clamp(4px, 0.8vw, 10px);
+    }
+
+    html[dir="rtl"] .nav-trigger {
+        white-space: normal;
+        text-align: center;
+        line-height: 1.22;
+        font-size: clamp(11px, 0.82vw, 12px);
+        padding: 4px clamp(3px, 0.4vw, 6px);
+        max-width: 140px;
+        justify-content: center;
+        word-break: normal;
+        overflow-wrap: break-word;
+    }
+
+    html[dir="rtl"] .nav-trigger .fa-chevron-down {
+        margin-right: 4px;
+        margin-left: 0;
+        flex-shrink: 0;
+    }
+
+    html[dir="rtl"] .header-actions {
+        flex-shrink: 0;
+        min-width: max-content;
+        gap: clamp(8px, 1vw, 14px);
+    }
+
+    html[dir="rtl"] .search-box input {
+        width: clamp(115px, 8.5vw, 150px);
+    }
+
+    html[dir="rtl"] .home-search-predict {
+        right: 0;
+        left: auto;
+        text-align: right;
+    }
+}
+
+@media (max-width: 1220px) and (min-width: 901px) {
+    html[dir="rtl"] .search-box {
+        display: none !important;
+    }
+    html[dir="rtl"] .header-search-btn {
+        display: inline-flex !important;
+    }
+}
+

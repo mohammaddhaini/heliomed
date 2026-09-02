@@ -1011,8 +1011,10 @@
             const title = String(node.title || node.id || "").trim();
             const slug = slugifyText(node.slug || title);
             const norm = normalizeText(title);
+            const compactSlug = slug.replace(/[^a-z0-9]/g, "");
+            const compactNorm = norm.replace(/[^a-z0-9]/g, "");
 
-            let entry = categoryMap.get(slug);
+            let entry = categoryMap.get(slug) || (compactSlug ? categoryMap.get(compactSlug) : null);
             if (!entry) {
                 entry = {
                     title: title || titleFromSlug(slug),
@@ -1020,14 +1022,20 @@
                     slug: slug,
                     imageUrl: String(node.imageUrl || node.image || "").trim(),
                     children: [],
-                    allDescendants: new Set([slug, norm, slugifyText(title)])
+                    allDescendants: new Set([slug, norm, slugifyText(title), compactSlug, compactNorm].filter(Boolean))
                 };
                 categoryMap.set(slug, entry);
                 if (norm) categoryMap.set(norm, entry);
+                if (compactSlug) categoryMap.set(compactSlug, entry);
+                if (compactNorm) categoryMap.set(compactNorm, entry);
             } else {
                 if (title) entry.title = title;
                 if (String(node.title_ar || "").trim()) entry.title_ar = String(node.title_ar).trim();
                 if (node.imageUrl || node.image) entry.imageUrl = String(node.imageUrl || node.image).trim();
+                [slug, norm, slugifyText(title), compactSlug, compactNorm].filter(Boolean).forEach(function (k) {
+                    entry.allDescendants.add(k);
+                    categoryMap.set(k, entry);
+                });
             }
 
             const children = Array.isArray(node.children) ? node.children : [];
@@ -1035,7 +1043,8 @@
                 registerCategoryNode(childNode);
                 const childSlug = slugifyText(childNode.slug || childNode.title);
                 const childNorm = normalizeText(childNode.title || childNode.slug);
-                const childEntry = categoryMap.get(childSlug) || categoryMap.get(childNorm);
+                const childCompact = childSlug.replace(/[^a-z0-9]/g, "");
+                const childEntry = categoryMap.get(childSlug) || categoryMap.get(childNorm) || (childCompact ? categoryMap.get(childCompact) : null);
 
                 if (childEntry) {
                     if (!entry.children.some(function (c) { return c.slug === childEntry.slug; })) {
@@ -1110,7 +1119,9 @@
             };
         }
         function searchBlob(product) {
-            return normalizeText([product.title, product.brand, product.category, product.section, product.badge, product.searchText, product.imageQuery].join(" "));
+            const extraCats = Array.isArray(product.categories) ? product.categories.join(" ") : "";
+            const extraCols = Array.isArray(product.collections) ? product.collections.join(" ") : "";
+            return normalizeText([product.title, product.brand, product.category, extraCats, extraCols, product.section, product.badge, product.searchText, product.imageQuery].join(" "));
         }
         function isOffer(product) {
             return /sale|offer|off|%|discount/i.test(product.badge || "") || Number(product.oldPriceValue) > Number(product.newPriceValue);
@@ -1135,50 +1146,64 @@
         function baseMatches(product) {
             const cleanSlug = slugifyText(slug);
             const slugNorm = normalizeText(slug || "");
+            const compactSlug = cleanSlug.replace(/[^a-z0-9]/g, "");
             const brandSlug = slugifyText(product.brand);
             const brandNorm = normalizeText(product.brand || "");
+            const compactBrand = brandSlug.replace(/[^a-z0-9]/g, "");
 
-            // Brand match: exact slug, normalized string, or substring
-            if (cleanSlug && (brandSlug === cleanSlug || brandNorm === slugNorm)) return true;
+            if (compactSlug && (brandSlug === cleanSlug || brandNorm === slugNorm || compactBrand === compactSlug)) return true;
             if (slugNorm && slugNorm.length > 2 && (brandNorm.includes(slugNorm) || slugNorm.includes(brandNorm))) return true;
 
-            // Global virtual collections
+            const allBelongings = [
+                product.category,
+                product.section,
+                product.subcategory,
+                product.subCategory,
+                ...(Array.isArray(product.categories) ? product.categories : []),
+                ...(Array.isArray(product.categorySlugs) ? product.categorySlugs : []),
+                ...(Array.isArray(product.collections) ? product.collections : []),
+                ...(Array.isArray(product.tags) ? product.tags : [])
+            ].filter(Boolean);
+
             if (cleanSlug === "all" || cleanSlug === "all-products") return true;
-            if (cleanSlug === "best-sellers") return Number(product.inventory || 0) > 0;
-            if (cleanSlug === "new-arrivals") return isNew(product);
-            if (cleanSlug === "offers") return isOffer(product);
+            if (cleanSlug === "best-sellers") {
+                if (Array.isArray(product.collections) && product.collections.some(c => slugifyText(c) === "best-sellers")) return true;
+                return true;
+            }
+            if (cleanSlug === "new-arrivals") {
+                if (Array.isArray(product.collections) && product.collections.some(c => slugifyText(c) === "new-arrivals")) return true;
+                return isNew(product);
+            }
+            if (cleanSlug === "offers") {
+                if (Array.isArray(product.collections) && product.collections.some(c => slugifyText(c) === "offers" || slugifyText(c) === "special-offers")) return true;
+                return isOffer(product);
+            }
             if (cleanSlug === "under-20") return Number(product.newPriceValue) > 0 && Number(product.newPriceValue) < 20;
             if (cleanSlug === "under-50") return Number(product.newPriceValue) > 0 && Number(product.newPriceValue) < 50;
 
-            // Check if slug matches category hierarchy (including subcategories and sub-subcategories)
-            const catEntry = categoryMap.get(cleanSlug) || categoryMap.get(slugNorm);
-            if (catEntry && catEntry.allDescendants) {
-                const prodCategorySlug = slugifyText(product.category);
-                const prodSectionSlug = slugifyText(product.section);
-                const prodSubcategorySlug = slugifyText(product.subcategory || product.subCategory);
-                const prodCategoryNorm = normalizeText(product.category || "");
-                const prodSectionNorm = normalizeText(product.section || "");
-                const prodSubcategoryNorm = normalizeText(product.subcategory || product.subCategory || "");
+            const catEntry = categoryMap.get(cleanSlug) || categoryMap.get(slugNorm) || (compactSlug ? categoryMap.get(compactSlug) : null);
 
-                if (catEntry.allDescendants.has(prodCategorySlug) ||
-                    catEntry.allDescendants.has(prodSectionSlug) ||
-                    catEntry.allDescendants.has(prodSubcategorySlug) ||
-                    catEntry.allDescendants.has(prodCategoryNorm) ||
-                    catEntry.allDescendants.has(prodSectionNorm) ||
-                    catEntry.allDescendants.has(prodSubcategoryNorm)) {
-                    return true;
+            for (const item of allBelongings) {
+                const itemSlug = slugifyText(item);
+                const itemNorm = normalizeText(item || "");
+                const itemCompact = itemSlug.replace(/[^a-z0-9]/g, "");
+
+                if (catEntry && catEntry.allDescendants) {
+                    if (catEntry.allDescendants.has(itemSlug) ||
+                        catEntry.allDescendants.has(itemNorm) ||
+                        catEntry.allDescendants.has(itemCompact)) {
+                        return true;
+                    }
+                }
+
+                if (cleanSlug && (itemSlug === cleanSlug || item === cleanSlug)) return true;
+                if (slugNorm && (itemNorm.includes(slugNorm) || slugNorm.includes(itemNorm))) return true;
+
+                if (compactSlug && itemCompact) {
+                    if (itemCompact === compactSlug) return true;
+                    if (compactSlug.length >= 4 && (itemCompact.includes(compactSlug) || compactSlug.includes(itemCompact))) return true;
                 }
             }
-
-            const catSlug = slugifyText(product.category);
-            const secSlug = slugifyText(product.section);
-            const subSlug = slugifyText(product.subcategory || product.subCategory);
-            if (cleanSlug && (catSlug === cleanSlug || secSlug === cleanSlug || subSlug === cleanSlug)) return true;
-
-            const catNorm = normalizeText(product.category || "");
-            const secNorm = normalizeText(product.section || "");
-            const subNorm = normalizeText(product.subcategory || product.subCategory || "");
-            if (slugNorm && (catNorm.includes(slugNorm) || secNorm.includes(slugNorm) || subNorm.includes(slugNorm))) return true;
 
             return false;
         }
@@ -1251,11 +1276,18 @@
                     // 2. Fallback: match a product from this category/subcategory that has an image
                     if (!imgUrl && products && products.length) {
                         const matchedProduct = products.find(function (p) {
-                            const pCat = slugifyText(p.category || "");
-                            const pSub = slugifyText(p.subcategory || p.subCategory || "");
-                            const pSec = slugifyText(p.section || "");
-                            return pCat === cleanItemSlug || pSub === cleanItemSlug || pSec === cleanItemSlug ||
-                                (subEntry && subEntry.allDescendants && (subEntry.allDescendants.has(pCat) || subEntry.allDescendants.has(pSub) || subEntry.allDescendants.has(pSec)));
+                            const pCats = [
+                                p.category,
+                                p.section,
+                                p.subcategory,
+                                p.subCategory,
+                                ...(Array.isArray(p.categories) ? p.categories : []),
+                                ...(Array.isArray(p.categorySlugs) ? p.categorySlugs : []),
+                                ...(Array.isArray(p.collections) ? p.collections : [])
+                            ].filter(Boolean).map(slugifyText);
+                            return pCats.some(function (c) {
+                                return c === cleanItemSlug || (subEntry && subEntry.allDescendants && subEntry.allDescendants.has(c));
+                            });
                         });
                         if (matchedProduct) {
                             imgUrl = matchedProduct.imageUrl || (matchedProduct.images && matchedProduct.images[0]) || "";
@@ -1346,7 +1378,9 @@
 
                 products = (rawProducts || []).map(function (item) {
                     return normalizeProduct(item, item.id);
-                }).filter(window.HeliomedProductUrls.isProductAvailable).filter(baseMatches);
+                }).filter(function (product) {
+                    return product && product.available !== false;
+                }).filter(baseMatches);
 
                 setupHero(products);
                 render();
@@ -1358,6 +1392,10 @@
         }
         function matchesFacet(product, group) {
             if (!selected[group].size) return true;
+            if (group === "category") {
+                const cats = [product.category, ...(Array.isArray(product.categories) ? product.categories : [])].filter(Boolean);
+                return cats.some(function (c) { return selected.category.has(c); });
+            }
             return selected[group].has(product[fieldMap[group]]);
         }
         function filteredProducts(options = {}) {
@@ -1378,9 +1416,17 @@
             const field = fieldMap[group];
             const counts = new Map();
             filteredProducts({ exclude: group }).forEach(function (product) {
-                const value = product[field];
-                if (!value) return;
-                counts.set(value, (counts.get(value) || 0) + 1);
+                if (group === "category") {
+                    const cats = [product.category, ...(Array.isArray(product.categories) ? product.categories : [])].filter(Boolean);
+                    const uniqueCats = new Set(cats);
+                    uniqueCats.forEach(function (val) {
+                        counts.set(val, (counts.get(val) || 0) + 1);
+                    });
+                } else {
+                    const value = product[field];
+                    if (!value) return;
+                    counts.set(value, (counts.get(value) || 0) + 1);
+                }
             });
             return [...counts.entries()].sort(function (a, b) {
                 return String(a[0]).localeCompare(String(b[0]));

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <link rel="icon" type="image/x-icon" href="icon.ico?v=2">
     <meta charset="UTF-8">
@@ -533,6 +533,218 @@
         }
         .status-badge.active { background: var(--ok-bg); color: var(--ok); }
         .status-badge.inactive { background: var(--danger-bg); color: var(--danger); }
+        .status-badge.admin { background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; }
+        .status-badge.customer { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+
+        .product-belongings-panel {
+            grid-column: 1 / -1;
+            border: 1px solid var(--brand-border-subtle);
+            border-radius: var(--radius-md);
+            background: #F9FAFB;
+            padding: 16px;
+            display: grid;
+            gap: 14px;
+        }
+        .product-belongings-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .product-belongings-head strong {
+            color: var(--brand-dark);
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .product-belongings-head span {
+            display: block;
+            margin-top: 3px;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .belonging-tags-area {
+            background: #fff;
+            border: 1px solid #DCE0E4;
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            display: grid;
+            gap: 8px;
+        }
+        .belonging-tags-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .belonging-chips-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            min-height: 32px;
+            align-items: center;
+        }
+        .belonging-empty-msg {
+            font-size: 12px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+        .belonging-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: #F1F5F9;
+            border: 1px solid #CBD5E1;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            transition: all 0.15s ease;
+        }
+        .belonging-chip.is-primary {
+            background: #EFF6FF;
+            border-color: #3B82F6;
+            color: #1D4ED8;
+            box-shadow: 0 1px 2px rgba(59, 130, 246, 0.15);
+        }
+        .belonging-chip .chip-star-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+            color: #94a3b8;
+            transition: color 0.15s;
+        }
+        .belonging-chip.is-primary .chip-star-btn {
+            color: #F59E0B;
+        }
+        .belonging-chip .chip-badge {
+            background: #2563EB;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 1px 5px;
+            border-radius: 8px;
+            letter-spacing: 0.4px;
+        }
+        .belonging-chip .chip-remove-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            margin-left: 2px;
+            cursor: pointer;
+            font-size: 15px;
+            line-height: 1;
+            color: #94a3b8;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .belonging-chip .chip-remove-btn:hover {
+            color: #EF4444;
+        }
+        .belonging-synced-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .belonging-picker-toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .belonging-search-wrap {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .belonging-search-wrap i {
+            position: absolute;
+            left: 10px;
+            color: #94a3b8;
+            font-size: 12px;
+            pointer-events: none;
+        }
+        .belonging-search-wrap input {
+            width: 100%;
+            padding-left: 30px;
+            font-size: 12px;
+        }
+        .belonging-custom-wrap {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .belonging-custom-wrap input {
+            font-size: 12px;
+            width: 180px;
+        }
+        .belonging-groups-container {
+            max-height: 280px;
+            overflow-y: auto;
+            border: 1px solid #E2E8F0;
+            border-radius: var(--radius-sm);
+            background: #fff;
+            padding: 12px;
+            display: grid;
+            gap: 12px;
+        }
+        .belonging-group {
+            display: grid;
+            gap: 6px;
+        }
+        .belonging-group-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-bottom: 2px;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .belonging-pill-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .belonging-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 16px;
+            border: 1px solid #E2E8F0;
+            background: #F8FAFC;
+            font-size: 12px;
+            font-weight: 500;
+            color: #334155;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+        }
+        .belonging-pill:hover {
+            background: #EDF2F7;
+            border-color: #CBD5E1;
+        }
+        .belonging-pill.is-selected {
+            background: #EFF6FF;
+            border-color: #3B82F6;
+            color: #1D4ED8;
+            font-weight: 700;
+        }
+        .belonging-pill input[type="checkbox"] {
+            margin: 0;
+            cursor: pointer;
+            accent-color: #2563EB;
+        }
 
         .product-gallery-panel {
             grid-column: 1 / -1;
@@ -1518,8 +1730,6 @@
             .pagination { flex-direction: column; align-items: center; }
         }
     </style>
-    <link rel="stylesheet" href="./rtl.css">
-    <script src="./i18n.js"></script>
 </head>
 <body>
 
@@ -1718,15 +1928,6 @@
                                 <div class="form-grid">
                                     <label class="wide">Title <input name="title" required></label>
                                     <label>Brand <input name="brand"></label>
-                                    <label>Category
-                                        <div style="display:flex; gap:6px; align-items:center;">
-                                            <input name="category" style="flex:1;">
-                                            <button type="button" id="quickCategoryPhotoBtn" class="secondary-btn" style="font-size:11px; padding:5px 8px; white-space:nowrap;" title="Open Photo Uploader for this category">
-                                                <i class="fas fa-camera"></i> Category Photo
-                                            </button>
-                                        </div>
-                                    </label>
-                                    <label>Section <input name="section"></label>
                                     <label>Badge <input name="badge"></label>
                                     <label>Old price <input name="oldPrice" placeholder="$0.00"></label>
                                     <label>New price <input name="newPrice" placeholder="$0.00"></label>
@@ -1737,6 +1938,49 @@
                                             <option value="false">No</option>
                                         </select>
                                     </label>
+
+                                    <div class="product-belongings-panel">
+                                        <div class="product-belongings-head">
+                                            <div>
+                                                <strong>Categories &amp; Collections (Belongs To)</strong>
+                                                <span>Assign this product to multiple categories, subcategories, or collections. Click any tag or star to choose the Primary Category.</span>
+                                            </div>
+                                            <div class="product-belongings-head-actions">
+                                                <button type="button" id="quickCategoryPhotoBtn" class="secondary-btn" style="font-size:11px; padding:5px 8px; white-space:nowrap;" title="Open Photo Uploader for the primary category">
+                                                    <i class="fas fa-camera"></i> Primary Category Photo
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="belonging-tags-area">
+                                            <div class="belonging-tags-label">Assigned Belongings (<span id="belongingCount">0</span> selected):</div>
+                                            <div class="belonging-chips-list" id="productBelongingTags">
+                                                <span class="belonging-empty-msg">No categories or collections assigned yet. Pick from the options below or type a custom tag.</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="belonging-synced-fields">
+                                            <label style="margin:0; font-size:12px; font-weight:700; color:var(--brand-dark);">Primary Category (Main display &amp; breadcrumbs)
+                                                <input name="category" id="primaryCategoryInput" placeholder="Auto-set from primary tag or type here..." style="margin-top:4px;" required>
+                                            </label>
+                                            <label style="margin:0; font-size:12px; font-weight:700; color:var(--brand-dark);">Section / Department (Optional secondary grouping)
+                                                <input name="section" id="productSectionInput" placeholder="e.g. Parapharmacy, Medical, Offers..." style="margin-top:4px;">
+                                            </label>
+                                        </div>
+
+                                        <div class="belonging-picker-toolbar">
+                                            <div class="belonging-search-wrap">
+                                                <i class="fas fa-search"></i>
+                                                <input type="text" id="belongingFilterInput" placeholder="Filter categories &amp; collections...">
+                                            </div>
+                                            <div class="belonging-custom-wrap">
+                                                <input type="text" id="customBelongingInput" placeholder="Add custom tag / collection...">
+                                                <button type="button" id="addCustomBelongingBtn" class="secondary-btn"><i class="fas fa-plus"></i> Add Tag</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="belonging-groups-container" id="belongingOptionsContainer"></div>
+                                    </div>
                                     <div class="product-gallery-panel">
                                         <div class="product-gallery-head">
                                             <div>
@@ -1945,7 +2189,7 @@
                 <!-- USERS PANEL -->
                 <section class="tab-panel hidden" id="usersPanel">
                     <details class="panel-section" id="userFormDetails">
-                        <summary>Edit User Profile</summary>
+                        <summary>Edit User Profile / Admin Role</summary>
                         <div class="panel-body">
                             <form id="userForm">
                                 <input type="hidden" name="id">
@@ -1958,6 +2202,12 @@
                                     <label class="wide">Address <input name="address"></label>
                                     <label>Building <input name="building"></label>
                                     <label>Floor <input name="floor"></label>
+                                    <label class="wide">Role
+                                        <select name="role">
+                                            <option value="customer">Customer</option>
+                                            <option value="admin">Administrator (Full Admin Access)</option>
+                                        </select>
+                                    </label>
                                     <label class="wide">Notes <textarea name="notes"></textarea></label>
                                 </div>
                                 <div class="actions">
@@ -1972,6 +2222,7 @@
                         <div class="toolbar-group">
                             <input id="userSearch" type="search" placeholder="Search users...">
                             <button class="secondary-btn" id="refreshUsers" type="button"><i class="fas fa-rotate"></i> Refresh</button>
+                            <button class="primary-btn" id="addAdminByEmailBtn" type="button"><i class="fas fa-user-shield"></i> Add Admin by Email</button>
                         </div>
                     </div>
                     <div class="table-wrap">
@@ -2200,6 +2451,14 @@
         const catPhotoSearch = document.getElementById("catPhotoSearch");
         const catPhotoGrid = document.getElementById("catPhotoGrid");
         const quickCategoryPhotoBtn = document.getElementById("quickCategoryPhotoBtn");
+        const productBelongingTags = document.getElementById("productBelongingTags");
+        const belongingCount = document.getElementById("belongingCount");
+        const primaryCategoryInput = document.getElementById("primaryCategoryInput");
+        const productSectionInput = document.getElementById("productSectionInput");
+        const belongingFilterInput = document.getElementById("belongingFilterInput");
+        const customBelongingInput = document.getElementById("customBelongingInput");
+        const addCustomBelongingBtn = document.getElementById("addCustomBelongingBtn");
+        const belongingOptionsContainer = document.getElementById("belongingOptionsContainer");
 
         const categoryFormImagePreview = document.getElementById("categoryFormImagePreview");
         const categoryFormImageUrl = document.getElementById("categoryFormImageUrl");
@@ -2303,6 +2562,245 @@
                 .replace(/^-+|-+$/g, "")
                 .slice(0, 90) || "media-file";
         }
+        let currentProductBelongings = [];
+        const STANDARD_FEATURED_COLLECTIONS = [
+            { title: "Best Sellers", slug: "best-sellers" },
+            { title: "New Arrivals", slug: "new-arrivals" },
+            { title: "Special Offers", slug: "offers" },
+            { title: "Under $20", slug: "under-20" },
+            { title: "Under $50", slug: "under-50" },
+            { title: "Summer Essentials", slug: "summer-essentials" },
+            { title: "Beauty Essentials", slug: "beauty-essentials" },
+            { title: "Wellness Essentials", slug: "wellness-essentials" },
+            { title: "Featured Collection", slug: "featured-collection" }
+        ];
+
+        function renderProductBelongingTags() {
+            if (!productBelongingTags) return;
+            if (belongingCount) belongingCount.textContent = currentProductBelongings.length;
+
+            if (currentProductBelongings.length === 0) {
+                productBelongingTags.innerHTML = '<span class="belonging-empty-msg">No categories or collections assigned yet. Pick from the options below or type a custom tag.</span>';
+                if (primaryCategoryInput) primaryCategoryInput.value = "";
+                updateBelongingPillsState();
+                return;
+            }
+
+            const hasPrimary = currentProductBelongings.some(b => b.isPrimary);
+            if (!hasPrimary && currentProductBelongings.length > 0) {
+                currentProductBelongings[0].isPrimary = true;
+            }
+            const primaryItem = currentProductBelongings.find(b => b.isPrimary);
+            if (primaryCategoryInput && primaryItem) {
+                primaryCategoryInput.value = primaryItem.title;
+            }
+
+            productBelongingTags.innerHTML = currentProductBelongings.map((b, idx) => {
+                const isPrimary = Boolean(b.isPrimary);
+                return `
+                    <div class="belonging-chip ${isPrimary ? 'is-primary' : ''}" data-belonging-index="${idx}">
+                        <button type="button" class="chip-star-btn" data-set-primary="${idx}" title="${isPrimary ? 'Primary category' : 'Click to make Primary'}">${isPrimary ? '★' : '☆'}</button>
+                        <span class="chip-name">${escapeHtml(b.title)}</span>
+                        ${isPrimary ? '<span class="chip-badge">Primary</span>' : ''}
+                        <button type="button" class="chip-remove-btn" data-remove-belonging="${idx}" title="Remove">&times;</button>
+                    </div>
+                `;
+            }).join("");
+
+            updateBelongingPillsState();
+        }
+
+        function updateBelongingPillsState() {
+            if (!belongingOptionsContainer) return;
+            const currentTitles = new Set(currentProductBelongings.map(b => b.title.toLowerCase().trim()));
+            belongingOptionsContainer.querySelectorAll(".belonging-pill").forEach(pill => {
+                const val = (pill.dataset.belongingTitle || "").toLowerCase().trim();
+                const checkbox = pill.querySelector('input[type="checkbox"]');
+                const isSelected = currentTitles.has(val);
+                pill.classList.toggle("is-selected", isSelected);
+                if (checkbox) checkbox.checked = isSelected;
+            });
+        }
+
+        function addBelonging(title, type = "category", parent = "", makePrimary = false) {
+            const cleanTitle = String(title || "").trim();
+            if (!cleanTitle) return;
+            const existing = currentProductBelongings.find(b => b.title.toLowerCase() === cleanTitle.toLowerCase());
+            if (existing) {
+                if (makePrimary) setPrimaryBelonging(cleanTitle);
+                return;
+            }
+            const isFirst = currentProductBelongings.length === 0;
+            currentProductBelongings.push({
+                title: cleanTitle,
+                isPrimary: isFirst || makePrimary,
+                type,
+                parent: parent || "",
+                slug: slug(cleanTitle)
+            });
+            if (makePrimary || isFirst) {
+                currentProductBelongings.forEach(b => {
+                    if (b.title.toLowerCase() !== cleanTitle.toLowerCase()) b.isPrimary = false;
+                });
+            }
+            if (parent && productSectionInput && !productSectionInput.value.trim()) {
+                productSectionInput.value = parent;
+            }
+            renderProductBelongingTags();
+        }
+
+        function removeBelonging(titleOrIndex) {
+            if (typeof titleOrIndex === "number") {
+                const removed = currentProductBelongings.splice(titleOrIndex, 1)[0];
+                if (removed?.isPrimary && currentProductBelongings.length > 0) {
+                    currentProductBelongings[0].isPrimary = true;
+                }
+            } else {
+                const titleLower = String(titleOrIndex).toLowerCase().trim();
+                const idx = currentProductBelongings.findIndex(b => b.title.toLowerCase() === titleLower);
+                if (idx !== -1) {
+                    const removed = currentProductBelongings.splice(idx, 1)[0];
+                    if (removed?.isPrimary && currentProductBelongings.length > 0) {
+                        currentProductBelongings[0].isPrimary = true;
+                    }
+                }
+            }
+            renderProductBelongingTags();
+        }
+
+        function setPrimaryBelonging(titleOrIndex) {
+            let targetTitle = "";
+            if (typeof titleOrIndex === "number") {
+                targetTitle = currentProductBelongings[titleOrIndex]?.title || "";
+            } else {
+                targetTitle = String(titleOrIndex).trim();
+            }
+            if (!targetTitle) return;
+            currentProductBelongings.forEach(b => {
+                b.isPrimary = (b.title.toLowerCase() === targetTitle.toLowerCase());
+            });
+            renderProductBelongingTags();
+        }
+
+        function clearProductBelongings() {
+            currentProductBelongings = [];
+            if (primaryCategoryInput) primaryCategoryInput.value = "";
+            if (productSectionInput) productSectionInput.value = "";
+            renderProductBelongingTags();
+        }
+
+        function loadProductBelongings(product) {
+            currentProductBelongings = [];
+            const primaryCat = String(product.category || "").trim();
+            const sec = String(product.section || "").trim();
+            const cats = Array.isArray(product.categories) ? product.categories : [];
+            const cols = Array.isArray(product.collections) ? product.collections : [];
+
+            if (cats.length) {
+                cats.forEach(c => {
+                    const clean = String(c || "").trim();
+                    if (!clean) return;
+                    currentProductBelongings.push({
+                        title: clean,
+                        isPrimary: primaryCat ? clean.toLowerCase() === primaryCat.toLowerCase() : currentProductBelongings.length === 0,
+                        type: "category",
+                        slug: slug(clean)
+                    });
+                });
+            } else if (primaryCat) {
+                currentProductBelongings.push({
+                    title: primaryCat,
+                    isPrimary: true,
+                    type: "category",
+                    slug: slug(primaryCat)
+                });
+            }
+
+            cols.forEach(c => {
+                const clean = String(c || "").trim();
+                if (!clean) return;
+                if (!currentProductBelongings.some(b => b.title.toLowerCase() === clean.toLowerCase())) {
+                    currentProductBelongings.push({
+                        title: clean,
+                        isPrimary: false,
+                        type: "collection",
+                        slug: slug(clean)
+                    });
+                }
+            });
+
+            if (productSectionInput) productSectionInput.value = sec;
+            if (primaryCategoryInput) primaryCategoryInput.value = primaryCat || currentProductBelongings[0]?.title || "";
+            renderProductBelongingTags();
+        }
+
+        function renderProductBelongingOptions(filterTerm = "") {
+            if (!belongingOptionsContainer) return;
+            const term = String(filterTerm || "").toLowerCase().trim();
+            const filteredCollections = STANDARD_FEATURED_COLLECTIONS.filter(c => !term || c.title.toLowerCase().includes(term));
+            const groupsMap = new Map();
+
+            categories.forEach(rootCat => {
+                const rootTitle = rootCat.title || rootCat.slug;
+                const items = [];
+                items.push({ title: rootTitle, slug: rootCat.slug, level: "root", parent: "" });
+                (rootCat.children || []).forEach(child => {
+                    const childTitle = child.title || child.slug;
+                    items.push({ title: childTitle, slug: child.slug, level: "sub", parent: rootTitle });
+                    (child.children || []).forEach(subChild => {
+                        const subTitle = subChild.title || subChild.slug;
+                        items.push({ title: subTitle, slug: subChild.slug, level: "subsub", parent: childTitle });
+                    });
+                });
+                groupsMap.set(rootTitle, items);
+            });
+
+            let html = '';
+
+            if (filteredCollections.length) {
+                html += `
+                    <div class="belonging-group">
+                        <div class="belonging-group-title"><i class="fas fa-tags" style="color:var(--brand-blue); margin-right:4px;"></i> Featured Collections &amp; Badges</div>
+                        <div class="belonging-pill-grid">
+                            ${filteredCollections.map(c => `
+                                <label class="belonging-pill" data-belonging-title="${escapeHtml(c.title)}" data-belonging-type="collection">
+                                    <input type="checkbox" data-belonging-title="${escapeHtml(c.title)}" data-belonging-type="collection">
+                                    <span>${escapeHtml(c.title)}</span>
+                                </label>
+                            `).join("")}
+                        </div>
+                    </div>
+                `;
+            }
+
+            groupsMap.forEach((items, rootTitle) => {
+                const matchingItems = items.filter(item => !term || item.title.toLowerCase().includes(term) || rootTitle.toLowerCase().includes(term));
+                if (!matchingItems.length) return;
+
+                html += `
+                    <div class="belonging-group">
+                        <div class="belonging-group-title"><i class="fas fa-folder" style="color:#d97706; margin-right:4px;"></i> ${escapeHtml(rootTitle)}</div>
+                        <div class="belonging-pill-grid">
+                            ${matchingItems.map(item => `
+                                <label class="belonging-pill" data-belonging-title="${escapeHtml(item.title)}" data-belonging-type="category" data-belonging-parent="${escapeHtml(item.parent || rootTitle)}">
+                                    <input type="checkbox" data-belonging-title="${escapeHtml(item.title)}" data-belonging-type="category" data-belonging-parent="${escapeHtml(item.parent || rootTitle)}">
+                                    <span>${escapeHtml(item.title)}</span>
+                                </label>
+                            `).join("")}
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (!html) {
+                html = '<div style="color:var(--text-muted); font-size:12px; padding:8px;">No matching categories or collections found. Type in the box above to add a custom tag.</div>';
+            }
+
+            belongingOptionsContainer.innerHTML = html;
+            updateBelongingPillsState();
+        }
+        renderProductBelongingOptions();
+
         let productGalleryItems = [];
         function renderProductGallery() {
             if (!productGalleryGrid) return;
@@ -2486,6 +2984,7 @@
             renderProductVariants([]);
             productGalleryItems = [];
             renderProductGallery();
+            clearProductBelongings();
         }
         function fillForm(form, data) {
             Array.from(form.elements).forEach(function (field) {
@@ -2570,10 +3069,12 @@
                 subtitle: "",
                 subtitle_ar: "",
                 active: true,
+                showText: true,
                 bgColor: "#FFFFFF",
                 accentColor: "#C2A26B",
                 slides: [
                     {
+                        showText: true,
                         headline: "Care You Can Trust at Home",
                         headline_ar: "",
                         kicker: "Heliomed Essentials",
@@ -2782,6 +3283,7 @@
                 itemLabel: "Slide",
                 addText: "Add Slide",
                 createItem: () => ({
+                    showText: true,
                     headline: "New Slide",
                     headline_ar: "",
                     kicker: "Heliomed Care",
@@ -2953,9 +3455,63 @@
 
         function productsForCollection(collectionId) {
             if (!collectionId) return products;
+            const target = String(collectionId).toLowerCase().trim();
+            const targetCompact = target.replace(/[^a-z0-9]/g, "");
+
+            // Look up any matching category rows to get child titles/slugs
+            const matchedRow = categoryRows().find(row => {
+                const rowSlug = String(row.item?.slug || "").toLowerCase().trim();
+                const rowTitle = String(row.item?.title || "").toLowerCase().trim();
+                const rowId = String(row.item?.id || "").toLowerCase().trim();
+                return rowSlug === target || rowTitle === target || rowId === target ||
+                    (targetCompact && (rowSlug.replace(/[^a-z0-9]/g, "") === targetCompact || rowTitle.replace(/[^a-z0-9]/g, "") === targetCompact));
+            });
+
+            const matchTokens = new Set([target, targetCompact].filter(Boolean));
+            if (matchedRow && matchedRow.item) {
+                const addItemTokens = (item) => {
+                    if (!item) return;
+                    if (item.title) {
+                        matchTokens.add(String(item.title).toLowerCase().trim());
+                        matchTokens.add(String(item.title).toLowerCase().replace(/[^a-z0-9]/g, ""));
+                    }
+                    if (item.slug) {
+                        matchTokens.add(String(item.slug).toLowerCase().trim());
+                        matchTokens.add(String(item.slug).toLowerCase().replace(/[^a-z0-9]/g, ""));
+                    }
+                    if (Array.isArray(item.children)) {
+                        item.children.forEach(addItemTokens);
+                    }
+                };
+                addItemTokens(matchedRow.item);
+            }
+
             return products.filter(product => {
-                const haystack = [product.category, product.section, product.searchText].join(" ").toLowerCase();
-                return haystack.includes(String(collectionId).toLowerCase());
+                const cat = String(product.category || "").toLowerCase().trim();
+                const sec = String(product.section || "").toLowerCase().trim();
+                const catCompact = cat.replace(/[^a-z0-9]/g, "");
+                const secCompact = sec.replace(/[^a-z0-9]/g, "");
+                const search = String(product.searchText || product.title || "").toLowerCase();
+                const searchCompact = search.replace(/[^a-z0-9]/g, "");
+
+                const allCats = [
+                    cat,
+                    sec,
+                    ...(Array.isArray(product.categories) ? product.categories : []),
+                    ...(Array.isArray(product.collections) ? product.collections : [])
+                ].map(c => String(c).toLowerCase().trim()).filter(Boolean);
+
+                for (const token of matchTokens) {
+                    if (!token) continue;
+                    for (const c of allCats) {
+                        const cCompact = c.replace(/[^a-z0-9]/g, "");
+                        if (c === token || cCompact === token) return true;
+                        if (token.length >= 3 && (c.includes(token) || cCompact.includes(token))) return true;
+                    }
+                    if (cat === token || sec === token || catCompact === token || secCompact === token) return true;
+                    if (token.length >= 3 && (cat.includes(token) || sec.includes(token) || catCompact.includes(token) || secCompact.includes(token) || searchCompact.includes(token))) return true;
+                }
+                return false;
             });
         }
 
@@ -3222,10 +3778,12 @@
 
         function renderRepeaterItems(sec) {
             const config = REPEATER_CONFIG[sec.type];
+            const prevScrollTop = cmsRepeaterList.scrollTop;
             if (sec.type === "split_promo" || sec.type === "collection_showcase") {
                 cmsRepeaterTitle.textContent = "Selected Products";
                 cmsAddItemBtn.classList.add("hidden");
                 cmsRepeaterList.innerHTML = renderSectionSpecificFields(sec);
+                cmsRepeaterList.scrollTop = prevScrollTop;
                 return;
             }
             if (!config) {
@@ -3242,9 +3800,27 @@
             sec[config.arrayKey] = sec[config.arrayKey] || [];
             cmsRepeaterList.innerHTML = renderSectionSpecificFields(sec) + sec[config.arrayKey].map((item, itemIndex) => renderRepeaterItem(sec, config, item, itemIndex)).join("");
             renderPaletteSwatches(cmsRepeaterList);
+            cmsRepeaterList.scrollTop = prevScrollTop;
         }
 
         function renderSectionSpecificFields(sec) {
+            if (sec.type === "hero_carousel") {
+                const showText = sec.showText !== false;
+                return `
+                <fieldset class="cms-fieldset">
+                    <legend><i class="fas fa-font"></i> Hero Writing & Text Overlay</legend>
+                    <div class="form-grid">
+                        <label class="wide" style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700; padding:12px 14px; background:#F8FAFC; border:1px solid var(--brand-border); border-radius:8px;">
+                            <input type="checkbox" data-section-key="showText" ${showText ? 'checked' : ''} style="width:18px; height:18px; accent-color:var(--brand-blue);">
+                            <span>Enable writing in hero (headline, subtitle, description, buttons)</span>
+                        </label>
+                        <div class="wide" style="font-size:11px; color:var(--text-muted); margin-top:-6px; padding-left:2px;">
+                            When disabled, the text overlay and background darkener are hidden, showing pure banner images. You can also toggle writing per individual slide below.
+                        </div>
+                    </div>
+                </fieldset>
+            `;
+            }
             if (sec.type === "split_promo") {
                 return `
                 <fieldset class="cms-fieldset">
@@ -3361,6 +3937,7 @@
 
         function renderRepeaterFields(type, item) {
             if (type === "hero_carousel") {
+                const showText = item.showText !== false;
                 const hasBg = Boolean(item.highlightsBgColor && item.highlightsBgColor !== 'transparent' && item.highlightsBgColor !== 'none');
                 const hasLine = Boolean(item.highlightsLineColor && item.highlightsLineColor !== 'transparent' && item.highlightsLineColor !== 'none');
                 const bgColorVal = hasBg ? item.highlightsBgColor : '#1D5F73';
@@ -3369,6 +3946,10 @@
 
                 return `
                     <div class="form-grid">
+                        <label class="wide" style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700; padding:10px 12px; background:#F8FAFC; border:1px solid var(--brand-border); border-radius:8px; margin-bottom:8px;">
+                            <input type="checkbox" data-key="showText" ${showText ? 'checked' : ''} style="width:18px; height:18px; accent-color:var(--brand-blue);">
+                            <span>Enable writing on this slide</span>
+                        </label>
                         <label>Kicker / Subtitle <input data-key="kicker" value="${escapeHtml(item.kicker || '')}"></label>
                         <label>Kicker / Subtitle (Arabic) <input data-key="kicker_ar" value="${escapeHtml(item.kicker_ar || '')}" lang="ar" dir="rtl"></label>
                         <label>Headline (H1) <input data-key="headline" value="${escapeHtml(item.headline || '')}"></label>
@@ -3786,7 +4367,7 @@
             }
             const sectionKey = input.dataset.sectionKey;
             if (sectionKey) {
-                sec[sectionKey] = input.value;
+                sec[sectionKey] = input.type === "checkbox" ? input.checked : input.value;
                 if (sectionKey === "collectionId") {
                     const collection = findCollectionOption(input.value);
                     sec.productIds = [];
@@ -3895,7 +4476,7 @@
                 return;
             }
 
-            if (e.target.matches("select, input[type='color']")) {
+            if (e.target.matches("select, input[type='color'], input[type='checkbox']")) {
                 e.target.dispatchEvent(new Event("input", { bubbles: true }));
             }
             const fileInput = e.target.closest(".cms-media-dropzone input[type='file']");
@@ -3903,6 +4484,9 @@
         });
 
         function transformCMSValue(input) {
+            if (input.type === "checkbox") {
+                return input.checked;
+            }
             if (input.dataset.transform === "csv") {
                 return input.value.split(",").map(item => item.trim()).filter(Boolean);
             }
@@ -3927,18 +4511,21 @@
             }
             const repeaterItem = e.target.closest(".cms-repeater-item");
             if (repeaterItem && activeSectionIndex >= 0) {
-                const itIdx = Number(repeaterItem.dataset.itemIndex);
-                const sec = homepageLayout.sections[activeSectionIndex];
-                if (sec?.type === "hero_carousel") {
-                    cmsPreviewFrame?.contentWindow?.postMessage({
-                        type: "CMS_PREVIEW_SET_HERO_SLIDE",
-                        slideIndex: itIdx
-                    }, window.location.origin);
-                } else if (sec?.type === "brand_showcase") {
-                    cmsPreviewFrame?.contentWindow?.postMessage({
-                        type: "CMS_PREVIEW_SET_BRAND_TAB",
-                        tabIndex: itIdx
-                    }, window.location.origin);
+                const isHeaderClick = Boolean(e.target.closest("summary") && !e.target.closest("button, [data-item-action]"));
+                if (isHeaderClick) {
+                    const itIdx = Number(repeaterItem.dataset.itemIndex);
+                    const sec = homepageLayout.sections[activeSectionIndex];
+                    if (sec?.type === "hero_carousel") {
+                        cmsPreviewFrame?.contentWindow?.postMessage({
+                            type: "CMS_PREVIEW_SET_HERO_SLIDE",
+                            slideIndex: itIdx
+                        }, window.location.origin);
+                    } else if (sec?.type === "brand_showcase") {
+                        cmsPreviewFrame?.contentWindow?.postMessage({
+                            type: "CMS_PREVIEW_SET_BRAND_TAB",
+                            tabIndex: itIdx
+                        }, window.location.origin);
+                    }
                 }
             }
             const actionBtn = e.target.closest("[data-item-action]");
@@ -4072,6 +4659,10 @@
 
         cmsPreviewFrame.addEventListener("load", sendPreviewUpdate);
 
+        cmsSectionForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+        });
+
         window.addEventListener("message", function (event) {
             if (event.origin !== window.location.origin || !event.data) return;
             if (event.data.type === "CMS_PREVIEW_READY") {
@@ -4081,7 +4672,7 @@
             if (event.data.type === "CMS_PREVIEW_SECTION_SELECT") {
                 const id = event.data.sectionId;
                 const idx = homepageLayout.sections.findIndex(section => section.id === id);
-                if (idx >= 0) {
+                if (idx >= 0 && idx !== activeSectionIndex) {
                     selectCMSSection(idx, { syncPreview: false });
                     sendPreviewUpdate();
                 }
@@ -4478,7 +5069,7 @@
             renderProducts();
             renderCategoryPhotoSection();
             const activeSection = homepageLayout.sections?.[activeSectionIndex];
-            if (activeSection?.type === "brand_showcase") {
+            if (activeSection) {
                 renderRepeaterItems(activeSection);
                 sendPreviewUpdate();
             }
@@ -4489,16 +5080,103 @@
                 .sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0) || String(a.title || "").localeCompare(String(b.title || "")));
             renderCategoryParentOptions();
             await loadCategoryImages();
+            renderProductBelongingOptions(belongingFilterInput?.value || "");
+            const activeSection = homepageLayout.sections?.[activeSectionIndex];
+            if (activeSection && (activeSection.type === "collection_showcase" || activeSection.type === "brand_collection_grid")) {
+                renderRepeaterItems(activeSection);
+                sendPreviewUpdate();
+            }
         }
         async function loadOrders() {
             const snapshot = await getDocs(collection(db, "orders"));
             orders = snapshot.docs.map(item => ({ id: item.id, ...item.data() })).sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
             renderOrders();
         }
+        let adminUids = new Set();
+        let adminEmailsList = new Set();
+
         async function loadUsers() {
-            const snapshot = await getDocs(collection(db, "userProfiles"));
-            users = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
-            renderUsers();
+            try {
+                const [usersSnap, adminsSnap, adminEmailsSnap] = await Promise.all([
+                    getDocs(collection(db, "userProfiles")),
+                    getDocs(collection(db, "admins")).catch(() => ({ docs: [] })),
+                    getDocs(collection(db, "adminEmails")).catch(() => ({ docs: [] }))
+                ]);
+
+                adminUids = new Set(
+                    (adminsSnap.docs || [])
+                        .filter(d => d.data().active !== false)
+                        .map(d => d.id)
+                );
+
+                adminEmailsList = new Set(
+                    (adminEmailsSnap.docs || [])
+                        .filter(d => d.data().active !== false)
+                        .map(d => String(d.id || d.data().email || "").toLowerCase())
+                );
+
+                const list = (usersSnap.docs || []).map(item => {
+                    const data = item.data();
+                    const email = String(data.email || "").toLowerCase();
+                    const isAdm = adminUids.has(item.id) || (email && adminEmailsList.has(email)) || data.isAdmin === true || data.role === "admin";
+                    return {
+                        id: item.id,
+                        ...data,
+                        isAdmin: isAdm,
+                        role: isAdm ? "admin" : (data.role || "customer")
+                    };
+                });
+
+                const existingIds = new Set(list.map(u => u.id));
+                const existingEmails = new Set(list.map(u => String(u.email || "").toLowerCase()).filter(Boolean));
+
+                (adminsSnap.docs || []).forEach(d => {
+                    if (d.data().active === false) return;
+                    if (!existingIds.has(d.id)) {
+                        const data = d.data();
+                        const email = String(data.email || "").toLowerCase();
+                        if (!email || !existingEmails.has(email)) {
+                            list.push({
+                                id: d.id,
+                                name: data.name || "Administrator",
+                                email: email || "",
+                                phone: data.phone || "",
+                                role: "admin",
+                                isAdmin: true,
+                                isExternalAdmin: true
+                            });
+                            existingIds.add(d.id);
+                            if (email) existingEmails.add(email);
+                        }
+                    }
+                });
+
+                (adminEmailsSnap.docs || []).forEach(d => {
+                    if (d.data().active === false) return;
+                    const email = String(d.id || d.data().email || "").toLowerCase();
+                    if (email && !existingEmails.has(email)) {
+                        const data = d.data();
+                        const uid = data.uid || ("admin-" + email.replace(/[^a-z0-9]/g, "-"));
+                        list.push({
+                            id: uid,
+                            name: data.name || email.split("@")[0],
+                            email: email,
+                            phone: data.phone || "",
+                            role: "admin",
+                            isAdmin: true,
+                            isExternalAdmin: true
+                        });
+                        existingEmails.add(email);
+                    }
+                });
+
+                users = list;
+                renderUsers();
+            } catch (error) {
+                console.error("Failed to load users:", error);
+                users = [];
+                renderUsers();
+            }
         }
         async function loadDiscounts() {
             const snapshot = await getDocs(collection(db, "discountCodes"));
@@ -4707,7 +5385,7 @@
                         <td>${displayImage(p) ? `<img class="product-thumb" src="${escapeHtml(displayImage(p))}" alt="${escapeHtml(p.title)}" loading="lazy">` : '<div class="product-thumb" style="display:grid;place-items:center;font-size:10px;color:var(--text-muted);">N/A</div>'}</td>
                         <td><strong>${escapeHtml(p.title)}</strong><br><small style="color:var(--text-muted);">${escapeHtml(p.id)}</small>${Array.isArray(p.variants) && p.variants.length ? `<br><small style="color:var(--brand-blue); font-weight:800;">${p.variants.length} size${p.variants.length === 1 ? "" : "s"}</small>` : ""}</td>
                         <td>${escapeHtml(p.brand || getBrand(p.title))}</td>
-                        <td>${escapeHtml(p.category || "")}${p.section ? `<br><small style="color:var(--text-muted);">${escapeHtml(p.section)}</small>` : ''}</td>
+                        <td><strong>${escapeHtml(p.category || (Array.isArray(p.categories) ? p.categories[0] : "") || "")}</strong>${Array.isArray(p.categories) && p.categories.length > 1 ? `<br><span title="${escapeHtml(p.categories.join(', '))}" style="display:inline-block; font-size:10px; font-weight:700; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; padding:1px 6px; border-radius:10px; cursor:help; margin-top:2px;">+${p.categories.length - 1} more</span>` : ''}${p.section ? `<br><small style="color:var(--text-muted);">${escapeHtml(p.section)}</small>` : ''}</td>
                         <td><strong>${escapeHtml(displayPrice(p, "newPrice"))}</strong>${displayPrice(p, "oldPrice") ? `<br><small style="text-decoration:line-through; color:var(--text-muted);">${escapeHtml(displayPrice(p, "oldPrice"))}</small>` : ''}</td>
                         <td><span class="status-badge ${p.available === false ? 'inactive' : 'active'}">${p.available === false ? 'Out of stock' : 'In stock (' + displayInventory(p) + ')'}</span></td>
                         <td><button class="tiny-btn" data-edit-product="${escapeHtml(p.id)}"><i class="fas fa-edit"></i> Edit</button><button class="tiny-btn danger" data-delete-product="${escapeHtml(p.id)}"><i class="fas fa-trash"></i></button></td>
@@ -4743,13 +5421,31 @@
             const filtered = users.filter(user => !term || rowText(user).includes(term));
             const paginated = paginateArray(filtered, pageState.users, pageState.pageSize);
 
-            usersTable.innerHTML = '<thead><tr><th>User</th><th>Phone</th><th>Address</th><th>Actions</th></tr></thead><tbody>' +
+            usersTable.innerHTML = '<thead><tr><th>User</th><th>Role</th><th>Phone</th><th>Address</th><th>Actions</th></tr></thead><tbody>' +
                 paginated.map(user => `
                     <tr>
-                        <td><strong>${escapeHtml(user.name || "")}</strong><br>${escapeHtml(user.email || "")}<br><small style="color:var(--text-muted);">${escapeHtml(user.id)}</small></td>
-                        <td>${escapeHtml(user.phone || "")}</td>
+                        <td>
+                            <strong>${escapeHtml(user.name || "Unnamed User")}</strong>
+                            <br><span style="color:var(--text);">${escapeHtml(user.email || "No email")}</span>
+                            <br><small style="color:var(--text-muted); font-size:11px;">${escapeHtml(user.id)}</small>
+                        </td>
+                        <td>
+                            ${user.isAdmin
+                                ? '<span class="status-badge admin"><i class="fas fa-shield-alt" style="margin-right:4px;"></i> Admin</span>'
+                                : '<span class="status-badge customer"><i class="fas fa-user" style="margin-right:4px;"></i> Customer</span>'}
+                        </td>
+                        <td>${escapeHtml(user.phone || "-")}</td>
                         <td>${escapeHtml(user.area || "")} ${escapeHtml(user.city || "")}<br><small style="color:var(--text-muted);">${escapeHtml(user.address || "")}</small></td>
-                        <td><button class="tiny-btn" data-edit-user="${escapeHtml(user.id)}"><i class="fas fa-edit"></i> Edit</button><button class="tiny-btn danger" data-delete-user="${escapeHtml(user.id)}"><i class="fas fa-trash"></i></button></td>
+                        <td>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                                <button class="tiny-btn" data-edit-user="${escapeHtml(user.id)}"><i class="fas fa-edit"></i> Edit</button>
+                                ${user.isAdmin
+                                    ? `<button class="tiny-btn danger" data-revoke-admin="${escapeHtml(user.id)}" data-user-email="${escapeHtml(user.email || "")}" title="Revoke Admin Privileges"><i class="fas fa-user-slash"></i> Demote</button>`
+                                    : `<button class="tiny-btn" style="background:#ede9fe; color:#6d28d9; border-color:#ddd6fe;" data-make-admin="${escapeHtml(user.id)}" data-user-email="${escapeHtml(user.email || "")}" data-user-name="${escapeHtml(user.name || "")}" title="Grant Admin Privileges"><i class="fas fa-shield-alt"></i> Make Admin</button>`
+                                }
+                                <button class="tiny-btn danger" data-delete-user="${escapeHtml(user.id)}"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
                     </tr>
                 `).join("") + '</tbody>';
 
@@ -4850,11 +5546,19 @@
             const oldPrice = form.oldPrice || firstVariant?.oldPrice || "";
             const newPrice = form.newPrice || firstVariant?.newPrice || "";
             const primaryImageUrl = galleryUrls[0] || form.imageUrl || firstVariant?.imageUrl || "";
+            const belongingTitles = currentProductBelongings.map(b => b.title.trim()).filter(Boolean);
+            const primaryBelonging = currentProductBelongings.find(b => b.isPrimary)?.title || form.category || belongingTitles[0] || "";
+            const categoryList = Array.from(new Set([primaryBelonging, ...belongingTitles])).filter(Boolean);
+            const categorySlugs = categoryList.map(c => slug(c));
+            const collectionsList = currentProductBelongings.filter(b => b.type === "collection").map(b => b.title.trim());
             const data = {
                 title: form.title,
                 brand: form.brand || getBrand(form.title),
-                category: form.category,
-                section: form.section,
+                category: primaryBelonging,
+                categories: categoryList,
+                categorySlugs,
+                collections: collectionsList,
+                section: form.section || "",
                 badge: form.badge,
                 oldPrice,
                 newPrice,
@@ -4868,7 +5572,16 @@
                 description: form.description,
                 usage: form.usage,
                 warnings: form.warnings,
-                searchText: [form.title, form.brand, form.category, form.section, form.badge, variants.map(variant => variant.name).join(" ")].join(" "),
+                searchText: [
+                    form.title,
+                    form.brand,
+                    primaryBelonging,
+                    categoryList.join(" "),
+                    collectionsList.join(" "),
+                    form.section,
+                    form.badge,
+                    variants.map(variant => variant.name).join(" ")
+                ].filter(Boolean).join(" "),
                 updatedAt: serverTimestamp()
             };
             await setDoc(doc(db, "medicines", id), data, { merge: true });
@@ -4886,6 +5599,7 @@
                 const product = products.find(item => item.id === edit.dataset.editProduct);
                 fillForm(productForm, { ...product, available: product.available === false ? "false" : "true" });
                 renderProductVariants(product?.variants || []);
+                loadProductBelongings(product);
                 const existingImages = [
                     product?.imageUrl,
                     ...(Array.isArray(product?.images) ? product.images : [])
@@ -4982,6 +5696,74 @@
         document.getElementById("refreshProducts").addEventListener("click", loadProducts);
         categorySearch.addEventListener("input", renderCategoriesAccordion);
         document.getElementById("refreshCategories").addEventListener("click", loadCategories);
+
+        productBelongingTags?.addEventListener("click", function (e) {
+            const starBtn = e.target.closest("[data-set-primary]");
+            if (starBtn) {
+                setPrimaryBelonging(Number(starBtn.dataset.setPrimary));
+                return;
+            }
+            const removeBtn = e.target.closest("[data-remove-belonging]");
+            if (removeBtn) {
+                removeBelonging(Number(removeBtn.dataset.removeBelonging));
+                return;
+            }
+            const chip = e.target.closest(".belonging-chip");
+            if (chip) {
+                const idx = Number(chip.dataset.belongingIndex);
+                if (!isNaN(idx)) setPrimaryBelonging(idx);
+            }
+        });
+
+        belongingOptionsContainer?.addEventListener("change", function (e) {
+            const checkbox = e.target.closest('input[type="checkbox"]');
+            if (!checkbox) return;
+            const title = checkbox.dataset.belongingTitle;
+            const type = checkbox.dataset.belongingType || "category";
+            const parent = checkbox.dataset.belongingParent || "";
+            if (checkbox.checked) {
+                addBelonging(title, type, parent);
+            } else {
+                removeBelonging(title);
+            }
+        });
+
+        belongingFilterInput?.addEventListener("input", function () {
+            renderProductBelongingOptions(belongingFilterInput.value);
+        });
+
+        function handleAddCustomBelonging() {
+            if (!customBelongingInput) return;
+            const val = customBelongingInput.value.trim();
+            if (!val) return;
+            addBelonging(val, "custom");
+            customBelongingInput.value = "";
+        }
+        addCustomBelongingBtn?.addEventListener("click", handleAddCustomBelonging);
+        customBelongingInput?.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                handleAddCustomBelonging();
+            }
+        });
+
+        primaryCategoryInput?.addEventListener("input", function () {
+            const val = primaryCategoryInput.value.trim();
+            if (!val) return;
+            const primaryItem = currentProductBelongings.find(b => b.isPrimary);
+            if (primaryItem) {
+                primaryItem.title = val;
+                primaryItem.slug = slug(val);
+            } else {
+                currentProductBelongings.push({
+                    title: val,
+                    isPrimary: true,
+                    type: "category",
+                    slug: slug(val)
+                });
+            }
+            renderProductBelongingTags();
+        });
 
         document.getElementById("newCategoryBtn").addEventListener("click", function () {
             clearForm(categoryForm);
@@ -5318,16 +6100,206 @@
             }
         });
 
+        async function grantAdmin(userId, userEmail, userName) {
+            const cleanEmail = String(userEmail || "").trim().toLowerCase();
+            const cleanId = String(userId || "").trim();
+
+            if (!cleanId && !cleanEmail) {
+                showStatus("Please provide a user ID or email.");
+                return;
+            }
+
+            try {
+                if (cleanId && !cleanId.startsWith("admin-")) {
+                    await setDoc(doc(db, "admins", cleanId), {
+                        active: true,
+                        email: cleanEmail || "",
+                        name: userName || "",
+                        grantedAt: serverTimestamp(),
+                        grantedBy: auth.currentUser?.email || auth.currentUser?.uid || "admin"
+                    }, { merge: true });
+
+                    await setDoc(doc(db, "userProfiles", cleanId), {
+                        isAdmin: true,
+                        role: "admin",
+                        updatedAt: serverTimestamp()
+                    }, { merge: true }).catch(() => {});
+                }
+
+                if (cleanEmail) {
+                    await setDoc(doc(db, "adminEmails", cleanEmail), {
+                        active: true,
+                        email: cleanEmail,
+                        uid: cleanId && !cleanId.startsWith("admin-") ? cleanId : "",
+                        grantedAt: serverTimestamp(),
+                        grantedBy: auth.currentUser?.email || auth.currentUser?.uid || "admin"
+                    }, { merge: true });
+                }
+
+                await loadUsers();
+                showStatus(`Admin privileges granted to ${cleanEmail || cleanId}.`);
+            } catch (err) {
+                console.error("Failed to grant admin:", err);
+                showStatus("Error granting admin: " + (err.message || ""));
+            }
+        }
+
+        async function revokeAdmin(userId, userEmail) {
+            const cleanEmail = String(userEmail || "").trim().toLowerCase();
+            const cleanId = String(userId || "").trim();
+
+            const isSelf = auth.currentUser && (auth.currentUser.uid === cleanId || (cleanEmail && auth.currentUser.email?.toLowerCase() === cleanEmail));
+            if (isSelf) {
+                if (!confirm("WARNING: You are about to revoke your own admin rights! You may lose access to this admin panel. Are you sure?")) {
+                    return;
+                }
+            } else {
+                if (!confirm(`Revoke admin privileges for ${cleanEmail || cleanId}?`)) {
+                    return;
+                }
+            }
+
+            try {
+                if (cleanId && !cleanId.startsWith("admin-")) {
+                    try {
+                        await deleteDoc(doc(db, "admins", cleanId));
+                    } catch (e) {
+                        await setDoc(doc(db, "admins", cleanId), { active: false, revokedAt: serverTimestamp() }, { merge: true });
+                    }
+
+                    await setDoc(doc(db, "userProfiles", cleanId), {
+                        isAdmin: false,
+                        role: "customer",
+                        updatedAt: serverTimestamp()
+                    }, { merge: true }).catch(() => {});
+                }
+
+                if (cleanEmail) {
+                    try {
+                        await deleteDoc(doc(db, "adminEmails", cleanEmail));
+                    } catch (e) {
+                        await setDoc(doc(db, "adminEmails", cleanEmail), { active: false, revokedAt: serverTimestamp() }, { merge: true });
+                    }
+                }
+
+                await loadUsers();
+                showStatus(`Admin privileges revoked for ${cleanEmail || cleanId}.`);
+            } catch (err) {
+                console.error("Failed to revoke admin:", err);
+                showStatus("Error revoking admin: " + (err.message || ""));
+            }
+        }
+
         userForm.addEventListener("submit", async function (event) {
             event.preventDefault();
             const form = Object.fromEntries(new FormData(userForm).entries());
-            if (!form.id) return;
             const id = form.id;
             delete form.id;
-            await setDoc(doc(db, "userProfiles", id), form, { merge: true });
+
+            const isRoleAdmin = form.role === "admin";
+            form.isAdmin = isRoleAdmin;
+
+            try {
+                if (id && !id.startsWith("admin-")) {
+                    await setDoc(doc(db, "userProfiles", id), form, { merge: true });
+                    if (isRoleAdmin) {
+                        await grantAdmin(id, form.email, form.name);
+                    } else {
+                        await revokeAdmin(id, form.email);
+                    }
+                } else if (form.email) {
+                    if (isRoleAdmin) {
+                        await grantAdmin(null, form.email, form.name);
+                    }
+                }
+
+                clearForm(userForm);
+                if (userForm.elements.role) userForm.elements.role.value = "customer";
+                await loadUsers();
+                showStatus("User profile saved.");
+            } catch (err) {
+                console.error("Failed to save user profile:", err);
+                showStatus("Failed to save user profile: " + (err.message || ""));
+            }
+        });
+
+        usersTable.addEventListener("click", async function (event) {
+            const makeAdminBtn = event.target.closest("[data-make-admin]");
+            const revokeAdminBtn = event.target.closest("[data-revoke-admin]");
+            const editBtn = event.target.closest("[data-edit-user]");
+            const deleteBtn = event.target.closest("[data-delete-user]");
+
+            if (makeAdminBtn) {
+                const uid = makeAdminBtn.dataset.makeAdmin;
+                const email = makeAdminBtn.dataset.userEmail;
+                const name = makeAdminBtn.dataset.userName;
+                await grantAdmin(uid, email, name);
+                return;
+            }
+
+            if (revokeAdminBtn) {
+                const uid = revokeAdminBtn.dataset.revokeAdmin;
+                const email = revokeAdminBtn.dataset.userEmail;
+                await revokeAdmin(uid, email);
+                return;
+            }
+
+            if (editBtn) {
+                const uid = editBtn.dataset.editUser;
+                const user = users.find(item => item.id === uid);
+                if (user) {
+                    fillForm(userForm, {
+                        ...user,
+                        role: user.isAdmin ? "admin" : "customer"
+                    });
+                    userForm.elements.id.value = user.id;
+                    if (userForm.elements.role) {
+                        userForm.elements.role.value = user.isAdmin ? "admin" : "customer";
+                    }
+                    document.getElementById("userFormDetails").open = true;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+                return;
+            }
+
+            if (deleteBtn) {
+                const uid = deleteBtn.dataset.deleteUser;
+                const user = users.find(item => item.id === uid);
+                if (confirm(`Delete user profile for ${user?.email || user?.name || uid}?`)) {
+                    if (user && user.isAdmin) {
+                        await revokeAdmin(uid, user.email);
+                    }
+                    if (!uid.startsWith("admin-")) {
+                        await deleteDoc(doc(db, "userProfiles", uid)).catch(() => {});
+                    }
+                    await loadUsers();
+                    showStatus("User profile deleted.");
+                }
+                return;
+            }
+        });
+
+        document.getElementById("clearUserForm")?.addEventListener("click", () => {
             clearForm(userForm);
-            await loadUsers();
-            showStatus("User profile saved.");
+            if (userForm.elements.role) userForm.elements.role.value = "customer";
+        });
+
+        document.getElementById("refreshUsers")?.addEventListener("click", loadUsers);
+
+        userSearch?.addEventListener("input", () => {
+            pageState.users = 1;
+            renderUsers();
+        });
+
+        document.getElementById("addAdminByEmailBtn")?.addEventListener("click", async () => {
+            const email = prompt("Enter email address to grant Administrator privileges:");
+            if (!email || !email.trim()) return;
+            const cleanEmail = email.trim().toLowerCase();
+            if (!cleanEmail.includes("@") || !cleanEmail.includes(".")) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+            await grantAdmin(null, cleanEmail, cleanEmail.split("@")[0]);
         });
 
         function updateDiscountControls() {
