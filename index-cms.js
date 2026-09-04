@@ -8,7 +8,7 @@ import {
     query
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 import { fetchQueryLazy } from "./products-cache.js";
-import { applyHeroImage } from "./hero-image.mjs";
+import { applyHeroImage, applyHeroAspectRatio } from "./hero-image.mjs";
 
 const isPreviewMode = detectPreviewMode();
 const HOMEPAGE_LOADER_MIN_MS = 3000;
@@ -585,6 +585,12 @@ function renderHeroCarousel(sec) {
 
     heroEl._slidesData = slides;
     heroEl._sectionData = sec;
+
+    const firstImg = heroEl.querySelector(".hero-slide-bg.active img") || heroEl.querySelector(".hero-image img");
+    if (firstImg) {
+        applyHeroAspectRatio(heroEl, firstImg);
+    }
+
     return heroEl;
 }
 
@@ -1026,6 +1032,12 @@ function initHeroSliders() {
 
     const slides = hero._slidesData;
     const sectionData = hero._sectionData || {};
+
+    const initialImg = hero.querySelector(".hero-slide-bg.active img") || hero.querySelector(".hero-image img");
+    if (initialImg) {
+        applyHeroAspectRatio(hero, initialImg);
+    }
+
     if (slides.length <= 1) return;
 
     let heroTimer = null;
@@ -1047,6 +1059,11 @@ function initHeroSliders() {
         allSlideBgs.forEach((bg, idx) => {
             bg.classList.toggle("active", idx === index);
         });
+
+        const activeImg = allSlideBgs[index]?.querySelector("img");
+        if (activeImg) {
+            applyHeroAspectRatio(hero, activeImg);
+        }
 
         const contentEl = hero.querySelector(".hero-content");
         if (contentEl) contentEl.classList.add("is-fading");

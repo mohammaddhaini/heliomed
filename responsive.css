@@ -54,6 +54,26 @@ textarea {
         padding: 0 !important;
     }
 
+    .hero {
+        aspect-ratio: var(--hero-aspect-ratio, 16 / 9);
+    }
+
+    .hero-slide-bg img,
+    .hero-image img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        object-position: center !important;
+    }
+
+    .hero.hero-text-hidden {
+        aspect-ratio: var(--hero-aspect-ratio, 16 / 9) !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        height: auto !important;
+        padding: 0 !important;
+    }
+
     img {
         max-width: 100%;
     }
@@ -326,6 +346,20 @@ textarea {
 @media (max-width: 520px) {
     main:not(#homepage-dynamic-root) {
         width: calc(100% - 16px) !important;
+    }
+
+    .hero.hero-text-hidden {
+        aspect-ratio: var(--hero-aspect-ratio, 16 / 9) !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        height: auto !important;
+        padding: 0 !important;
+    }
+
+    .hero-slide-bg img,
+    .hero-image img {
+        object-fit: contain !important;
+        object-position: center !important;
     }
 
     h1 {

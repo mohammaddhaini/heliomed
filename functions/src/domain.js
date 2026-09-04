@@ -276,10 +276,6 @@ function resolveVariant(item, variants) {
 function normalizedDiscount(discount, requestedCode, subtotal) {
     if (!requestedCode) return null;
     if (!discount || discount.active === false) fail("failed-precondition", "Discount is unavailable.");
-    const minimum = Number(discount.minSubtotal ?? discount.minimumSubtotal ?? 0);
-    if (!Number.isFinite(minimum) || subtotal < Math.round(minimum * 100)) {
-        fail("failed-precondition", "Discount minimum subtotal is not met.");
-    }
     const type = String(discount.type ?? discount.discountType ?? "fixed").toLowerCase();
     const value = Number(discount.value ?? discount.amount ?? discount.percent ?? 0);
     if (!Number.isFinite(value) || value < 0) fail("failed-precondition", "Discount value is invalid.");
@@ -287,7 +283,6 @@ function normalizedDiscount(discount, requestedCode, subtotal) {
         code: requestedCode,
         type,
         value,
-        minSubtotal: minimum,
         freeShipping: discount.freeShipping === true || type === "free_shipping" || type === "freeshipping"
     };
 }

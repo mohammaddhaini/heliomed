@@ -242,8 +242,6 @@
     function getDiscountAmount(subtotal, deliveryCost) {
         var discount = readDiscount();
         if (!discount) return 0;
-        var minSubtotal = Number(discount.minSubtotal || discount.minimumSubtotal || 0);
-        if (subtotal < minSubtotal) return 0;
         var type = String(discount.type || discount.discountType || "").toLowerCase();
         var value = Number(discount.value ?? discount.amount ?? discount.percent ?? 0);
         if (type === "percent" || type === "percentage") return Math.min(subtotal, subtotal * (value / 100));

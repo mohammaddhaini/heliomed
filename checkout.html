@@ -759,14 +759,6 @@
                     renderSummary();
                     return;
                 }
-                const minSubtotal = Number(discount.minSubtotal || discount.minimumSubtotal || 0);
-                if (subtotal < minSubtotal) {
-                    window.HeliomedCart.clearDiscount();
-                    discountNote.classList.add("error");
-                    discountNote.textContent = t("checkout.minimumSubtotalPrefix", "This code needs a minimum subtotal of") + " " + window.HeliomedCart.formatMoney(minSubtotal) + ".";
-                    renderSummary();
-                    return;
-                }
                 window.HeliomedCart.setDiscount(discount);
                 discountNote.textContent = t("checkout.codeApplied", "Code applied.");
                 renderSummary();

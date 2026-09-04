@@ -2253,7 +2253,6 @@
                                         </select>
                                     </label>
                                     <label>Value <input name="value" type="number" step="0.01" min="0"></label>
-                                    <label>Minimum Subtotal <input name="minSubtotal" type="number" step="0.01" min="0"></label>
                                     <label>Free Shipping
                                         <select name="freeShipping">
                                             <option value="false">No</option>
@@ -5453,13 +5452,12 @@
         }
 
         function renderDiscounts() {
-            discountsTable.innerHTML = '<thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Minimum</th><th>Status</th><th>Actions</th></tr></thead><tbody>' +
+            discountsTable.innerHTML = '<thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead><tbody>' +
                 discounts.map(discount => `
                     <tr>
                         <td><strong>${escapeHtml(discount.code || discount.id)}</strong></td>
                         <td>${escapeHtml(discount.type || "")}</td>
                         <td>${escapeHtml(discount.value ?? "")}</td>
-                        <td>${escapeHtml(discount.minSubtotal ?? "")}</td>
                         <td><span class="status-badge ${discount.active === false ? 'inactive' : 'active'}">${discount.active === false ? "Inactive" : "Active"}</span></td>
                         <td><button class="tiny-btn" data-edit-discount="${escapeHtml(discount.id)}"><i class="fas fa-edit"></i></button><button class="tiny-btn danger" data-delete-discount="${escapeHtml(discount.id)}"><i class="fas fa-trash"></i></button></td>
                     </tr>
@@ -6328,7 +6326,6 @@
                 active: boolFromForm(form.active),
                 type: discountForm.elements.type.value,
                 value: isFreeShipping ? 0 : Number(form.value || 0),
-                minSubtotal: Number(form.minSubtotal || 0),
                 freeShipping: isFreeShipping ? true : boolFromForm(form.freeShipping),
                 updatedAt: serverTimestamp()
             };

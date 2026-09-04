@@ -197,7 +197,7 @@ describe("priceCheckout", () => {
         assert.equal(priced.moneyCents.total, 8638);
     });
 
-    it("rejects inactive and minimum-subtotal discounts", () => {
+    it("rejects inactive discounts and applies discounts without minimum subtotal restriction", () => {
         // Given
         const checkout = parseCheckoutInput(validCheckout());
 
@@ -206,10 +206,9 @@ describe("priceCheckout", () => {
             () => priceCheckout({ checkout, medicines, discount: { code: "SAVE10", active: false, type: "percent", value: 10 } }),
             (error) => error instanceof CheckoutError && error.code === "failed-precondition"
         );
-        assert.throws(
-            () => priceCheckout({ checkout, medicines, discount: { code: "SAVE10", active: true, type: "fixed", value: 5, minSubtotal: 30 } }),
-            (error) => error instanceof CheckoutError && error.code === "failed-precondition"
-        );
+
+        const priced = priceCheckout({ checkout, medicines, discount: { code: "SAVE10", active: true, type: "fixed", value: 5 } });
+        assert.equal(priced.moneyCents.discountAmount, 500);
     });
 });
 
