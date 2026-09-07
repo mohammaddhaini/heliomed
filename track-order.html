@@ -12,8 +12,8 @@
     <link rel="icon" type="image/ico" href="icon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Track My Order | Heliomed</title>
-    <meta name="description" content="Track your Heliomed order status.">
+    <title>Track My Order | Helio Med</title>
+    <meta name="description" content="Track your Helio Med order status.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -369,7 +369,7 @@
         <header class="header">
             <div class="logo">
                 <a href="./index.html">
-                    <img src="heliomed-logo.png" alt="Heliomed logo">
+                    <img src="heliomed-logo.png" alt="Helio Med logo">
                 </a>
             </div>
     
@@ -670,7 +670,7 @@
 
         function renderOrder(order) {
             const status = order.status || "Order received";
-            document.title = order.id + " | Track My Order | Heliomed";
+            document.title = order.id + " | Track My Order | Helio Med";
             document.getElementById("orderTitle").textContent = status === "Cancelled" ? t("track.orderCancelled", "Order cancelled") : t("track.orderStatus", "Order status");
             document.getElementById("orderId").textContent = t("order.orderPrefix", "Order") + " " + order.id;
             document.getElementById("updatedText").textContent = timestampText(order.updatedAt) ? t("track.updated", "Updated") + " " + timestampText(order.updatedAt) : "";

@@ -1,0 +1,606 @@
+[
+  {
+    "index": 1,
+    "excelRow": 2,
+    "rawName": "GINKO OMEGA 30CAPS",
+    "docId": "ginko-omega-30-capsules",
+    "title": "Ginko Omega 30 Capsules",
+    "brand": "Ginko Omega",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "Popular",
+    "newPrice": "$22.00",
+    "newPriceValue": 22.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Dietary supplement containing Ginkgo Biloba extract and Omega-3 fatty acids to support cognitive function, concentration, and cardiovascular health.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "Ginko-Omega.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Ginko-Omega.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Ginko-Omega.webp"
+    ],
+    "searchText": "ginko omega 30 capsules ginko omega supplements supplements parapharmacy vitamins popular ginko omega 30caps"
+  },
+  {
+    "index": 2,
+    "excelRow": 3,
+    "rawName": "NERVA-Q10 30CAPS",
+    "docId": "nerva-q10-30-capsules",
+    "title": "Nerva-Q10 30 Capsules",
+    "brand": "Nerva",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "",
+    "newPrice": "$18.00",
+    "newPriceValue": 18.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Coenzyme Q10 and neuro-supportive micronutrients formulated to maintain healthy nerve function and promote cellular energy production.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "NervaQ10_24.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\NervaQ10_24.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\NervaQ10_24.webp"
+    ],
+    "searchText": "nerva-q10 30 capsules nerva supplements supplements parapharmacy vitamins nerva-q10 30caps"
+  },
+  {
+    "index": 3,
+    "excelRow": 4,
+    "rawName": "OVABESTFORWOMEN 60TAB",
+    "docId": "ovabest-for-women-60-tablets",
+    "title": "OvaBest for Women 60 Tablets",
+    "brand": "OvaBest",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "Top Seller",
+    "newPrice": "$36.00",
+    "newPriceValue": 36.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Targeted nutritional support for women formulated to help maintain hormonal balance, ovarian wellness, and metabolic vitality.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "OvaBest.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\OvaBest.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\OvaBest.webp"
+    ],
+    "searchText": "ovabest for women 60 tablets ovabest supplements supplements parapharmacy vitamins top seller ovabestforwomen 60tab"
+  },
+  {
+    "index": 4,
+    "excelRow": 5,
+    "rawName": "RINOPANTENA NASAL OINTMENT 10 G",
+    "docId": "rinopantena-nasal-ointment-10g",
+    "title": "Rinopantena Nasal Ointment 10g",
+    "brand": "Rinopantena",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "",
+    "newPrice": "$13.00",
+    "newPriceValue": 13.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Specialized nasal ointment designed to lubricate, moisturize, and promote re-epithelialization of dry or irritated nasal mucous membranes.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "",
+    "localImagePath": "",
+    "localImageFiles": [],
+    "searchText": "rinopantena nasal ointment 10g rinopantena supplements supplements parapharmacy vitamins rinopantena nasal ointment 10 g"
+  },
+  {
+    "index": 5,
+    "excelRow": 6,
+    "rawName": "REVAGINAL OVULI-OVULES",
+    "docId": "revaginal-ovules",
+    "title": "Revaginal Ovules",
+    "brand": "Revaginal",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "",
+    "newPrice": "$17.00",
+    "newPriceValue": 17.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Vaginal ovules specifically formulated to support physiological vaginal flora, optimal pH, and mucosal comfort.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "",
+    "localImagePath": "",
+    "localImageFiles": [],
+    "searchText": "revaginal ovules revaginal supplements supplements parapharmacy vitamins revaginal ovuli-ovules"
+  },
+  {
+    "index": 6,
+    "excelRow": 7,
+    "rawName": "SILVER PLUS 30 CAPSULES",
+    "docId": "silver-plus-30-capsules",
+    "title": "Silver Plus 30 Capsules",
+    "brand": "Silver Plus",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "",
+    "newPrice": "$17.00",
+    "newPriceValue": 17.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Comprehensive multivitamin and mineral formulation developed to promote daily vitality, immunity, and overall well-being.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "Silver Plus.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Silver Plus.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Silver Plus.webp"
+    ],
+    "searchText": "silver plus 30 capsules silver plus supplements supplements parapharmacy vitamins silver plus 30 capsules"
+  },
+  {
+    "index": 7,
+    "excelRow": 8,
+    "rawName": "FLAXAVIT-K2 PLUS 30 CAPSULES",
+    "docId": "flaxavit-k2-plus-30-capsules",
+    "title": "FlaxaVit-K2 Plus 30 Capsules",
+    "brand": "FlaxaVit",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "Premium",
+    "newPrice": "$32.00",
+    "newPriceValue": 32.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Synergistic complex of Vitamin K2 and essential fatty acids to optimize calcium utilization, bone mineral density, and arterial health.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "FlaxaVit K2.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\FlaxaVit K2.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\FlaxaVit K2.webp"
+    ],
+    "searchText": "flaxavit-k2 plus 30 capsules flaxavit supplements supplements parapharmacy vitamins premium flaxavit-k2 plus 30 capsules"
+  },
+  {
+    "index": 8,
+    "excelRow": 9,
+    "rawName": "ACTIZIM WITH MELATONIN",
+    "docId": "actizim-with-melatonin",
+    "title": "Actizim with Melatonin",
+    "brand": "Actizim",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "",
+    "newPrice": "$15.00",
+    "newPriceValue": 15.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Advanced digestive enzyme blend combined with melatonin to facilitate nighttime digestion and encourage restful, restorative sleep.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "Actizim.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Actizim.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Actizim.webp"
+    ],
+    "searchText": "actizim with melatonin actizim supplements supplements parapharmacy vitamins actizim with melatonin"
+  },
+  {
+    "index": 9,
+    "excelRow": 10,
+    "rawName": "NEUROQ10 64Cmg n",
+    "docId": "neuroq10-640mg",
+    "title": "NeuroQ10 640mg",
+    "brand": "NeuroQ10",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "High Potency",
+    "newPrice": "$39.00",
+    "newPriceValue": 39.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "High-strength Coenzyme Q10 (640mg) supplement formulated for enhanced cellular bioenergetics, cardiovascular health, and antioxidant protection.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "NeuroQ10_640mg.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\NeuroQ10_640mg.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\NeuroQ10_640mg.webp"
+    ],
+    "searchText": "neuroq10 640mg neuroq10 supplements supplements parapharmacy vitamins high potency neuroq10 64cmg n"
+  },
+  {
+    "index": 10,
+    "excelRow": 11,
+    "rawName": "ARTOGENE 30CAPS",
+    "docId": "artogene-30-capsules",
+    "title": "Artogene 30 Capsules",
+    "brand": "Artogene",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "",
+    "newPrice": "$20.00",
+    "newPriceValue": 20.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Complete joint support formula containing glucosamine, chondroitin, and trace minerals to nurture cartilage and joint mobility.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "Artogen.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Artogen.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Artogen.webp"
+    ],
+    "searchText": "artogene 30 capsules artogene supplements supplements parapharmacy vitamins artogene 30caps"
+  },
+  {
+    "index": 11,
+    "excelRow": 12,
+    "rawName": "ARTOGENE 60CAPS",
+    "docId": "artogene-60-capsules",
+    "title": "Artogene 60 Capsules",
+    "brand": "Artogene",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "Value Pack",
+    "newPrice": "$32.00",
+    "newPriceValue": 32.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Extended-supply joint care formula with glucosamine, chondroitin, and essential cofactors for joint flexibility and cartilage strength.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "Artogen.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Artogen.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Artogen.webp"
+    ],
+    "searchText": "artogene 60 capsules artogene supplements supplements parapharmacy vitamins value pack artogene 60caps"
+  },
+  {
+    "index": 12,
+    "excelRow": 13,
+    "rawName": "ENER B 30CAPS",
+    "docId": "ener-b-30-capsules",
+    "title": "Ener-B 30 Capsules",
+    "brand": "Ener-B",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "",
+    "newPrice": "$17.00",
+    "newPriceValue": 17.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "High-potency B-complex supplement formulated to support energy metabolism, reduce fatigue, and sustain nervous system vigor.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "Ener-B.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Ener-B.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Ener-B.webp"
+    ],
+    "searchText": "ener-b 30 capsules ener-b supplements supplements parapharmacy vitamins ener b 30caps"
+  },
+  {
+    "index": 13,
+    "excelRow": 14,
+    "rawName": "FERTIBEST 30TAB",
+    "docId": "fertibest-30-tablets",
+    "title": "FertiBest 30 Tablets",
+    "brand": "FertiBest",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "",
+    "newPrice": "$30.00",
+    "newPriceValue": 30.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Targeted blend of antioxidants, amino acids, and minerals clinically selected to support reproductive health and fertility parameters.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "FertiBest.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\FertiBest.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\FertiBest.webp"
+    ],
+    "searchText": "fertibest 30 tablets fertibest supplements supplements parapharmacy vitamins fertibest 30tab"
+  },
+  {
+    "index": 14,
+    "excelRow": 15,
+    "rawName": "HEMOBEST PLUS 30TAB",
+    "docId": "hemobest-plus-30-tablets",
+    "title": "HemoBest Plus 30 Tablets",
+    "brand": "HemoBest",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "",
+    "newPrice": "$20.00",
+    "newPriceValue": 20.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Gentle, non-constipating iron complex enriched with Vitamin C, B12, and folic acid to support healthy red blood cell and hemoglobin formation.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "Hemobest.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Hemobest.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\Hemobest.webp"
+    ],
+    "searchText": "hemobest plus 30 tablets hemobest supplements supplements parapharmacy vitamins hemobest plus 30tab"
+  },
+  {
+    "index": 15,
+    "excelRow": 16,
+    "rawName": "PROBIOVIT Q10",
+    "docId": "probiovit-q10",
+    "title": "ProbioVit Q10",
+    "brand": "ProbioVit",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "",
+    "newPrice": "$20.00",
+    "newPriceValue": 20.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Multi-strain probiotic culture combined with CoQ10 to fortify digestive microflora, enhance nutrient absorption, and boost cellular vitality.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "ProbioVit Q10.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\ProbioVit Q10.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\ProbioVit Q10.webp"
+    ],
+    "searchText": "probiovit q10 probiovit supplements supplements parapharmacy vitamins probiovit q10"
+  },
+  {
+    "index": 16,
+    "excelRow": 17,
+    "rawName": "PROBIOVIT C",
+    "docId": "probiovit-c",
+    "title": "ProbioVit C",
+    "brand": "ProbioVit",
+    "category": "Supplements",
+    "categories": [
+      "Supplements",
+      "Parapharmacy"
+    ],
+    "categorySlugs": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "collections": [
+      "supplements",
+      "parapharmacy"
+    ],
+    "section": "Parapharmacy",
+    "badge": "",
+    "newPrice": "$15.00",
+    "newPriceValue": 15.0,
+    "oldPrice": "",
+    "oldPriceValue": null,
+    "inventory": 15,
+    "available": true,
+    "description": "Targeted probiotic cultures blended with Vitamin C to bolster gastrointestinal integrity and reinforce immune defense mechanisms.",
+    "usage": "As directed on packaging or by your healthcare professional.",
+    "warnings": "Do not exceed recommended daily dosage. Keep out of reach of children.",
+    "imageFileName": "ProbioVit C.webp",
+    "localImagePath": "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\ProbioVit C.webp",
+    "localImageFiles": [
+      "C:\\Users\\dr laptop\\Vs code programs\\client-websites\\tabib-clinc\\scripts\\imgs\\ProbioVit C.webp"
+    ],
+    "searchText": "probiovit c probiovit supplements supplements parapharmacy vitamins probiovit c"
+  }
+]

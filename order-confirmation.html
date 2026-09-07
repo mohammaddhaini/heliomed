@@ -12,8 +12,8 @@
     <link rel="icon" type="image/ico" href="icon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmation | Heliomed</title>
-    <meta name="description" content="Your Heliomed order confirmation.">
+    <title>Order Confirmation | Helio Med</title>
+    <meta name="description" content="Your Helio Med order confirmation.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -255,7 +255,7 @@
     <!-- HEADER -->
         <header class="header">
             <div class="logo">
-                <img src="heliomed-logo.png" alt="Heliomed logo">
+                <img src="heliomed-logo.png" alt="Helio Med logo">
             </div>
     
             <button class="mobile-nav-toggle" type="button" aria-label="Open menu" data-i18n-aria="common.openMenu" aria-controls="primary-navigation" aria-expanded="false">
@@ -507,7 +507,7 @@
         }
 
         function renderOrder(order) {
-            document.title = order.id + " | Heliomed";
+            document.title = order.id + " | Helio Med";
             document.getElementById("trackOrderLink").href = "./track-order.html?order=" + encodeURIComponent(order.id);
             document.getElementById("orderNumber").textContent = t("order.orderPrefix", "Order") + " " + order.id;
             document.getElementById("customerDetails").innerHTML =

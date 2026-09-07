@@ -1,0 +1,782 @@
+[
+  {
+    "title": "Silicone Knee Brace",
+    "raw_price": "35$",
+    "newPrice": "$35.00",
+    "newPriceValue": 35
+  },
+  {
+    "title": "Arm sling",
+    "raw_price": "15$",
+    "newPrice": "$15.00",
+    "newPriceValue": 15
+  },
+  {
+    "title": "Shoulder Immobilizer",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "Clavicle Brace",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Tennis Elbow Brace",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Elbow Immobilizer",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "ROM Elbow Brace",
+    "raw_price": "150$-250$",
+    "newPrice": "",
+    "newPriceValue": null
+  },
+  {
+    "title": "Abduction Shoulder",
+    "raw_price": "150$",
+    "newPrice": "$150.00",
+    "newPriceValue": 150
+  },
+  {
+    "title": "Hinged Knee Brace",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "ROM Knee Brace",
+    "raw_price": "250$",
+    "newPrice": "$250.00",
+    "newPriceValue": 250
+  },
+  {
+    "title": "ACL Brace",
+    "raw_price": "300$",
+    "newPrice": "$300.00",
+    "newPriceValue": 300
+  },
+  {
+    "title": "Hip Abduction",
+    "raw_price": "350$",
+    "newPrice": "$350.00",
+    "newPriceValue": 350
+  },
+  {
+    "title": "Upper Calf Support HB5105",
+    "raw_price": "20$",
+    "newPrice": "$20.00",
+    "newPriceValue": 20
+  },
+  {
+    "title": "Patellar Tendon Bandage HB5106",
+    "raw_price": "20$",
+    "newPrice": "$20.00",
+    "newPriceValue": 20
+  },
+  {
+    "title": "Lower Calf Support HB5101",
+    "raw_price": "20$",
+    "newPrice": "$20.00",
+    "newPriceValue": 20
+  },
+  {
+    "title": "Standard Patella Supported Knee Brace HB5104",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Standard Steel Articulated Knee Brace HB5111",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "OA Knee Brace",
+    "raw_price": "250$",
+    "newPrice": "$250.00",
+    "newPriceValue": 250
+  },
+  {
+    "title": "Standard Knee Brace DNB419",
+    "raw_price": "15$",
+    "newPrice": "$15.00",
+    "newPriceValue": 15
+  },
+  {
+    "title": "Silicone Metatarsal Pad SS006",
+    "raw_price": "20$",
+    "newPrice": "$20.00",
+    "newPriceValue": 20
+  },
+  {
+    "title": "Full Silicone Insoles SS004",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Silicone Heel Cushions SS002",
+    "raw_price": "20$",
+    "newPrice": "$20.00",
+    "newPriceValue": 20
+  },
+  {
+    "title": "Knee Immobilizer HB5117",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "Silicone Metatarsal Ring Pad SS034",
+    "raw_price": "20$",
+    "newPrice": "$20.00",
+    "newPriceValue": 20
+  },
+  {
+    "title": "Silicone Hallux Valgus Pad SS032",
+    "raw_price": "10$",
+    "newPrice": "$10.00",
+    "newPriceValue": 10
+  },
+  {
+    "title": "Silicone Toe Separator SS005",
+    "raw_price": "10$",
+    "newPrice": "$10.00",
+    "newPriceValue": 10
+  },
+  {
+    "title": "Pad Supported Ankle Brace HB5002",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Air Cast Ankle Stabilizing Orthosis AB01",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Ankle Support with Plastic Backed HB5006",
+    "raw_price": "35$",
+    "newPrice": "$35.00",
+    "newPriceValue": 35
+  },
+  {
+    "title": "Ankle Support Brace DNB406",
+    "raw_price": "20$",
+    "newPrice": "$20.00",
+    "newPriceValue": 20
+  },
+  {
+    "title": "Plaster Shoes AB05",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "AFO Ankle shoes Orthosis AB13",
+    "raw_price": "80$",
+    "newPrice": "$80.00",
+    "newPriceValue": 80
+  },
+  {
+    "title": "Reflex AFO AB18",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Plantar Fasciitis Night Splint AB20",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Colostomy Corset HB5249",
+    "raw_price": "35$",
+    "newPrice": "$35.00",
+    "newPriceValue": 35
+  },
+  {
+    "title": "Vertebradyn FORCE Rigid LSO",
+    "raw_price": "350$",
+    "newPrice": "$350.00",
+    "newPriceValue": 350
+  },
+  {
+    "title": "Vertebradyn Osteo Dynamic Brace",
+    "raw_price": "500$",
+    "newPrice": "$500.00",
+    "newPriceValue": 500
+  },
+  {
+    "title": "Vertebradyn SENSO Back Brace",
+    "raw_price": "200$",
+    "newPrice": "$200.00",
+    "newPriceValue": 200
+  },
+  {
+    "title": "TLSO Corset HB6248",
+    "raw_price": "200$",
+    "newPrice": "$200.00",
+    "newPriceValue": 200
+  },
+  {
+    "title": "Knitted Lumbar Brace KB724",
+    "raw_price": "80$",
+    "newPrice": "$80.00",
+    "newPriceValue": 80
+  },
+  {
+    "title": "Hyperextension Spine Brace",
+    "raw_price": "250$",
+    "newPrice": "$250.00",
+    "newPriceValue": 250
+  },
+  {
+    "title": "Posturex Brace HB5247",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Lumbosacral Corset 26cm HB5244",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "Thoracic Lumbar Corset HB5248",
+    "raw_price": "120$",
+    "newPrice": "$120.00",
+    "newPriceValue": 120
+  },
+  {
+    "title": "Lumbosacral Corset 32cm HB5245",
+    "raw_price": "80$",
+    "newPrice": "$80.00",
+    "newPriceValue": 80
+  },
+  {
+    "title": "Chest Corset HB5250",
+    "raw_price": "30$",
+    "newPrice": "$30.00",
+    "newPriceValue": 30
+  },
+  {
+    "title": "Pregnant Corset HB5203",
+    "raw_price": "30$",
+    "newPrice": "$30.00",
+    "newPriceValue": 30
+  },
+  {
+    "title": "Bond of Slipped Disc HB7270",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Lumbosacral Corset HB8244",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "Posturex HB8247",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Soft Collar Neck Support NS03",
+    "raw_price": "15$",
+    "newPrice": "$15.00",
+    "newPriceValue": 15
+  },
+  {
+    "title": "Disk-Trac Cervical Traction Collar",
+    "raw_price": "200$",
+    "newPrice": "$200.00",
+    "newPriceValue": 200
+  },
+  {
+    "title": "Disk-Trac Lumbar Belt",
+    "raw_price": "200$",
+    "newPrice": "$200.00",
+    "newPriceValue": 200
+  },
+  {
+    "title": "Abdominal Corset HB5240",
+    "raw_price": "30$",
+    "newPrice": "$30.00",
+    "newPriceValue": 30
+  },
+  {
+    "title": "Visco D-Roll Pillow VD1001",
+    "raw_price": "20$",
+    "newPrice": "$20.00",
+    "newPriceValue": 20
+  },
+  {
+    "title": "Visco Leg Position Pillow VD1002",
+    "raw_price": "20$",
+    "newPrice": "$20.00",
+    "newPriceValue": 20
+  },
+  {
+    "title": "Sitting Cushion SC1002",
+    "raw_price": "35$",
+    "newPrice": "$35.00",
+    "newPriceValue": 35
+  },
+  {
+    "title": "Visco Sitting Ring SC1001V",
+    "raw_price": "35$",
+    "newPrice": "$35.00",
+    "newPriceValue": 35
+  },
+  {
+    "title": "Neck Support Pillow VP4005",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Neck Support Pillow VP1004",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Sitting Cushion SC1002B",
+    "raw_price": "35$",
+    "newPrice": "$35.00",
+    "newPriceValue": 35
+  },
+  {
+    "title": "Visco Reflux Pillow",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Memory Foam Pillow Cooling Gel",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Baby Contoured Pillow",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Anti Snoring Pillow",
+    "raw_price": "80$",
+    "newPrice": "$80.00",
+    "newPriceValue": 80
+  },
+  {
+    "title": "Rehabilitation cushion with a relief hole",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Baby Sleeping Pillow",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Manu Cast Organic",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Manu Cast Organic P",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "Myolito Tens Machine",
+    "raw_price": "220$",
+    "newPrice": "$220.00",
+    "newPriceValue": 220
+  },
+  {
+    "title": "Sitting Ring Cushion SC1001/B",
+    "raw_price": "35$",
+    "newPrice": "$35.00",
+    "newPriceValue": 35
+  },
+  {
+    "title": "Open End Sitting Cushion SC1004",
+    "raw_price": "35$",
+    "newPrice": "$35.00",
+    "newPriceValue": 35
+  },
+  {
+    "title": "Patient Turning Pillow",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Memory Foam Back Cushion",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Gel Seat Cushion",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "U Travel Neck Pillow",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Leg Raise Pillow",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Shape&Rest Pillow",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "U Gel Seat Cushion",
+    "raw_price": "40-60$",
+    "newPrice": "",
+    "newPriceValue": null
+  },
+  {
+    "title": "Knee Bandage with Patella JB2104",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Elbow Bandage with Pad JB2307",
+    "raw_price": "30$",
+    "newPrice": "$30.00",
+    "newPriceValue": 30
+  },
+  {
+    "title": "Wrist Splint JB2302",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Pediatric Arm Sling WP911",
+    "raw_price": "15$",
+    "newPrice": "$15.00",
+    "newPriceValue": 15
+  },
+  {
+    "title": "Pediatric Velpeau Bandage WP916",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "Steel-Jointed Knee Bandage JB2111",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Walker",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Clavicula Bandage JB2407",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Boxer Fracture Splint JB2304",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Knee Immobilizer JB2117",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "Welpo Bandage JB2409",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "Sponge Neck Support JS03",
+    "raw_price": "15$",
+    "newPrice": "$15.00",
+    "newPriceValue": 15
+  },
+  {
+    "title": "Mallet Finger Splint",
+    "raw_price": "10$",
+    "newPrice": "$10.00",
+    "newPriceValue": 10
+  },
+  {
+    "title": "Hand Brace HB5311",
+    "raw_price": "15$",
+    "newPrice": "$15.00",
+    "newPriceValue": 15
+  },
+  {
+    "title": "Thumb Splint HB5303",
+    "raw_price": "20$",
+    "newPrice": "$20.00",
+    "newPriceValue": 20
+  },
+  {
+    "title": "Wrist Band DNB437",
+    "raw_price": "15$",
+    "newPrice": "$15.00",
+    "newPriceValue": 15
+  },
+  {
+    "title": "Wrist Splint HB5302",
+    "raw_price": "20$",
+    "newPrice": "$20.00",
+    "newPriceValue": 20
+  },
+  {
+    "title": "Thumb Supported Wrist Splint HB5304",
+    "raw_price": "30$",
+    "newPrice": "$30.00",
+    "newPriceValue": 30
+  },
+  {
+    "title": "Wrist Splint with Thumb HB5324",
+    "raw_price": "35$",
+    "newPrice": "$35.00",
+    "newPriceValue": 35
+  },
+  {
+    "title": "Wrist Splint HB5321",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Long Wrist Splint HB5325",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Hand Splint HB5330",
+    "raw_price": "30$",
+    "newPrice": "$30.00",
+    "newPriceValue": 30
+  },
+  {
+    "title": "Polycarbonate Resting Wrist Splint AB14",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Standard Epicondilite Bandage HB5314",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Elbows Immobilizer HB5312",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "Elbow Brace (Gonio-Adjustable) HB5313",
+    "raw_price": "150$",
+    "newPrice": "$150.00",
+    "newPriceValue": 150
+  },
+  {
+    "title": "Finger Splint A08",
+    "raw_price": "10$",
+    "newPrice": "$10.00",
+    "newPriceValue": 10
+  },
+  {
+    "title": "Medical Insole (Customized)",
+    "raw_price": "150$",
+    "newPrice": "$150.00",
+    "newPriceValue": 150
+  },
+  {
+    "title": "Support Stocking Sensitiv (Open Toe)",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "Support Stocking Calypso (Closed Toe)",
+    "raw_price": "70$- 2 pairs",
+    "newPrice": "",
+    "newPriceValue": null
+  },
+  {
+    "title": "Support Stocking Twin (Closed Toe)",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Support Stocking Cotton (Closed Toe)",
+    "raw_price": "75$",
+    "newPrice": "$75.00",
+    "newPriceValue": 75
+  },
+  {
+    "title": "Support Stocking Nova (Open Toe)",
+    "raw_price": "60$",
+    "newPrice": "$60.00",
+    "newPriceValue": 60
+  },
+  {
+    "title": "Over Bed Table",
+    "raw_price": "100$",
+    "newPrice": "$100.00",
+    "newPriceValue": 100
+  },
+  {
+    "title": "Walker with Wheels",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Cane (Different shapes)",
+    "raw_price": "20$",
+    "newPrice": "$20.00",
+    "newPriceValue": 20
+  },
+  {
+    "title": "Underarm Crutches",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Elbow Crutches",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Pedal Exerciser",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Toilet Seat",
+    "raw_price": "50$",
+    "newPrice": "$50.00",
+    "newPriceValue": 50
+  },
+  {
+    "title": "Rossmax Blood Pressure Monitor",
+    "raw_price": "45$",
+    "newPrice": "$45.00",
+    "newPriceValue": 45
+  },
+  {
+    "title": "Rossmax Blood Glucose Monitoring System",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Aspen Vista",
+    "raw_price": "180$",
+    "newPrice": "$180.00",
+    "newPriceValue": 180
+  },
+  {
+    "title": "Vista CTO 4 Post",
+    "raw_price": "650$",
+    "newPrice": "$650.00",
+    "newPriceValue": 650
+  },
+  {
+    "title": "Philadelphia Collar",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Over Door Traction",
+    "raw_price": "40$",
+    "newPrice": "$40.00",
+    "newPriceValue": 40
+  },
+  {
+    "title": "Rigid Cervical Collar NS10",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Adjustable Cervical Brace",
+    "raw_price": "100$",
+    "newPrice": "$100.00",
+    "newPriceValue": 100
+  },
+  {
+    "title": "Clavical Bandage HB5407",
+    "raw_price": "25$",
+    "newPrice": "$25.00",
+    "newPriceValue": 25
+  },
+  {
+    "title": "Rom Walker HB5051",
+    "raw_price": "200$",
+    "newPrice": "$200.00",
+    "newPriceValue": 200
+  },
+  {
+    "title": "OMRON Blood Pressure Monitor-M2",
+    "raw_price": "70$",
+    "newPrice": "$70.00",
+    "newPriceValue": 70
+  }
+]

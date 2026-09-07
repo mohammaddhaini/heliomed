@@ -400,7 +400,7 @@ function initHomepageSearchPredictions() {
         predictionPanel.innerHTML = predictions.map(product => {
             const productUrl = product.id ? window.HeliomedProductUrls.productPath(product) : "#";
             const metaParts = [
-                escapeHtml(product.brand || "Heliomed"),
+                escapeHtml(product.brand || "Helio Med"),
                 productHasVisiblePrice(product) ? `<span class="home-search-predict-price">${escapeHtml(product.newPrice)}</span>` : ""
             ].filter(Boolean);
             return `
@@ -527,7 +527,7 @@ function renderHeroCarousel(sec) {
 
     const initial = slides[0];
     const initialHeadline = contentValue(initial, "headline", "");
-    const initialKicker = contentValue(initial, "kicker", "Heliomed Essentials");
+    const initialKicker = contentValue(initial, "kicker", "Helio Med Essentials");
     const initialCopy = contentValue(initial, "copy", "");
     const initialPrimaryCta = contentValue(initial, "primaryCtaText", "Shop Daily Care");
     const initialSecondaryCta = contentValue(initial, "secondaryCtaText", "");
@@ -983,7 +983,7 @@ function renderProductCard(product, includeTrustBadge) {
                     ${product.imageUrl ? `<img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.title || 'Product')}" loading="lazy">` : '<div class="cc-pc-placeholder">' + escapeHtml(t("product.imageComingSoon")) + '</div>'}
                     ${includeTrustBadge ? '<div class="cc-pc-trust-badge"><i class="fas fa-check"></i></div>' : ''}
                 </div>
-                <div class="cc-pc-brand">${escapeHtml(product.brand || 'Heliomed')}</div>
+                <div class="cc-pc-brand">${escapeHtml(product.brand || 'Helio Med')}</div>
                 <div class="cc-pc-title">${escapeHtml(product.title || 'Untitled product')}</div>
                 ${showPrice ? `
                     <div class="cc-pc-price">
@@ -1047,7 +1047,7 @@ function initHeroSliders() {
     function applySlide(index) {
         const slide = slides[index];
         if (!slide) return;
-        const slideKicker = contentValue(slide, "kicker", "Heliomed Essentials");
+        const slideKicker = contentValue(slide, "kicker", "Helio Med Essentials");
         const slideHeadline = contentValue(slide, "headline", "");
         const slideCopy = contentValue(slide, "copy", "");
         const primaryCtaText = contentValue(slide, "primaryCtaText", "Shop Daily Care");
@@ -1309,7 +1309,7 @@ function getDefaultHomepageLayout() {
                     {
                         showText: true,
                         headline: "Care You Can Trust at Home",
-                        kicker: "Heliomed Essentials",
+                        kicker: "Helio Med Essentials",
                         copy: "Daily parapharmacy, beauty, wellness, and recovery essentials organized for fast decisions.",
                         primaryCtaText: "Shop Daily Care",
                         primaryCtaUrl: "./collection.html?collection=parapharmacy",
@@ -1347,7 +1347,7 @@ function getDefaultHomepageLayout() {
                 id: "sec_cat",
                 type: "category_finder",
                 title: "Shop by Category",
-                subtitle: "Jump straight into the main Heliomed departments.",
+                subtitle: "Jump straight into the main Helio Med departments.",
                 active: true,
                 cards: [
                     { icon: "fas fa-capsules", title: "Vitamins & Supplements", subtitle: "Energy, immunity, sleep, and joint support.", targetUrl: "./collection.html?collection=supplements" },

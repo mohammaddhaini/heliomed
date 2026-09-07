@@ -1,5 +1,5 @@
 /**
- * Static product page generator for Heliomed.
+ * Static product page generator for Helio Med.
  *
  * Pulls every doc from Firestore "medicines", and for each one writes a
  * static HTML file at:  dist/product/<slug>/index.html
@@ -37,7 +37,7 @@ const CONFIG = {
   collection: "medicines",
   templatePath: path.join(__dirname, "productdetail.html"), // your existing file
   outDir: path.join(__dirname, "dist", "product"),
-  siteName: "Heliomed",
+  siteName: "Helio Med",
 };
 
 // ---------------------------------------------------------------------------

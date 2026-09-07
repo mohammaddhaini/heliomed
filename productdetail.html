@@ -12,8 +12,8 @@
     <link rel="icon" type="image/ico" href="icon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Detail | Heliomed</title>
-    <meta name="description" content="Heliomed product detail.">
+    <title>Product Detail | Helio Med</title>
+    <meta name="description" content="Helio Med product detail.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -761,7 +761,7 @@
         <header class="header">
             <div class="logo">
                 <a href="./index.html">
-                    <img src="heliomed-logo.png" alt="Heliomed logo">
+                    <img src="heliomed-logo.png" alt="Helio Med logo">
                 </a>
             </div>
     
@@ -1550,13 +1550,13 @@
         function renderProduct(product) {
             const brand = getBrand(product.title);
 
-            document.title = product.title + " | Heliomed";
+            document.title = product.title + " | Helio Med";
             document.getElementById("breadcrumbName").textContent = product.title;
             document.getElementById("brand").textContent = brand;
             document.getElementById("title").textContent = product.title;
             document.getElementById("category").textContent = product.category || "Product";
             document.getElementById("section").textContent = product.section ? "/ " + product.section : "";
-            document.getElementById("detailsText").textContent = product.description || product.title + " from " + brand + ", selected for Heliomed care routines.";
+            document.getElementById("detailsText").textContent = product.description || product.title + " from " + brand + ", selected for Helio Med care routines.";
             document.getElementById("usageText").textContent = product.usage || "Use as directed on the product packaging or as recommended by your healthcare professional.";
             document.getElementById("warningsText").textContent = product.warnings || "Read the label before use. Keep out of reach of children. Ask a healthcare professional if you are unsure whether this product is suitable for you.";
             stickyTitle.textContent = product.title;

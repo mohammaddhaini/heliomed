@@ -11,8 +11,8 @@
             document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
         })();
     </script>
-    <title>Collection | Heliomed</title>
-    <meta name="description" content="Browse Heliomed collections.">
+    <title>Collection | Helio Med</title>
+    <meta name="description" content="Browse Helio Med collections.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -598,7 +598,7 @@
         <header class="header">
             <div class="logo">
                 <a href="./index.html">
-                    <img src="heliomed-logo.png" alt="Heliomed logo">
+                    <img src="heliomed-logo.png" alt="Helio Med logo">
                 </a>
             </div>
     
@@ -859,7 +859,7 @@
         const collectionMeta = {
             "best-sellers": { title: "Best Sellers", description: "Customer-favorite care essentials across parapharmacy, beauty, wellness, and recovery.", subs: ["offers", "new-arrivals", "under-20", "beauty-essentials"] },
             "new-arrivals": { title: "New Arrivals", description: "Freshly added care products and seasonal essentials.", subs: ["best-sellers", "offers", "summer-essentials"] },
-            "offers": { title: "Offers", description: "Discounted products and current Heliomed deals.", subs: ["under-20", "under-50", "best-sellers"] },
+            "offers": { title: "Offers", description: "Discounted products and current Helio Med deals.", subs: ["under-20", "under-50", "best-sellers"] },
             "supports-recovery": { title: "Supports & Recovery", description: "Supports, braces, recovery aids, and mobility care organized by body area and use.", subs: ["neck", "back", "knee", "wrist-support", "compression", "posture-support"] },
             "vitamins": { title: "Vitamins", description: "Daily vitamins and supplement essentials for wellness routines.", subs: ["minerals", "multivitamins", "immune-support", "energy", "sleep"] },
             "minerals": { title: "Minerals", description: "Mineral supplements and daily wellness support.", subs: ["vitamins", "multivitamins", "immune-support"] },
@@ -874,7 +874,7 @@
             "body-care": { title: "Body Care", description: "Daily body care, moisturizers, and personal care essentials.", subs: ["skincare", "oral-care", "fragrances"] },
             "oral-care": { title: "Oral Care", description: "Dental and oral hygiene products for daily routines.", subs: ["body-care", "personal-care"] },
             "mother-baby": { title: "Mother & Baby", description: "Care essentials for mother and baby routines.", subs: ["baby-care", "mother-care", "personal-care"] },
-            "makeup": { title: "Makeup", description: "Beauty and makeup picks from Heliomed brands.", subs: ["skincare", "fragrances", "beauty-essentials"] },
+            "makeup": { title: "Makeup", description: "Beauty and makeup picks from Helio Med brands.", subs: ["skincare", "fragrances", "beauty-essentials"] },
             "fragrances": { title: "Fragrances", description: "Fragrance and perfume picks.", subs: ["body-care", "makeup"] },
             "medical-devices": { title: "Medical Devices & Supplies", description: "Home medical supplies and daily monitoring essentials.", subs: ["supports-recovery", "personal-care"] },
             "personal-care": { title: "Personal Care", description: "Everyday parapharmacy and personal care products.", subs: ["body-care", "medical-devices", "mother-baby"] },
@@ -901,7 +901,7 @@
             "summer-essentials": { title: "Summer Essentials", description: "Sun care, hydration, and warm-weather care essentials.", subs: ["skincare", "offers"] },
             "beauty-essentials": { title: "Beauty Essentials", description: "Skincare, haircare, makeup, and beauty favorites.", subs: ["skincare", "haircare", "makeup"] },
             "wellness-essentials": { title: "Wellness Essentials", description: "Vitamins, supplements, and daily wellness support.", subs: ["vitamins", "immunity", "energy"] },
-            "featured-collection": { title: "Featured Collection", description: "Highlighted care picks from Heliomed.", subs: ["best-sellers", "new-arrivals"] }
+            "featured-collection": { title: "Featured Collection", description: "Highlighted care picks from Helio Med.", subs: ["best-sellers", "new-arrivals"] }
         };
 
         const BASE_CATEGORY_TREE = [
@@ -1226,8 +1226,8 @@
                 meta = {
                     title: brandName,
                     description: catEntry
-                        ? "Explore " + brandName + " care essentials and subcategories at Heliomed."
-                        : "Explore authentic products and care essentials from " + brandName + " at Heliomed.",
+                        ? "Explore " + brandName + " care essentials and subcategories at Helio Med."
+                        : "Explore authentic products and care essentials from " + brandName + " at Helio Med.",
                     subs: childSubSlugs
                 };
             } else if (catEntry && catEntry.children && catEntry.children.length > 0) {
@@ -1250,7 +1250,7 @@
                 };
             }
 
-            document.title = meta.title + " | Heliomed";
+            document.title = meta.title + " | Helio Med";
             if (breadcrumbName) breadcrumbName.textContent = meta.title;
             if (titleEl) titleEl.textContent = meta.title;
             if (descriptionEl) descriptionEl.textContent = meta.description;
@@ -1526,7 +1526,7 @@
                         (product.badge ? '<span class="badge">' + escapeHtml(product.badge) + '</span>' : "") +
                     '</a>' +
                     '<div class="product-body">' +
-                        '<div class="product-brand">' + escapeHtml(product.brand || "Heliomed") + '</div>' +
+                        '<div class="product-brand">' + escapeHtml(product.brand || "Helio Med") + '</div>' +
                         '<h2 class="product-title"><a href="' + detailUrl + '">' + escapeHtml(product.title) + '</a></h2>' +
                         (showPrice ? '<div class="product-price">' +
                             (product.oldPrice ? '<span class="old-price">' + escapeHtml(product.oldPrice) + '</span>' : "") +
