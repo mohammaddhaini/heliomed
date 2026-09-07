@@ -43,7 +43,14 @@ const CONFIG = {
 // ---------------------------------------------------------------------------
 // Init Firebase Admin
 // ---------------------------------------------------------------------------
-const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+let serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+
+if (!serviceAccountJson) {
+  const localServiceAccountPath = path.join(__dirname, "service-account.json");
+  if (fs.existsSync(localServiceAccountPath)) {
+    serviceAccountJson = fs.readFileSync(localServiceAccountPath, "utf-8");
+  }
+}
 
 if (!serviceAccountJson) {
   throw new Error(

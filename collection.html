@@ -635,7 +635,7 @@
                                 <a href="./collection.html?collection=men-care">Men Care</a>
                                 <a href="./collection.html?collection=geriatric-care">Geriatric Care</a>
                                 <a href="./collection.html?collection=nutrition">Nutrition</a>
-                                <a href="./collection.html?collection=supplemnts">Supplements</a>
+                                <a href="./collection.html?collection=supplements">Supplements</a>
                             </div>
                             <div class="mega-column">
                                 <a class="category-view-all" style="border:0;padding:5px 0;margin:0;" href="./collection.html?collection=parapharmacy">View all Parapharmacy &rarr;</a>
@@ -922,8 +922,7 @@
                     { title: "Men Care", slug: "men-care" },
                     { title: "Geriatric Care", slug: "geriatric-care" },
                     { title: "Nutrition", slug: "nutrition" },
-                    { title: "Supplements", slug: "supplements" },
-                    { title: "Supplements", slug: "supplemnts" }
+                    { title: "Supplements", slug: "supplements" }
                 ]
             },
             {
@@ -1047,7 +1046,11 @@
                 const childEntry = categoryMap.get(childSlug) || categoryMap.get(childNorm) || (childCompact ? categoryMap.get(childCompact) : null);
 
                 if (childEntry) {
-                    if (!entry.children.some(function (c) { return c.slug === childEntry.slug; })) {
+                    const childSlug = childEntry.slug;
+                    const childTitleNorm = normalizeText(childEntry.title);
+                    if (!entry.children.some(function (c) {
+                        return c.slug === childSlug || (childTitleNorm && normalizeText(c.title) === childTitleNorm);
+                    })) {
                         entry.children.push(childEntry);
                     }
                     childEntry.allDescendants.forEach(function (desc) {
@@ -1261,7 +1264,21 @@
                 subcategories.innerHTML = "";
             } else {
                 if (subcategoriesWrap) subcategoriesWrap.style.display = "";
-                subcategories.innerHTML = (meta.subs || []).map(function (item) {
+                const seenSubcategoryKeys = new Set();
+                const deduplicatedSubs = (meta.subs || []).filter(function (item) {
+                    const cleanItemSlug = slugifyText(item);
+                    const itemNorm = normalizeText(item);
+                    const subEntry = categoryMap.get(cleanItemSlug) || categoryMap.get(item) || categoryMap.get(itemNorm);
+                    const subTitle = (subEntry
+                        ? contentValue(subEntry, "title", collectionMeta[item]?.title || titleFromSlug(item))
+                        : collectionMeta[item]?.title || titleFromSlug(item)).trim().toLowerCase();
+                    const dedupeKey = subTitle || cleanItemSlug;
+                    if (!dedupeKey || seenSubcategoryKeys.has(dedupeKey)) return false;
+                    seenSubcategoryKeys.add(dedupeKey);
+                    return true;
+                });
+
+                subcategories.innerHTML = deduplicatedSubs.map(function (item) {
                     const cleanItemSlug = slugifyText(item);
                     const itemNorm = normalizeText(item);
                     const subEntry = categoryMap.get(cleanItemSlug) || categoryMap.get(item) || categoryMap.get(itemNorm);
