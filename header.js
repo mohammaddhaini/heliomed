@@ -297,7 +297,6 @@ document.addEventListener('DOMContentLoaded', function () {
         setCategoryNav(true);
     });
 
-    var scrollTicking = false;
     var lastScrollY = window.scrollY || 0;
     var scrollDirection = null;
     var directionStartY = lastScrollY;
@@ -312,44 +311,30 @@ document.addEventListener('DOMContentLoaded', function () {
         );
     }
 
+var scrollTicking = false;
+    var shrinkAt = 60;
+    var growAt = 20;
+
     function onScroll() {
         if (scrollTicking) return;
         scrollTicking = true;
         requestAnimationFrame(function () {
             var currentY = Math.max(0, window.scrollY || 0);
-            var nextDirection = currentY > lastScrollY ? 'down' : currentY < lastScrollY ? 'up' : scrollDirection;
 
-            if (nextDirection && nextDirection !== scrollDirection) {
-                scrollDirection = nextDirection;
-                directionStartY = lastScrollY;
+            if (currentY > shrinkAt) {
+                header?.classList.add('is-scrolled', 'scrolled');
+            } else if (currentY < growAt) {
+                header?.classList.remove('is-scrolled', 'scrolled');
             }
 
             updateHeaderOffset();
-            if (currentY > 30) {
-                header?.classList.add('is-scrolled');
-                header?.classList.add('scrolled');
-            } else if (currentY < 12) {
-                header?.classList.remove('is-scrolled');
-                header?.classList.remove('scrolled');
-            }
-
-            if (header) {
-                if (!isResponsiveHeader() || currentY < 40 || shouldKeepHeaderVisible()) {
-                    header.classList.remove('header-hidden');
-                    directionStartY = currentY;
-                } else if (scrollDirection === 'down' && currentY > 70 && currentY - directionStartY >= hideScrollDistance) {
-                    header.classList.add('header-hidden');
-                    directionStartY = currentY;
-                } else if (scrollDirection === 'up' && directionStartY - currentY >= showScrollDistance) {
-                    header.classList.remove('header-hidden');
-                    directionStartY = currentY;
-                }
-            }
-
-            lastScrollY = currentY;
             scrollTicking = false;
         });
     }
+
+    updateHeaderOffset();
+    if (header && 'ResizeObserver' in window) new ResizeObserver(updateHeaderOffset).observe(header);
+    window.addEventListener('scroll', onScroll, { passive: true });
 
     updateHeaderOffset();
     if (header && 'ResizeObserver' in window) new ResizeObserver(updateHeaderOffset).observe(header);
