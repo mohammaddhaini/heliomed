@@ -1927,6 +1927,7 @@
                                 <input type="hidden" name="id">
                                 <div class="form-grid">
                                     <label class="wide">Title <input name="title" required></label>
+                                    <label class="wide">Arabic title <input name="title_ar" lang="ar" dir="rtl" placeholder="العنوان بالعربية"></label>
                                     <label>Brand <input name="brand"></label>
                                     <label>Badge <input name="badge"></label>
                                     <label>Old price <input name="oldPrice" placeholder="$0.00"></label>
@@ -2009,8 +2010,11 @@
                                         <div class="product-variants-list" id="productVariantsList"></div>
                                     </div>
                                     <label class="wide">Description <textarea name="description"></textarea></label>
+                                    <label class="wide">Arabic description <textarea name="description_ar" lang="ar" dir="rtl" placeholder="الوصف بالعربية"></textarea></label>
                                     <label>Usage <textarea name="usage"></textarea></label>
+                                    <label>Arabic usage <textarea name="usage_ar" lang="ar" dir="rtl" placeholder="طريقة الاستخدام بالعربية"></textarea></label>
                                     <label>Warnings <textarea name="warnings"></textarea></label>
+                                    <label>Arabic warnings <textarea name="warnings_ar" lang="ar" dir="rtl" placeholder="التحذيرات بالعربية"></textarea></label>
                                 </div>
                                 <div class="actions">
                                     <button class="primary-btn" type="submit"><i class="fas fa-save"></i> Save Product</button>
@@ -3553,6 +3557,7 @@
                 images: Array.isArray(product.images) ? product.images : [],
                 variants: Array.isArray(product.variants) ? product.variants.map(normalizeVariant) : [],
                 description: product.description || "",
+                description_ar: product.description_ar || "",
                 usage: product.usage || "",
                 warnings: product.warnings || ""
             };
@@ -5382,7 +5387,7 @@
                 paginated.map(p => `
                     <tr>
                         <td>${displayImage(p) ? `<img class="product-thumb" src="${escapeHtml(displayImage(p))}" alt="${escapeHtml(p.title)}" loading="lazy">` : '<div class="product-thumb" style="display:grid;place-items:center;font-size:10px;color:var(--text-muted);">N/A</div>'}</td>
-                        <td><strong>${escapeHtml(p.title)}</strong><br><small style="color:var(--text-muted);">${escapeHtml(p.id)}</small>${Array.isArray(p.variants) && p.variants.length ? `<br><small style="color:var(--brand-blue); font-weight:800;">${p.variants.length} size${p.variants.length === 1 ? "" : "s"}</small>` : ""}</td>
+                        <td><strong>${escapeHtml(p.title)}</strong>${p.title_ar ? `<br><small style="color:var(--text-muted); font-size:11px;" dir="rtl">${escapeHtml(p.title_ar)}</small>` : ""}<br><small style="color:var(--text-muted);">${escapeHtml(p.id)}</small>${Array.isArray(p.variants) && p.variants.length ? `<br><small style="color:var(--brand-blue); font-weight:800;">${p.variants.length} size${p.variants.length === 1 ? "" : "s"}</small>` : ""}${p.description_ar ? `<br><span style="display:inline-block; font-size:9px; font-weight:700; background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; padding:1px 5px; border-radius:4px; margin-top:2px;">AR DESC</span>` : ""}</td>
                         <td>${escapeHtml(p.brand || getBrand(p.title))}</td>
                         <td><strong>${escapeHtml(p.category || (Array.isArray(p.categories) ? p.categories[0] : "") || "")}</strong>${Array.isArray(p.categories) && p.categories.length > 1 ? `<br><span title="${escapeHtml(p.categories.join(', '))}" style="display:inline-block; font-size:10px; font-weight:700; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; padding:1px 6px; border-radius:10px; cursor:help; margin-top:2px;">+${p.categories.length - 1} more</span>` : ''}${p.section ? `<br><small style="color:var(--text-muted);">${escapeHtml(p.section)}</small>` : ''}</td>
                         <td><strong>${escapeHtml(displayPrice(p, "newPrice"))}</strong>${displayPrice(p, "oldPrice") ? `<br><small style="text-decoration:line-through; color:var(--text-muted);">${escapeHtml(displayPrice(p, "oldPrice"))}</small>` : ''}</td>
@@ -5551,6 +5556,7 @@
             const collectionsList = currentProductBelongings.filter(b => b.type === "collection").map(b => b.title.trim());
             const data = {
                 title: form.title,
+                title_ar: form.title_ar || "",
                 brand: form.brand || getBrand(form.title),
                 category: primaryBelonging,
                 categories: categoryList,
@@ -5568,16 +5574,22 @@
                 images: galleryUrls,
                 variants,
                 description: form.description,
+                description_ar: form.description_ar || "",
                 usage: form.usage,
+                usage_ar: form.usage_ar || "",
                 warnings: form.warnings,
+                warnings_ar: form.warnings_ar || "",
                 searchText: [
                     form.title,
+                    form.title_ar,
                     form.brand,
                     primaryBelonging,
                     categoryList.join(" "),
                     collectionsList.join(" "),
                     form.section,
                     form.badge,
+                    form.description,
+                    form.description_ar,
                     variants.map(variant => variant.name).join(" ")
                 ].filter(Boolean).join(" "),
                 updatedAt: serverTimestamp()

@@ -478,6 +478,7 @@
             color: #53616c;
             line-height: 1.6;
             font-size: 14px;
+            white-space: pre-line;
         }
         .product-section {
             margin-top: 54px;
@@ -1547,19 +1548,74 @@
             }
         }
 
-        function renderProduct(product) {
+        function renderProductTexts(product) {
+            if (!product) return;
             const brand = getBrand(product.title);
+            const isAr = window.HeliomedI18n?.currentLang
+                ? window.HeliomedI18n.currentLang() === "ar"
+                : ((document.documentElement.lang || localStorage.getItem("heliomed_lang") || "").toLowerCase().startsWith("ar"));
 
-            document.title = product.title + " | Helio Med";
-            document.getElementById("breadcrumbName").textContent = product.title;
-            document.getElementById("brand").textContent = brand;
-            document.getElementById("title").textContent = product.title;
-            document.getElementById("category").textContent = product.category || "Product";
-            document.getElementById("section").textContent = product.section ? "/ " + product.section : "";
-            document.getElementById("detailsText").textContent = product.description || product.title + " from " + brand + ", selected for Helio Med care routines.";
-            document.getElementById("usageText").textContent = product.usage || "Use as directed on the product packaging or as recommended by your healthcare professional.";
-            document.getElementById("warningsText").textContent = product.warnings || "Read the label before use. Keep out of reach of children. Ask a healthcare professional if you are unsure whether this product is suitable for you.";
-            stickyTitle.textContent = product.title;
+            const localizedTitle = (isAr && product.title_ar && product.title_ar.trim()) ? product.title_ar.trim() : product.title;
+            document.title = localizedTitle + " | Helio Med";
+            const breadcrumbEl = document.getElementById("breadcrumbName");
+            if (breadcrumbEl) breadcrumbEl.textContent = localizedTitle;
+            const brandEl = document.getElementById("brand");
+            if (brandEl) brandEl.textContent = brand;
+            const titleEl = document.getElementById("title");
+            if (titleEl) titleEl.textContent = localizedTitle;
+            if (stickyTitle) stickyTitle.textContent = localizedTitle;
+
+            const categoryEl = document.getElementById("category");
+            if (categoryEl) categoryEl.textContent = (isAr && product.category_ar) ? product.category_ar : (product.category || (isAr ? "منتج" : "Product"));
+            const sectionEl = document.getElementById("section");
+            if (sectionEl) sectionEl.textContent = product.section ? "/ " + product.section : "";
+
+            const defaultDesc = t("product.defaultDescription", { title: localizedTitle, brand }) || (localizedTitle + " from " + brand + ", selected for Helio Med care routines.");
+            const desc = (isAr && product.description_ar && product.description_ar.trim())
+                ? product.description_ar.trim()
+                : (product.description || defaultDesc);
+
+            const detailsEl = document.getElementById("detailsText");
+            if (detailsEl) {
+                detailsEl.textContent = desc;
+                if (isAr && product.description_ar && product.description_ar.trim()) {
+                    detailsEl.setAttribute("dir", "rtl");
+                } else {
+                    detailsEl.removeAttribute("dir");
+                }
+            }
+
+            const defaultUsage = t("product.defaultUsage") || "Use as directed on the product packaging or as recommended by your healthcare professional.";
+            const usage = (isAr && product.usage_ar && product.usage_ar.trim())
+                ? product.usage_ar.trim()
+                : (product.usage || defaultUsage);
+            const usageEl = document.getElementById("usageText");
+            if (usageEl) {
+                usageEl.textContent = usage;
+                if (isAr && product.usage_ar && product.usage_ar.trim()) {
+                    usageEl.setAttribute("dir", "rtl");
+                } else {
+                    usageEl.removeAttribute("dir");
+                }
+            }
+
+            const defaultWarnings = t("product.defaultWarnings") || "Read the label before use. Keep out of reach of children. Ask a healthcare professional if you are unsure whether this product is suitable for you.";
+            const warnings = (isAr && product.warnings_ar && product.warnings_ar.trim())
+                ? product.warnings_ar.trim()
+                : (product.warnings || defaultWarnings);
+            const warningsEl = document.getElementById("warningsText");
+            if (warningsEl) {
+                warningsEl.textContent = warnings;
+                if (isAr && product.warnings_ar && product.warnings_ar.trim()) {
+                    warningsEl.setAttribute("dir", "rtl");
+                } else {
+                    warningsEl.removeAttribute("dir");
+                }
+            }
+        }
+
+        function renderProduct(product) {
+            renderProductTexts(product);
 
             renderVariants(product);
             loadReviews();
@@ -1744,6 +1800,7 @@
                 emptyState.textContent = t("product.notFound");
                 return;
             }
+            renderProductTexts(currentProduct);
             renderVariants(currentProduct);
             renderReviews();
             if (!brandSection.hidden) {

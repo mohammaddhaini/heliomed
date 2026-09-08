@@ -123,8 +123,11 @@ test("non-product CMS fields use Arabic values with English fallback", () => {
   assert.equal(i18n.contentValue({ title: "English", title_ar: "العربية" }, "title"), "English");
 });
 
-test("product schemas and product rendering do not opt into Arabic fields", () => {
-  for (const file of ["productdetail.html", "cart.js", "search.html", "generate-product-pages.js"]) {
+test("product schemas and product rendering support Arabic description while other product views remain unchanged", () => {
+  assert.match(read("productdetail.html"), /\bdescription_ar\b/, "productdetail.html should support description_ar");
+  assert.match(read("admin.html"), /name="description_ar"/, "admin.html should have description_ar form field");
+
+  for (const file of ["cart.js", "search.html", "generate-product-pages.js"]) {
     assert.doesNotMatch(read(file), /\b(?:title|name|description|usage|warnings|brand|category)_ar\b/, `${file} must keep products unchanged`);
   }
 
@@ -132,7 +135,7 @@ test("product schemas and product rendering do not opt into Arabic fields", () =
     /productForm\.addEventListener\("submit"[\s\S]*?productsTable\.addEventListener/
   );
   assert.ok(adminProductSubmit, "admin product save block should remain detectable");
-  assert.doesNotMatch(adminProductSubmit[0], /\b\w+_ar\b/);
+  assert.match(adminProductSubmit[0], /\bdescription_ar\b/, "admin save block should include description_ar");
 
   const cmsProductNormalizer = read("index-cms.js").match(
     /function normalizeProductVariant[\s\S]*?function normalizeSearchText/

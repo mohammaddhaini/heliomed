@@ -206,6 +206,9 @@ html[dir="rtl"] .product-card,
 html[dir="rtl"] .product-body,
 html[dir="rtl"] .related-body,
 html[dir="rtl"] .review-card,
+html[dir="rtl"] .product-info,
+html[dir="rtl"] .detail-section,
+html[dir="rtl"] .detail-section p,
 html[dir="rtl"] .cart-drawer-item-details {
     text-align: right;
 }
