@@ -1004,12 +1004,13 @@ function renderProductCard(product, includeTrustBadge) {
 function renderBrick(brick, className) {
     const title = contentValue(brick, "title", "");
     const subtitle = contentValue(brick, "subtitle", "");
+    const textColor = brick.textColor || "#FFFFFF";
     return `
         <a href="${escapeHtml(brick.targetUrl || '#')}" class="cc-brick-block ${escapeHtml(className)}" style="background: ${escapeHtml(brick.bgColor || '#e5dde3')}; text-decoration:none;">
             ${brick.imageUrl ? `<img src="${escapeHtml(brick.imageUrl)}" alt="${escapeHtml(title)}">` : ''}
-            <div class="cc-brick-content">
-                <h3>${escapeHtml(title)}</h3>
-                <p>${escapeHtml(subtitle)}</p>
+            <div class="cc-brick-content" style="color: ${escapeHtml(textColor)};">
+                <h3 style="color: inherit;">${escapeHtml(title)}</h3>
+                <p style="color: inherit;">${escapeHtml(subtitle)}</p>
             </div>
         </a>
     `;
@@ -1399,11 +1400,11 @@ function getDefaultHomepageLayout() {
                 subtitle: "Start with what you need help with.",
                 active: true,
                 bricks: [
-                    { size: "tall", title: "Repair Your Skin Barrier", subtitle: "Cleansers and recovery creams", bgColor: "#e5dde3", imageUrl: "", targetUrl: "./collection.html?collection=skin-care" },
-                    { size: "square", title: "Daily Wellness", subtitle: "Vitamins and supplements", bgColor: "#d6bcb1", imageUrl: "", targetUrl: "./collection.html?collection=supplements" },
-                    { size: "square", title: "Mother & Baby", subtitle: "Gentle everyday basics", bgColor: "#cfc2c6", imageUrl: "", targetUrl: "./collection.html?collection=baby-care" },
-                    { size: "wide_top", title: "Supports & Recovery", subtitle: "Braces and movement care", bgColor: "#d8c5bd", imageUrl: "", targetUrl: "./collection.html?collection=medical-supplies" },
-                    { size: "wide_bottom", title: "Beauty Basics", subtitle: "Hair, nails, and makeup", bgColor: "#cbb8b8", imageUrl: "", targetUrl: "./collection.html?collection=makeup" }
+                    { size: "tall", title: "Repair Your Skin Barrier", subtitle: "Cleansers and recovery creams", bgColor: "#e5dde3", textColor: "#FFFFFF", imageUrl: "", targetUrl: "./collection.html?collection=skin-care" },
+                    { size: "square", title: "Daily Wellness", subtitle: "Vitamins and supplements", bgColor: "#d6bcb1", textColor: "#FFFFFF", imageUrl: "", targetUrl: "./collection.html?collection=supplements" },
+                    { size: "square", title: "Mother & Baby", subtitle: "Gentle everyday basics", bgColor: "#cfc2c6", textColor: "#FFFFFF", imageUrl: "", targetUrl: "./collection.html?collection=baby-care" },
+                    { size: "wide_top", title: "Supports & Recovery", subtitle: "Braces and movement care", bgColor: "#d8c5bd", textColor: "#FFFFFF", imageUrl: "", targetUrl: "./collection.html?collection=medical-supplies" },
+                    { size: "wide_bottom", title: "Beauty Basics", subtitle: "Hair, nails, and makeup", bgColor: "#cbb8b8", textColor: "#FFFFFF", imageUrl: "", targetUrl: "./collection.html?collection=makeup" }
                 ]
             }
         ]

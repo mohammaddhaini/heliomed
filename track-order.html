@@ -362,6 +362,7 @@
     <link rel="stylesheet" href="./responsive.css">
     <link rel="stylesheet" href="./header.css">
     <link rel="stylesheet" href="./rtl.css">
+    <link rel="stylesheet" href="./care.css">
     <script src="./i18n.js"></script>
 </head>
 <body>
@@ -521,6 +522,13 @@
         </header>
 
     <main>
+        <nav class="portal-breadcrumb" aria-label="Breadcrumb" style="margin-bottom: 20px;">
+            <a href="./index.html">Home</a>
+            <span class="portal-bc-sep">/</span>
+            <span>Customer Care</span>
+            <span class="portal-bc-sep">/</span>
+            <span class="portal-bc-current">Track My Order</span>
+        </nav>
         <section class="track-hero">
             <div>
                 <h1 data-i18n="track.title">Track My Order</h1>
@@ -602,7 +610,151 @@
                 </div>
             </aside>
         </section>
+
+        <section class="portal-info-container" style="max-width: 1200px; margin: 40px auto; padding: 0 16px;">
+            <div class="lang-en" style="background:#fff; border: 1px solid var(--portal-border, #d1d5db); border-radius: 12px; padding: 32px; margin-bottom: 30px;">
+                <h2 class="portal-section-title" style="margin-top:0;">Track Your Order Guide</h2>
+                <p class="portal-text">
+                    Once your order has been confirmed, HELIO MED will provide available order and delivery updates through the contact information provided during checkout.
+                </p>
+                <p class="portal-text">
+                    To check the status of your order via WhatsApp, please contact us at <a href="https://wa.me/96171593904" target="_blank" rel="noopener" style="color:var(--portal-accent, #0d6b63);font-weight:600;">+961 71 593 904</a> and provide:
+                </p>
+                <ul class="portal-list">
+                    <li>Order number</li>
+                    <li>Full name</li>
+                    <li>Phone number used for the order</li>
+                </ul>
+                <h3 style="font-size:1.1rem;margin:24px 0 12px;color:var(--portal-text, #1f2937);">Possible order statuses:</h3>
+                <ul class="portal-list">
+                    <li><strong>Order Received:</strong> Your order has been successfully submitted.</li>
+                    <li><strong>Confirmed:</strong> Your order has been reviewed and confirmed.</li>
+                    <li><strong>Preparing:</strong> Your order is being prepared.</li>
+                    <li><strong>Out for Delivery:</strong> Your order has been handed to the delivery service.</li>
+                    <li><strong>Delivered:</strong> Your order has been delivered.</li>
+                </ul>
+                <div class="portal-notice" style="margin-top:20px;">
+                    Delivery times may vary depending on the delivery area, product availability, weather, public holidays, or circumstances beyond our reasonable control.
+                </div>
+            </div>
+
+            <div class="lang-ar" style="background:#fff; border: 1px solid var(--portal-border, #d1d5db); border-radius: 12px; padding: 32px; margin-bottom: 30px;">
+                <h2 class="portal-section-title" style="margin-top:0;">دليل تتبع الطلبات</h2>
+                <p class="portal-text">
+                    بعد تأكيد الطلب، تقوم HELIO MED بتزويد العميل بالمعلومات المتاحة حول حالة الطلب والتوصيل عبر بيانات التواصل المسجلة أثناء الطلب.
+                </p>
+                <p class="portal-text">
+                    لمتابعة حالة طلبكم عبر الواتساب، يرجى مراسلتنا على <a href="https://wa.me/96171593904" target="_blank" rel="noopener" style="color:var(--portal-accent, #0d6b63);font-weight:600;">+961 71 593 904</a> وتزويدنا بـ:
+                </p>
+                <ul class="portal-list">
+                    <li>رقم الطلب</li>
+                    <li>الاسم الكامل</li>
+                    <li>رقم الهاتف المستخدم عند الطلب</li>
+                </ul>
+                <h3 style="font-size:1.1rem;margin:24px 0 12px;color:var(--portal-text, #1f2937);">حالات الطلب المحتملة:</h3>
+                <ul class="portal-list">
+                    <li><strong>تم استلام الطلب:</strong> تم تسجيل طلبكم بنجاح.</li>
+                    <li><strong>تم التأكيد:</strong> تمت مراجعة الطلب وتأكيده.</li>
+                    <li><strong>قيد التحضير:</strong> يتم تجهيز الطلب.</li>
+                    <li><strong>خرج للتوصيل:</strong> تم تسليم الطلب إلى جهة التوصيل.</li>
+                    <li><strong>تم التسليم:</strong> تم تسليم الطلب.</li>
+                </ul>
+                <div class="portal-notice" style="margin-top:20px;">
+                    قد تختلف مدة التوصيل بحسب المنطقة، توفر المنتجات، الأحوال الجوية، العطل الرسمية أو الظروف الخارجة عن إرادتنا المعقولة.
+                </div>
+            </div>
+        </section>
     </main>
+
+    <footer class="footer-wrapper" id="contact" role="contentinfo">
+        <div class="footer-grid">
+            <div class="footer-col footer-col-brand">
+                <div class="footer-logo">
+                    <img src="heliomed-logo.png" alt="HELIO MED - Health, Wellness, Care">
+                </div>
+                <p class="footer-brand-bio" data-i18n="footer.brandBio">
+                    Lebanon's trusted parapharmacy and healthcare destination. Delivering authentic medical supplies, supplements, and skin wellness essentials to your doorstep.
+                </p>
+                <div class="footer-socials-row">
+                    <span class="footer-social-label">Follow us:</span>
+                    <div class="footer-socials-icons">
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-icon fb" aria-label="Facebook" data-i18n-aria-label="aria.facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon ig" aria-label="Instagram" data-i18n-aria-label="aria.instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/96171593904" target="_blank" rel="noopener noreferrer" class="social-icon wa" aria-label="WhatsApp" data-i18n-aria-label="aria.whatsapp"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4 data-i18n="footer.shopHeading">Shop</h4>
+                <ul>
+                    <li><a href="./collection.html?collection=parapharmacy" data-i18n="footer.parapharmacy">Parapharmacy</a></li>
+                    <li><a href="./collection.html?collection=medical-supplies" data-i18n="footer.medicalSupplies">Medical Supplies</a></li>
+                    <li><a href="./collection.html?collection=supplements" data-i18n="footer.supplements">Supplements</a></li>
+                    <li><a href="./collection.html?collection=skin-care" data-i18n="footer.beautyPersonalCare">Beauty & Personal Care</a></li>
+                    <li><a href="./collection.html?collection=organic" data-i18n="footer.organic">Organic</a></li>
+                    <li><a href="./collection.html?collection=perfume" data-i18n="footer.perfumeMakeup">Perfume & Makeup</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4 data-i18n="footer.careHeading">Customer Care</h4>
+                <ul>
+                    <li><a href="./contact.html" data-i18n="footer.contact">Contact Us</a></li>
+                    <li><a href="./track-order.html" data-i18n="footer.trackOrder">Track My Order</a></li>
+                    <li><a href="./shipping.html" data-i18n="footer.shipping">Shipping & Delivery</a></li>
+                    <li><a href="./returns.html" data-i18n="footer.returns">Returns & Refunds</a></li>
+                    <li><a href="./faq.html" data-i18n="footer.faq">Frequently Asked Questions</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4 data-i18n="footer.companyHeading">Company & Legal</h4>
+                <ul>
+                    <li><a href="./about.html" data-i18n="footer.about">About HELIO MED</a></li>
+                    <li><a href="./privacy-policy.html" data-i18n="footer.privacy">Privacy Policy</a></li>
+                    <li><a href="./terms.html" data-i18n="footer.terms">Terms & Conditions</a></li>
+                    <li><a href="./shipping.html" data-i18n="footer.shippingPolicy">Shipping Policy</a></li>
+                    <li><a href="./returns.html" data-i18n="footer.returnsPolicy">Return & Refund Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col footer-col-company">
+                <h4 data-i18n="footer.officialHeading">Official Company Information</h4>
+                <div class="footer-official-card">
+                    <p class="footer-company-name" data-i18n="footer.officialName">HELIO MED</p>
+                    <p class="footer-company-sub" data-i18n="footer.officialDesc">Registered healthcare and trading company in Lebanon</p>
+                    <div class="footer-meta-item">
+                        <i class="fas fa-location-dot"></i>
+                        <span data-i18n="footer.serviceArea">Lebanon (Nationwide Dispatch)</span>
+                    </div>
+                    <div class="footer-meta-item">
+                        <i class="fas fa-envelope"></i>
+                        <span><strong data-i18n="footer.emailLabel">Email:</strong> <a href="mailto:info@heliomed-lb.com">info@heliomed-lb.com</a></span>
+                    </div>
+                    <div class="footer-meta-item">
+                        <i class="fab fa-whatsapp"></i>
+                        <span><strong data-i18n="footer.whatsappLabel">WhatsApp:</strong> <a href="https://wa.me/96171593904" target="_blank" rel="noopener">+961 71 593 904</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="bottom-bar">
+        <div class="bottom-bar-content">
+            <div class="bottom-bar-copy" data-i18n="footer.rightsText">© 2026 HELIO MED. All Rights Reserved.</div>
+            <div class="bottom-bar-links">
+                <a href="./privacy-policy.html" data-i18n="footer.privacy">Privacy Policy</a>
+                <span class="sep">|</span>
+                <a href="./terms.html" data-i18n="footer.terms">Terms & Conditions</a>
+                <span class="sep">|</span>
+                <a href="./shipping.html" data-i18n="footer.shippingPolicy">Shipping Policy</a>
+                <span class="sep">|</span>
+                <a href="./returns.html" data-i18n="footer.returnsPolicy">Return & Refund Policy</a>
+            </div>
+        </div>
+    </div>
     <script src="./cart.js"></script>
     <script src="./wishlist.js"></script>
     <script type="module">

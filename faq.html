@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="icon.ico?v=2">
+    <script>
+        (function () {
+            const lang = localStorage.getItem("heliomed_lang") === "ar" ? "ar" : "en";
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        }());
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frequently Asked Questions | HELIO MED Lebanon</title>
+    <meta name="description" content="Answers to common questions about ordering, delivery times, payment methods, returns, authenticity, and medical supplies at HELIO MED Lebanon.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
+    <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="./rtl.css">
+    <link rel="stylesheet" href="./responsive.css">
+    <link rel="stylesheet" href="./care.css">
+    <script src="./i18n.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="./index.html">
+                <img src="heliomed-logo.png" alt="Helio Med logo">
+            </a>
+        </div>
+
+        <button class="mobile-nav-toggle" type="button" aria-label="Open menu" data-i18n-aria="common.openMenu" aria-controls="primary-navigation" aria-expanded="false">
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+        </button>
+
+        <ul class="nav-links" id="primary-navigation" data-i18n-static-text>
+            <li class="nav-panel-header" aria-hidden="true">
+                <span class="nav-panel-title" data-i18n="nav.menu">MENU</span>
+                <button class="nav-panel-close" type="button" aria-label="Close menu" data-i18n-aria="common.closeMenu"><i class="fas fa-times"></i></button>
+            </li>
+            <li class="nav-item">
+                <a href="./collection.html?collection=parapharmacy" class="nav-trigger">PARAPHARMACY <i class="fas fa-chevron-down"></i></a>
+                <div class="mega-menu">
+                    <div class="mega-grid">
+                        <div class="mega-column">
+                            <a href="./collection.html?collection=skin-care">Skin Care</a>
+                            <a href="./collection.html?collection=hair-care">Hair Care</a>
+                            <a href="./collection.html?collection=face-care">Face Care</a>
+                            <a href="./collection.html?collection=dental-care">Dental Care</a>
+                            <a href="./collection.html?collection=body-care">Body Care</a>
+                        </div>
+                        <div class="mega-column">
+                            <a href="./collection.html?collection=nail-care">Nail Care</a>
+                            <a href="./collection.html?collection=foot-care">Foot Care</a>
+                            <a href="./collection.html?collection=baby-care">Baby Care</a>
+                            <a href="./collection.html?collection=mother-care">Mother Care</a>
+                            <a href="./collection.html?collection=kids-care">Kids Care</a>
+                        </div>
+                        <div class="mega-column">
+                            <a href="./collection.html?collection=men-care">Men Care</a>
+                            <a href="./collection.html?collection=geriatric-care">Geriatric Care</a>
+                            <a href="./collection.html?collection=nutrition">Nutrition</a>
+                            <a href="./collection.html?collection=supplements">Supplements</a>
+                        </div>
+                        <div class="mega-column">
+                            <a class="category-view-all" style="border:0;padding:5px 0;margin:0;" href="./collection.html?collection=parapharmacy">View all Parapharmacy &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="./collection.html?collection=medical-supplies" class="nav-trigger">MEDICAL SUPPLIES <i class="fas fa-chevron-down"></i></a>
+                <div class="mega-menu three">
+                    <div class="mega-grid three">
+                        <div class="mega-column">
+                            <strong>Supports</strong>
+                            <a href="./collection.html?collection=ankle-support">Ankle Support</a>
+                            <a href="./collection.html?collection=back-support">Back Support</a>
+                            <a href="./collection.html?collection=cervical-support">Cervical Support</a>
+                            <a href="./collection.html?collection=disk-trac">Disk Trac</a>
+                            <a href="./collection.html?collection=knee-support">Knee Support</a>
+                            <a href="./collection.html?collection=shoulder-and-elbow">Shoulder &amp; Elbow</a>
+                            <a href="./collection.html?collection=wrist-and-hand-braces">Wrist &amp; Hand Braces</a>
+                        </div>
+                        <div class="mega-column">
+                            <strong>Disposables</strong>
+                            <a href="./collection.html?collection=gloves">Gloves</a>
+                            <a href="./collection.html?collection=guaze">Gauze</a>
+                            <a href="./collection.html?collection=needles">Needles</a>
+                            <a href="./collection.html?collection=suture">Sutures</a>
+                            <a href="./collection.html?collection=blades">Blades</a>
+                            <a href="./collection.html?collection=wound-care">Wound Care</a>
+                            <a href="./collection.html?collection=drapes">Drapes / Apparel</a>
+                        </div>
+                        <div class="mega-column">
+                            <strong>Other</strong>
+                            <a href="./collection.html?collection=home-care">Home Care</a>
+                            <a href="./collection.html?collection=foot-care">Foot Care</a>
+                            <a href="./collection.html?collection=liposuction">Liposuction</a>
+                            <a href="./collection.html?collection=pediatric">Pediatric</a>
+                            <a href="./collection.html?collection=vascular">Vascular</a>
+                            <a href="./collection.html?collection=pillows">Pillows</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="./collection.html?collection=organic" class="nav-trigger">ORGANIC <i class="fas fa-chevron-down"></i></a>
+                <div class="mega-menu compact">
+                    <div class="mega-grid">
+                        <div class="mega-column">
+                            <a href="./collection.html?collection=organic">View All Organic</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="./collection.html?collection=perfume" class="nav-trigger">PERFUME <i class="fas fa-chevron-down"></i></a>
+                <div class="mega-menu compact">
+                    <div class="mega-grid">
+                        <div class="mega-column">
+                            <a href="./collection.html?collection=women">Women</a>
+                            <a href="./collection.html?collection=men">Men</a>
+                            <a href="./collection.html?collection=kids">Kids</a>
+                            <a href="./collection.html?collection=bundles">Bundles</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="./collection.html?collection=makeup" class="nav-trigger">MAKEUP <i class="fas fa-chevron-down"></i></a>
+                <div class="mega-menu compact">
+                    <div class="mega-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));max-width:360px;">
+                        <div class="mega-column">
+                            <a href="./collection.html?collection=face">Face</a>
+                            <a href="./collection.html?collection=eye">Eye</a>
+                            <a href="./collection.html?collection=lips">Lips</a>
+                            <a href="./collection.html?collection=nail">Nail</a>
+                        </div>
+                        <div class="mega-column">
+                            <a href="./collection.html?collection=tools-and-accessories">Tools &amp; Accessories</a>
+                            <a href="./collection.html?collection=makeup-remover">Makeup Remover</a>
+                            <a href="./collection.html?collection=medical-makeup">Medical Makeup</a>
+                            <a href="./collection.html?collection=palettes">Palettes</a>
+                            <a href="./collection.html?collection=korean-products">Korean Products</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="./collection.html?collection=offers" class="nav-trigger"><i class="fas fa-tags"></i> OFFERS</a>
+            </li>
+            <li class="nav-item mobile-only-nav"><a href="./account.html" class="nav-trigger account-link"><i class="far fa-user"></i> LOGIN</a></li>
+            <li class="nav-item mobile-only-nav"><a href="./wishlist.html" class="nav-trigger"><i class="far fa-heart"></i> WISHLIST</a></li>
+        </ul>
+
+        <div class="header-actions">
+            <div class="search-box">
+                <input type="text" placeholder="Search for products" data-i18n-placeholder="common.searchPlaceholder">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="header-icons">
+                <a href="./account.html" aria-label="Open account" data-i18n-aria="common.openAccount"><i class="far fa-user"></i></a>
+                <a class="cart-icon-wrapper" href="./wishlist.html" aria-label="Open wishlist" data-i18n-aria="common.openWishlist">
+                    <i class="far fa-heart"></i>
+                    <span class="wishlist-count">0</span>
+                </a>
+                <a class="cart-icon-wrapper cart-icon-wrapper-cart" href="./cart.html" aria-label="Shopping Cart" data-i18n-aria="common.shoppingCart">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="portal-main">
+        <div class="portal-container">
+            <nav class="portal-breadcrumb" aria-label="Breadcrumb">
+                <a href="./index.html">Home</a>
+                <span class="portal-bc-sep">/</span>
+                <span>Customer Care</span>
+                <span class="portal-bc-sep">/</span>
+                <span class="portal-bc-current">Frequently Asked Questions</span>
+            </nav>
+
+            <div class="portal-layout">
+                <aside class="portal-sidebar" aria-label="Help and Legal Navigation">
+                    <div class="portal-sidebar-nav">
+                        <div class="portal-nav-section">
+                            <span class="portal-nav-header">Customer Care</span>
+                            <ul class="portal-nav-list">
+                                <li><a href="./about.html" class="portal-nav-item">About HELIO MED</a></li>
+                                <li><a href="./contact.html" class="portal-nav-item">Contact Us</a></li>
+                                <li><a href="./track-order.html" class="portal-nav-item">Track My Order</a></li>
+                                <li><a href="./faq.html" class="portal-nav-item active">Frequently Asked Questions</a></li>
+                            </ul>
+                        </div>
+                        <div class="portal-nav-section">
+                            <span class="portal-nav-header">Policies &amp; Legal</span>
+                            <ul class="portal-nav-list">
+                                <li><a href="./shipping.html" class="portal-nav-item">Shipping &amp; Delivery</a></li>
+                                <li><a href="./returns.html" class="portal-nav-item">Returns &amp; Refunds</a></li>
+                                <li><a href="./privacy-policy.html" class="portal-nav-item">Privacy Policy</a></li>
+                                <li><a href="./terms.html" class="portal-nav-item">Terms &amp; Conditions</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="portal-support-card">
+                        <span class="portal-support-tag">Direct Help</span>
+                        <h4 class="portal-support-title">Still have a question?</h4>
+                        <p class="portal-support-text">Our team is happy to guide you on product specifications, availability, or delivery details.</p>
+                        <a href="https://wa.me/96171593904" target="_blank" rel="noopener" class="portal-support-btn">
+                            <i class="fab fa-whatsapp"></i> Ask on WhatsApp
+                        </a>
+                    </div>
+                </aside>
+
+                <article class="portal-content">
+                    <div class="lang-en">
+                        <header class="portal-header">
+                            <h1 class="portal-title">Frequently Asked Questions</h1>
+                        </header>
+
+                        <section class="portal-section">
+                            <div class="portal-faq-list">
+                                <details class="portal-faq-item" open>
+                                    <summary class="portal-faq-question">
+                                        <span>Are HELIO MED products authentic?</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        HELIO MED works to source products from trusted suppliers and distributors. Product packaging may occasionally change according to manufacturer updates.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>Where do you deliver?</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        We currently deliver within Lebanon, subject to courier availability.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>How can I track my order?</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        Contact us via WhatsApp and provide your order number and phone number, or check via our <a href="./track-order.html" style="color:var(--portal-accent);font-weight:600;">Track My Order</a> page.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>Can I change or cancel my order?</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        Please contact us as soon as possible. Once an order has been prepared or dispatched, changes or cancellation may no longer be possible.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>What if I receive the wrong or damaged product?</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        Contact HELIO MED promptly and provide your order number together with photos of the product and parcel where applicable.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>Can I return an opened product?</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        For health and hygiene reasons, opened or used products are generally not eligible for return unless defective, damaged, incorrect, or otherwise required by applicable law.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>Are product photos always identical to the item delivered?</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        Manufacturers may change packaging or presentation without prior notice. The product's core identity should remain as described.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>Does information on HELIO MED replace medical advice?</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        No. Website information is intended for general informational purposes and is not a substitute for professional medical advice.
+                                    </div>
+                                </details>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="lang-ar">
+                        <header class="portal-header">
+                            <h1 class="portal-title">الأسئلة الشائعة</h1>
+                        </header>
+
+                        <section class="portal-section">
+                            <div class="portal-faq-list">
+                                <details class="portal-faq-item" open>
+                                    <summary class="portal-faq-question">
+                                        <span>هل منتجات HELIO MED أصلية؟</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        تعمل HELIO MED على تأمين المنتجات من موردين وموزعين موثوقين. وقد تقوم الشركات المصنعة أحياناً بتحديث شكل العبوة أو التغليف.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>إلى أين تقومون بالتوصيل؟</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        نقوم حالياً بالتوصيل ضمن لبنان بحسب تغطية شركة التوصيل.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>كيف يمكنني تتبع طلبي؟</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        يمكنكم التواصل معنا عبر واتساب وإرسال رقم الطلب ورقم الهاتف، أو عبر صفحة <a href="./track-order.html" style="color:var(--portal-accent);font-weight:600;">تتبع طلبي</a>.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>هل يمكن تعديل أو إلغاء الطلب؟</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        يرجى التواصل معنا في أسرع وقت ممكن. بعد تجهيز الطلب أو إرساله، قد لا يكون التعديل أو الإلغاء ممكناً.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>ماذا أفعل إذا استلمت منتجاً خاطئاً أو متضرراً؟</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        يرجى التواصل مع HELIO MED سريعاً وإرسال رقم الطلب وصور المنتج والطرد عند الحاجة.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>هل يمكن إرجاع منتج تم فتحه؟</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        لأسباب صحية ومتعلقة بالنظافة، لا تقبل المنتجات المفتوحة أو المستخدمة بصورة عامة، إلا في حال وجود عيب أو تلف أو خطأ في الطلب أو إذا كان القانون يفرض خلاف ذلك.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>هل صورة المنتج على الموقع مطابقة دائماً للعبوة المستلمة؟</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        قد تقوم الشركة المصنعة بتغيير شكل العبوة أو التصميم دون إشعار مسبق، مع بقاء المنتج الأساسي مطابقاً للوصف.
+                                    </div>
+                                </details>
+
+                                <details class="portal-faq-item">
+                                    <summary class="portal-faq-question">
+                                        <span>هل المعلومات الصحية على الموقع تغني عن استشارة الطبيب؟</span>
+                                        <i class="fas fa-chevron-down portal-faq-icon"></i>
+                                    </summary>
+                                    <div class="portal-faq-answer">
+                                        كلا. المعلومات الموجودة على الموقع هي معلومات عامة ولا تشكل بديلاً عن الاستشارة الطبية المتخصصة.
+                                    </div>
+                                </details>
+                            </div>
+                        </section>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-wrapper" id="contact" role="contentinfo">
+        <div class="footer-grid">
+            <div class="footer-col footer-col-brand">
+                <div class="footer-logo">
+                    <img src="heliomed-logo.png" alt="HELIO MED - Health, Wellness, Care">
+                </div>
+                <p class="footer-brand-bio" data-i18n="footer.brandBio">
+                    Lebanon's trusted parapharmacy and healthcare destination. Delivering authentic medical supplies, supplements, and skin wellness essentials to your doorstep.
+                </p>
+                <div class="footer-socials-row">
+                    <span class="footer-social-label">Follow us:</span>
+                    <div class="footer-socials-icons">
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-icon fb" aria-label="Facebook" data-i18n-aria-label="aria.facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon ig" aria-label="Instagram" data-i18n-aria-label="aria.instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/96171593904" target="_blank" rel="noopener noreferrer" class="social-icon wa" aria-label="WhatsApp" data-i18n-aria-label="aria.whatsapp"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4 data-i18n="footer.shopHeading">Shop</h4>
+                <ul>
+                    <li><a href="./collection.html?collection=parapharmacy" data-i18n="footer.parapharmacy">Parapharmacy</a></li>
+                    <li><a href="./collection.html?collection=medical-supplies" data-i18n="footer.medicalSupplies">Medical Supplies</a></li>
+                    <li><a href="./collection.html?collection=supplements" data-i18n="footer.supplements">Supplements</a></li>
+                    <li><a href="./collection.html?collection=skin-care" data-i18n="footer.beautyPersonalCare">Beauty & Personal Care</a></li>
+                    <li><a href="./collection.html?collection=organic" data-i18n="footer.organic">Organic</a></li>
+                    <li><a href="./collection.html?collection=perfume" data-i18n="footer.perfumeMakeup">Perfume & Makeup</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4 data-i18n="footer.careHeading">Customer Care</h4>
+                <ul>
+                    <li><a href="./contact.html" data-i18n="footer.contact">Contact Us</a></li>
+                    <li><a href="./track-order.html" data-i18n="footer.trackOrder">Track My Order</a></li>
+                    <li><a href="./shipping.html" data-i18n="footer.shipping">Shipping & Delivery</a></li>
+                    <li><a href="./returns.html" data-i18n="footer.returns">Returns & Refunds</a></li>
+                    <li><a href="./faq.html" data-i18n="footer.faq">Frequently Asked Questions</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4 data-i18n="footer.companyHeading">Company & Legal</h4>
+                <ul>
+                    <li><a href="./about.html" data-i18n="footer.about">About HELIO MED</a></li>
+                    <li><a href="./privacy-policy.html" data-i18n="footer.privacy">Privacy Policy</a></li>
+                    <li><a href="./terms.html" data-i18n="footer.terms">Terms & Conditions</a></li>
+                    <li><a href="./shipping.html" data-i18n="footer.shippingPolicy">Shipping Policy</a></li>
+                    <li><a href="./returns.html" data-i18n="footer.returnsPolicy">Return & Refund Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col footer-col-company">
+                <h4 data-i18n="footer.officialHeading">Official Company Information</h4>
+                <div class="footer-official-card">
+                    <p class="footer-company-name" data-i18n="footer.officialName">HELIO MED</p>
+                    <p class="footer-company-sub" data-i18n="footer.officialDesc">Registered healthcare and trading company in Lebanon</p>
+                    <div class="footer-meta-item">
+                        <i class="fas fa-location-dot"></i>
+                        <span data-i18n="footer.serviceArea">Lebanon (Nationwide Dispatch)</span>
+                    </div>
+                    <div class="footer-meta-item">
+                        <i class="fas fa-envelope"></i>
+                        <span><strong data-i18n="footer.emailLabel">Email:</strong> <a href="mailto:info@heliomed-lb.com">info@heliomed-lb.com</a></span>
+                    </div>
+                    <div class="footer-meta-item">
+                        <i class="fab fa-whatsapp"></i>
+                        <span><strong data-i18n="footer.whatsappLabel">WhatsApp:</strong> <a href="https://wa.me/96171593904" target="_blank" rel="noopener">+961 71 593 904</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="bottom-bar">
+        <div class="bottom-bar-content">
+            <div class="bottom-bar-copy" data-i18n="footer.rightsText">© 2026 HELIO MED. All Rights Reserved.</div>
+            <div class="bottom-bar-links">
+                <a href="./privacy-policy.html" data-i18n="footer.privacy">Privacy Policy</a>
+                <span class="sep">|</span>
+                <a href="./terms.html" data-i18n="footer.terms">Terms & Conditions</a>
+                <span class="sep">|</span>
+                <a href="./shipping.html" data-i18n="footer.shippingPolicy">Shipping Policy</a>
+                <span class="sep">|</span>
+                <a href="./returns.html" data-i18n="footer.returnsPolicy">Return & Refund Policy</a>
+            </div>
+        </div>
+    </div>
+
+    <a class="whatsapp-btn" href="https://wa.me/96171593904" target="_blank" rel="noopener" aria-label="Contact Helio Med on WhatsApp" data-i18n-aria-label="aria.whatsapp"><i class="fab fa-whatsapp"></i></a>
+
+    <script type="module" src="./navbar-categories.js"></script>
+    <script src="./header.js"></script>
+</body>
+</html>

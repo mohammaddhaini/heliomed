@@ -1882,13 +1882,9 @@
                                     <fieldset class="cms-fieldset">
                                         <legend>Style Tokens</legend>
                                         <div class="form-grid">
-                                            <label>Background Color
+                                            <label class="wide">Background Color
                                                 <input id="cmsFieldBgColor" type="color" value="#FFFFFF" style="height:42px; padding:2px 6px;">
                                                 <span class="cms-swatch-row" data-swatches-for="cmsFieldBgColor"></span>
-                                            </label>
-                                            <label>Accent Color
-                                                <input id="cmsFieldAccentColor" type="color" value="#C2A26B" style="height:42px; padding:2px 6px;">
-                                                <span class="cms-swatch-row" data-swatches-for="cmsFieldAccentColor"></span>
                                             </label>
                                         </div>
                                     </fieldset>
@@ -2490,7 +2486,6 @@
         const cmsFieldSubtitle = document.getElementById("cmsFieldSubtitle");
         const cmsFieldSubtitleAr = document.getElementById("cmsFieldSubtitleAr");
         const cmsFieldBgColor = document.getElementById("cmsFieldBgColor");
-        const cmsFieldAccentColor = document.getElementById("cmsFieldAccentColor");
         const cmsRepeaterList = document.getElementById("cmsRepeaterList");
         const cmsAddItemBtn = document.getElementById("cmsAddItemBtn");
         const cmsSaveDraftBtn = document.getElementById("cmsSaveDraftBtn");
@@ -3189,11 +3184,11 @@
                 subtitle_ar: "",
                 active: true,
                 bricks: [
-                    { size: "tall", title: "Repair Your Skin Barrier", title_ar: "", subtitle: "Cleansers and recovery creams", subtitle_ar: "", bgColor: "#e5dde3", imageUrl: "", targetUrl: "./collection.html?collection=skin-care" },
-                    { size: "square", title: "Daily Wellness", title_ar: "", subtitle: "Vitamins and supplements", subtitle_ar: "", bgColor: "#d6bcb1", imageUrl: "", targetUrl: "./collection.html?collection=supplements" },
-                    { size: "square", title: "Mother & Baby", title_ar: "", subtitle: "Gentle everyday basics", subtitle_ar: "", bgColor: "#cfc2c6", imageUrl: "", targetUrl: "./collection.html?collection=baby-care" },
-                    { size: "wide_top", title: "Supports & Recovery", title_ar: "", subtitle: "Braces and movement care", subtitle_ar: "", bgColor: "#d8c5bd", imageUrl: "", targetUrl: "./collection.html?collection=medical-supplies" },
-                    { size: "wide_bottom", title: "Beauty Basics", title_ar: "", subtitle: "Hair, nails, and makeup", subtitle_ar: "", bgColor: "#cbb8b8", imageUrl: "", targetUrl: "./collection.html?collection=makeup" }
+                    { size: "tall", title: "Repair Your Skin Barrier", title_ar: "", subtitle: "Cleansers and recovery creams", subtitle_ar: "", bgColor: "#e5dde3", textColor: "#FFFFFF", imageUrl: "", targetUrl: "./collection.html?collection=skin-care" },
+                    { size: "square", title: "Daily Wellness", title_ar: "", subtitle: "Vitamins and supplements", subtitle_ar: "", bgColor: "#d6bcb1", textColor: "#FFFFFF", imageUrl: "", targetUrl: "./collection.html?collection=supplements" },
+                    { size: "square", title: "Mother & Baby", title_ar: "", subtitle: "Gentle everyday basics", subtitle_ar: "", bgColor: "#cfc2c6", textColor: "#FFFFFF", imageUrl: "", targetUrl: "./collection.html?collection=baby-care" },
+                    { size: "wide_top", title: "Supports & Recovery", title_ar: "", subtitle: "Braces and movement care", subtitle_ar: "", bgColor: "#d8c5bd", textColor: "#FFFFFF", imageUrl: "", targetUrl: "./collection.html?collection=medical-supplies" },
+                    { size: "wide_bottom", title: "Beauty Basics", title_ar: "", subtitle: "Hair, nails, and makeup", subtitle_ar: "", bgColor: "#cbb8b8", textColor: "#FFFFFF", imageUrl: "", targetUrl: "./collection.html?collection=makeup" }
                 ]
             },
             brand_collection_grid: {
@@ -3346,7 +3341,7 @@
                 arrayKey: "bricks",
                 itemLabel: "Brick",
                 addText: "Add Brick",
-                createItem: () => ({ size: "square", title: "Concern Item", title_ar: "", subtitle: "", subtitle_ar: "", bgColor: "#d6bcb1", imageUrl: "", targetUrl: "./collection.html" })
+                createItem: () => ({ size: "square", title: "Concern Item", title_ar: "", subtitle: "", subtitle_ar: "", bgColor: "#d6bcb1", textColor: "#FFFFFF", imageUrl: "", targetUrl: "./collection.html" })
             },
             brand_collection_grid: {
                 title: "Tiles",
@@ -3773,7 +3768,6 @@
             cmsFieldSubtitle.value = sec.subtitle || "";
             cmsFieldSubtitleAr.value = sec.subtitle_ar || "";
             cmsFieldBgColor.value = sec.bgColor || "#FFFFFF";
-            cmsFieldAccentColor.value = sec.accentColor || "#C2A26B";
 
             renderPaletteSwatches(cmsSectionForm);
             renderRepeaterItems(sec);
@@ -4157,12 +4151,13 @@
                             <option value="wide_bottom" ${item.size === 'wide_bottom' ? 'selected' : ''}>Wide Bottom</option>
                         </select>
                     </label>
+                    <label>Target URL <input data-key="targetUrl" value="${escapeHtml(item.targetUrl || '')}"></label>
                     <label>Brick Title <input data-key="title" value="${escapeHtml(item.title || '')}"></label>
                     <label>Brick Title (Arabic) <input data-key="title_ar" value="${escapeHtml(item.title_ar || '')}" lang="ar" dir="rtl"></label>
                     <label class="wide">Subtitle <input data-key="subtitle" value="${escapeHtml(item.subtitle || '')}"></label>
                     <label class="wide">Subtitle (Arabic) <input data-key="subtitle_ar" value="${escapeHtml(item.subtitle_ar || '')}" lang="ar" dir="rtl"></label>
                     <label>Background Color <input data-key="bgColor" type="color" value="${escapeHtml(item.bgColor || '#e5dde3')}" style="height:42px;"><span class="cms-swatch-row" data-swatches-for="brickBgColor"></span></label>
-                    <label>Target URL <input data-key="targetUrl" value="${escapeHtml(item.targetUrl || '')}"></label>
+                    <label>Text Color <input data-key="textColor" type="color" value="${escapeHtml(item.textColor || '#FFFFFF')}" style="height:42px;"><span class="cms-swatch-row" data-swatches-for="brickTextColor"></span></label>
                     <label class="wide">Image URL <input data-key="imageUrl" value="${escapeHtml(item.imageUrl || '')}"></label>
                     <div class="wide">${renderMediaDropzone({ imageUrl: item.imageUrl, target: "item", key: "imageUrl", label: "Upload brick image" })}</div>
                 </div>
@@ -4324,12 +4319,6 @@
         cmsFieldBgColor.addEventListener("input", function () {
             if (activeSectionIndex >= 0) {
                 homepageLayout.sections[activeSectionIndex].bgColor = this.value;
-                markCustomizerDirty();
-            }
-        });
-        cmsFieldAccentColor.addEventListener("input", function () {
-            if (activeSectionIndex >= 0) {
-                homepageLayout.sections[activeSectionIndex].accentColor = this.value;
                 markCustomizerDirty();
             }
         });
