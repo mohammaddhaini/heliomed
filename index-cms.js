@@ -23,6 +23,12 @@ let collectionCatalog = [];
 let brandCatalog = [];
 let contentCatalogPromise = null;
 
+const DEFAULT_COLLECTION_IMAGES = {
+    "best-sellers": "medical_devices_best_sellers.webp",
+    "new-arrivals": "medical_devices_new_arrival.webp",
+    "offers": "medical_devices_offers.webp"
+};
+
 function t(key, params) {
     return window.HeliomedI18n && typeof window.HeliomedI18n.t === "function"
         ? window.HeliomedI18n.t(key, params)
@@ -202,7 +208,7 @@ function ensureContentCatalog() {
                 subtitle: item.description || "Collection",
                 subtitle_ar: item.description_ar || "",
                 href: "./collection.html?collection=" + encodeURIComponent(item.id),
-                imageUrl: item.imageUrl || ""
+                imageUrl: item.imageUrl || DEFAULT_COLLECTION_IMAGES[item.id] || ""
             };
         });
         const contentBrands = (contentData.brands || []).map(item => {
@@ -227,7 +233,12 @@ function ensureContentCatalog() {
                 imageUrl: ""
             };
         });
-        collectionCatalog = mergeCatalogItems([...categoryCollections, ...contentCollections]);
+        const standardFeaturedCollections = [
+            { id: "best-sellers", title: "Best Sellers", subtitle: "Collection", href: "./collection.html?collection=best-sellers", imageUrl: DEFAULT_COLLECTION_IMAGES["best-sellers"] },
+            { id: "new-arrivals", title: "New Arrivals", subtitle: "Collection", href: "./collection.html?collection=new-arrivals", imageUrl: DEFAULT_COLLECTION_IMAGES["new-arrivals"] },
+            { id: "offers", title: "Offers", subtitle: "Collection", href: "./collection.html?collection=offers", imageUrl: DEFAULT_COLLECTION_IMAGES["offers"] }
+        ];
+        collectionCatalog = mergeCatalogItems([...categoryCollections, ...contentCollections, ...standardFeaturedCollections]);
         brandCatalog = mergeCatalogItems([...contentBrands, ...productBrands]);
     }).catch(error => {
         console.warn("Could not load content catalogs for CMS sections:", error);
@@ -246,7 +257,7 @@ function collectCategoryOptions(item, level, target) {
             title_ar: item.title_ar || "",
             subtitle: level,
             href: item.href || "./collection.html?collection=" + encodeURIComponent(id),
-            imageUrl: item.imageUrl || ""
+            imageUrl: item.imageUrl || DEFAULT_COLLECTION_IMAGES[id] || ""
         });
     }
     (item.children || []).forEach(child => {

@@ -856,6 +856,12 @@
         let collectionContentRecord = null;
         let categoryImagesMap = {};
 
+        const DEFAULT_CATEGORY_IMAGES = {
+            "best-sellers": "medical_devices_best_sellers.webp",
+            "new-arrivals": "medical_devices_new_arrival.webp",
+            "offers": "medical_devices_offers.webp"
+        };
+
         const collectionMeta = {
             "best-sellers": { title: "Best Sellers", description: "Customer-favorite care essentials across parapharmacy, beauty, wellness, and recovery.", subs: ["offers", "new-arrivals", "under-20", "beauty-essentials"] },
             "new-arrivals": { title: "New Arrivals", description: "Freshly added care products and seasonal essentials.", subs: ["best-sellers", "offers", "summer-essentials"] },
@@ -1288,7 +1294,10 @@
 
                     // 1. Check custom uploaded photo from settings/categoryImages or category doc
                     let imgUrl = (categoryImagesMap && (categoryImagesMap[cleanItemSlug] || categoryImagesMap[item] || categoryImagesMap[itemNorm])) ||
-                                 (subEntry && (subEntry.imageUrl || subEntry.image)) || "";
+                                 (subEntry && (subEntry.imageUrl || subEntry.image)) ||
+                                 DEFAULT_CATEGORY_IMAGES[cleanItemSlug] ||
+                                 DEFAULT_CATEGORY_IMAGES[item] ||
+                                 DEFAULT_CATEGORY_IMAGES[itemNorm] || "";
 
                     // 2. Fallback: match a product from this category/subcategory that has an image
                     if (!imgUrl && products && products.length) {

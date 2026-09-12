@@ -4802,6 +4802,12 @@
 
         let categoryImagesMap = {};
 
+        const DEFAULT_CATEGORY_IMAGES = {
+            "best-sellers": "medical_devices_best_sellers.webp",
+            "new-arrivals": "medical_devices_new_arrival.webp",
+            "offers": "medical_devices_offers.webp"
+        };
+
         async function loadCategoryImages() {
             try {
                 const snap = await getDoc(doc(db, "settings", "categoryImages"));
@@ -4822,8 +4828,9 @@
                 if (!cleanSlug || cleanSlug === "product") return;
                 const existing = map.get(cleanSlug);
                 const customImg = categoryImagesMap[cleanSlug] || "";
-                const effectiveImg = customImg || img || (existing ? existing.imageUrl : "");
-                const src = customImg ? "custom" : (img ? "category" : (existing ? existing.source : "none"));
+                const defaultImg = DEFAULT_CATEGORY_IMAGES[cleanSlug] || "";
+                const effectiveImg = customImg || img || defaultImg || (existing ? existing.imageUrl : "");
+                const src = customImg ? "custom" : ((img || defaultImg) ? "category" : (existing ? existing.source : "none"));
 
                 if (!existing) {
                     map.set(cleanSlug, {
@@ -4843,6 +4850,9 @@
                     } else if (img && !existing.imageUrl) {
                         existing.imageUrl = img;
                         existing.source = "category";
+                    } else if (defaultImg && !existing.imageUrl) {
+                        existing.imageUrl = defaultImg;
+                        existing.source = "category";
                     }
                 }
             }
@@ -4859,6 +4869,11 @@
 
             traverse(BASE_CATEGORY_TREE);
             traverse(categories);
+            if (Array.isArray(STANDARD_FEATURED_COLLECTIONS)) {
+                STANDARD_FEATURED_COLLECTIONS.forEach(col => {
+                    addCat(col.title, col.slug, null, DEFAULT_CATEGORY_IMAGES[col.slug] || "");
+                });
+            }
 
             products.forEach(p => {
                 if (p.category) addCat(p.category, p.category);
@@ -5291,7 +5306,7 @@
                     const catPath = cat.slug;
                     const subcats = cat.children || [];
                     const openAttr = term ? 'open' : '';
-                    const catImg = categoryImagesMap[cat.slug] || cat.imageUrl || "";
+                    const catImg = categoryImagesMap[cat.slug] || cat.imageUrl || DEFAULT_CATEGORY_IMAGES[cat.slug] || "";
                     const catImgHtml = catImg ? `<span style="width:26px; height:26px; border-radius:50%; background:#EEF1F5; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; margin-right:8px; vertical-align:middle; border:1px solid var(--brand-border); flex-shrink:0;"><img src="${escapeHtml(catImg)}" style="width:76%; height:76%; object-fit:contain; mix-blend-mode:multiply;"></span>` : '';
                     return `
                     <details class="category-node" ${openAttr}>
@@ -5315,7 +5330,7 @@
                             ${subcats.map(sub => {
                                 const subPath = `${cat.slug}/${sub.slug}`;
                                 const subSubcats = sub.children || [];
-                                const subImg = categoryImagesMap[sub.slug] || sub.imageUrl || "";
+                                const subImg = categoryImagesMap[sub.slug] || sub.imageUrl || DEFAULT_CATEGORY_IMAGES[sub.slug] || "";
                                 const subImgHtml = subImg ? `<span style="width:24px; height:24px; border-radius:50%; background:#EEF1F5; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; margin-right:6px; vertical-align:middle; border:1px solid var(--brand-border); flex-shrink:0;"><img src="${escapeHtml(subImg)}" style="width:76%; height:76%; object-fit:contain; mix-blend-mode:multiply;"></span>` : '';
                                 return `
                                 <details class="category-node subcategory-node" ${openAttr}>
@@ -5338,7 +5353,7 @@
                                         ${subSubcats.length === 0 ? '<div style="font-size:11px; color:var(--text-muted); padding:4px 0;">No sub-subcategories.</div>' : ''}
                                         ${subSubcats.map(subSub => {
                                             const subSubPath = `${subPath}/${subSub.slug}`;
-                                            const subSubImg = categoryImagesMap[subSub.slug] || subSub.imageUrl || "";
+                                            const subSubImg = categoryImagesMap[subSub.slug] || subSub.imageUrl || DEFAULT_CATEGORY_IMAGES[subSub.slug] || "";
                                             const subSubImgHtml = subSubImg ? `<span style="width:22px; height:22px; border-radius:50%; background:#EEF1F5; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; margin-right:6px; vertical-align:middle; border:1px solid var(--brand-border); flex-shrink:0;"><img src="${escapeHtml(subSubImg)}" style="width:76%; height:76%; object-fit:contain; mix-blend-mode:multiply;"></span>` : '';
                                             return `
                                             <div class="sub-sub-item">
@@ -5904,7 +5919,7 @@
                 if (found.level === "subsubcategory" && found.parent) {
                     parentSubcategorySelect.value = found.parent.slug || "";
                 }
-                const catImg = categoryImagesMap[found.item.slug] || found.item.imageUrl || "";
+                const catImg = categoryImagesMap[found.item.slug] || found.item.imageUrl || DEFAULT_CATEGORY_IMAGES[found.item.slug] || "";
                 fillForm(categoryForm, {
                     editingPath: found.path,
                     level: found.level,
