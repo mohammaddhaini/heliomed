@@ -110,6 +110,85 @@ export function buildOrderConfirmationMessage(order, options = {}) {
     return lines.join("\n");
 }
 
+export function buildAdminOrderNotificationMessage(order, options = {}) {
+    const siteUrl = (options.siteUrl || DEFAULT_SITE_URL).replace(/\/+$/, "");
+    const customerName = String(order?.customer?.name || "عميل (Customer)").trim();
+    const customerPhone = String(order?.customer?.phone || "غير محدد (N/A)").trim();
+    const customerEmail = String(order?.customer?.email || "").trim();
+    const orderId = String(order?.id || "").trim();
+    const total = Number(order?.total ?? 0).toFixed(2);
+    const subtotal = Number(order?.subtotal ?? 0).toFixed(2);
+    const delivery = Number(order?.delivery ?? 0).toFixed(2);
+    const discountAmount = Number(order?.discountAmount ?? 0).toFixed(2);
+    const payment = String(order?.payment || "Cash on Delivery").trim();
+    const paymentText = payment === "Whish" ? "Whish Money" : "الدفع عند الاستلام (Cash on Delivery)";
+    const area = String(order?.address?.areaLabel || order?.deliveryArea?.label || order?.address?.area || "").trim();
+
+    const addressParts = [
+        order?.address?.city,
+        order?.address?.street,
+        order?.address?.building ? `بناية ${order.address.building}` : "",
+        order?.address?.floor ? `طابق ${order.address.floor}` : ""
+    ].filter(Boolean);
+    const addressText = addressParts.length ? addressParts.join("، ") : (area || "لبنان");
+
+    const items = Array.isArray(order?.items) ? order.items : [];
+    const itemsText = items.map((item) => {
+        const title = String(item.title || item.name || "منتج").trim();
+        const quantity = item.quantity || 1;
+        const price = item.price != null ? `$${Number(item.price * quantity).toFixed(2)}` : "";
+        return `• ${title} (x${quantity})${price ? ` - ${price}` : ""}`;
+    }).join("\n");
+
+    const trackingUrl = orderId ? `${siteUrl}/track-order.html?order=${encodeURIComponent(orderId)}` : `${siteUrl}/track-order.html`;
+    const adminOrderUrl = `${siteUrl}/admin.html`;
+    const notes = String(order?.address?.notes || order?.customer?.notes || "").trim();
+
+    if (options.template && typeof options.template === "string" && options.template.trim()) {
+        return interpolateTemplate(options.template, {
+            customerName,
+            customerPhone,
+            customerEmail,
+            orderId,
+            total,
+            subtotal,
+            delivery,
+            discountAmount,
+            payment: paymentText,
+            area: area || "لبنان",
+            address: addressText,
+            items: itemsText,
+            notes,
+            trackingUrl,
+            adminOrderUrl,
+            siteUrl
+        });
+    }
+
+    const lines = [
+        `🚨 *طلب جديد! New Order Received*`,
+        ``,
+        `📦 رقم الطلب: *${orderId}*`,
+        `👤 الزبون: *${customerName}*`,
+        `📞 الهاتف: *${customerPhone}*`,
+        `💰 المجموع: *$${total}* (${paymentText})`,
+        `📍 منطقة التوصيل: ${area || "لبنان"}`,
+        `🏢 العنوان: ${addressText}`
+    ];
+
+    if (notes) {
+        lines.push(`📝 ملاحظات: ${notes}`);
+    }
+
+    if (itemsText) {
+        lines.push(``, `🛒 *المنتجات المطلوبة:*`, itemsText);
+    }
+
+    lines.push(``, `🔗 تتبع الطلب: ${trackingUrl}`);
+
+    return lines.join("\n");
+}
+
 /**
  * Sends a WhatsApp message via the Green API REST API.
  */
@@ -215,3 +294,54 @@ export async function sendOrderConfirmationWhatsApp({
         return { sent: false, error: error.message };
     }
 }
+
+export async function sendAdminOrderNotificationWhatsApp({
+    order,
+    adminPhone,
+    template,
+    enabled = true,
+    idInstance = process.env.GREEN_API_ID_INSTANCE,
+    apiTokenInstance = process.env.GREEN_API_TOKEN_INSTANCE,
+    apiUrl = process.env.GREEN_API_URL || DEFAULT_API_URL,
+    siteUrl = process.env.SITE_URL || DEFAULT_SITE_URL,
+    fetchImpl = fetch,
+    logger = console
+} = {}) {
+    if (enabled === false) {
+        logger.info?.("sendAdminOrderNotificationWhatsApp: Admin WhatsApp alert disabled in settings.");
+        return { sent: false, reason: "disabled" };
+    }
+    if (!order) {
+        logger.warn?.("sendAdminOrderNotificationWhatsApp: No order provided.");
+        return { sent: false, reason: "missing-order" };
+    }
+
+    const rawPhone = String(adminPhone || "").trim();
+    const recipientPhone = normalizeWhatsAppPhone(rawPhone);
+
+    if (!recipientPhone) {
+        logger.warn?.(`sendAdminOrderNotificationWhatsApp: Invalid or missing admin phone number: "${rawPhone}"`);
+        return { sent: false, reason: "invalid-phone" };
+    }
+
+    const message = buildAdminOrderNotificationMessage(order, { siteUrl, template });
+    const chatId = toGreenApiChatId(recipientPhone);
+
+    try {
+        const result = await sendGreenApiMessage({
+            idInstance,
+            apiTokenInstance,
+            apiUrl,
+            chatId,
+            message,
+            fetchImpl
+        });
+
+        logger.info?.(`Admin WhatsApp alert sent via Green API for order ${order.id} to ${recipientPhone}`);
+        return { sent: true, recipient: recipientPhone, chatId, result };
+    } catch (error) {
+        logger.error?.(`Failed to send Admin WhatsApp alert via Green API for order ${order.id} to ${recipientPhone}:`, error);
+        return { sent: false, error: error.message };
+    }
+}
+

@@ -1926,8 +1926,17 @@
                                     <label class="wide">Arabic title <input name="title_ar" lang="ar" dir="rtl" placeholder="العنوان بالعربية"></label>
                                     <label>Brand <input name="brand"></label>
                                     <label>Badge <input name="badge"></label>
-                                    <label>Old price <input name="oldPrice" placeholder="$0.00"></label>
-                                    <label>New price <input name="newPrice" placeholder="$0.00"></label>
+                                    <label>Currency
+                                        <div style="display:flex; gap:6px;">
+                                            <select name="currency" id="productCurrencySelect" style="flex:1;">
+                                                <option value="$">$ (USD)</option>
+                                                <option value="LBP">LBP (Lebanese Pound)</option>
+                                            </select>
+                                            <button type="button" id="addCustomCurrencyBtn" class="secondary-btn" style="white-space:nowrap; padding:0 12px; font-weight:700;" title="Add new currency"><i class="fas fa-plus"></i> Add</button>
+                                        </div>
+                                    </label>
+                                    <label>Old price <input name="oldPrice" id="productOldPrice" placeholder="0.00"></label>
+                                    <label>New price <input name="newPrice" id="productNewPrice" placeholder="0.00"></label>
                                     <label>Inventory <input name="inventory" type="number" min="0"></label>
                                     <label>Available
                                         <select name="available">
@@ -2273,43 +2282,97 @@
                 <section class="tab-panel hidden" id="settingsPanel">
                     <div class="settings-grid">
                         <div class="panel-section">
-                            <h2 style="margin: 0 0 14px; font-size: 17px; font-weight: 800; color: var(--brand-dark);"><i class="fab fa-whatsapp" style="color: #25D366;"></i> WhatsApp Order Message Template</h2>
+                            <h2 style="margin: 0 0 14px; font-size: 17px; font-weight: 800; color: var(--brand-dark);"><i class="fab fa-whatsapp" style="color: #25D366;"></i> WhatsApp Order Notifications</h2>
                             <form id="whatsappSettingsForm">
-                                <div class="form-grid" style="grid-template-columns: 1fr; gap: 12px;">
-                                    <label>Automatic WhatsApp Notifications
-                                        <select name="whatsappEnabled" id="whatsappEnabledSelect">
-                                            <option value="true">Enabled (Send on new order)</option>
-                                            <option value="false">Disabled</option>
-                                        </select>
-                                    </label>
+                                <div style="background: rgba(37, 211, 102, 0.07); border: 1px solid rgba(37, 211, 102, 0.35); border-radius: 10px; padding: 18px; margin-bottom: 22px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                        <i class="fas fa-bell" style="color: #128C7E; font-size: 16px;"></i>
+                                        <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--brand-dark);">Store Admin Notification (Always Alert Specific Number)</h3>
+                                    </div>
+                                    <p style="font-size: 12px; color: var(--text-muted); margin: 0 0 14px; line-height: 1.5;">
+                                        Specify the WhatsApp number where you want to <strong>ALWAYS</strong> receive an instant alert with full details (customer name, customer phone, address, ordered items, and total) whenever a new order is placed.
+                                    </p>
+                                    <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                                        <label>Admin Order Alerts
+                                            <select name="adminNotifyEnabled" id="adminNotifyEnabledSelect">
+                                                <option value="true">Enabled (Always alert admin number)</option>
+                                                <option value="false">Disabled</option>
+                                            </select>
+                                        </label>
+                                        <label>Admin WhatsApp Phone Number
+                                            <input type="tel" id="adminNotifyPhoneInput" name="adminNotifyPhone" placeholder="e.g. +961 70 123 456 or 70123456" autocomplete="tel">
+                                        </label>
+                                    </div>
                                     <div>
-                                        <label for="whatsappTemplateTextarea">Message Template</label>
-                                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Click any tag below to insert it into your message:</div>
-                                        <div class="chip-container" id="placeholderChips">
-                                            <button type="button" class="placeholder-chip" data-insert="{customerName}">{customerName}</button>
-                                            <button type="button" class="placeholder-chip" data-insert="{orderId}">{orderId}</button>
-                                            <button type="button" class="placeholder-chip" data-insert="{total}">{total}</button>
-                                            <button type="button" class="placeholder-chip" data-insert="{payment}">{payment}</button>
-                                            <button type="button" class="placeholder-chip" data-insert="{area}">{area}</button>
-                                            <button type="button" class="placeholder-chip" data-insert="{address}">{address}</button>
-                                            <button type="button" class="placeholder-chip" data-insert="{items}">{items}</button>
-                                            <button type="button" class="placeholder-chip" data-insert="{trackingUrl}">{trackingUrl}</button>
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                            <label for="adminWhatsappTemplateTextarea" style="font-size: 12px; font-weight: 700; color: var(--brand-dark); margin: 0;">Admin Alert Message Template</label>
+                                            <button type="button" class="tiny-btn" id="resetAdminWhatsAppTemplateBtn" style="font-size: 11px;"><i class="fas fa-undo"></i> Reset Admin Template</button>
                                         </div>
-                                        <textarea id="whatsappTemplateTextarea" name="whatsappTemplate" rows="12" style="width: 100%; font-family: inherit; font-size: 13px; line-height: 1.5; padding: 10px; border-radius: 6px; border: 1px solid var(--brand-border); resize: vertical;" dir="rtl"></textarea>
+                                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Click any tag below to insert it into your admin alert message:</div>
+                                        <div class="chip-container" id="adminPlaceholderChips">
+                                            <button type="button" class="placeholder-chip" data-admin-insert="{orderId}">{orderId}</button>
+                                            <button type="button" class="placeholder-chip" data-admin-insert="{customerName}">{customerName}</button>
+                                            <button type="button" class="placeholder-chip" data-admin-insert="{customerPhone}">{customerPhone}</button>
+                                            <button type="button" class="placeholder-chip" data-admin-insert="{total}">{total}</button>
+                                            <button type="button" class="placeholder-chip" data-admin-insert="{payment}">{payment}</button>
+                                            <button type="button" class="placeholder-chip" data-admin-insert="{area}">{area}</button>
+                                            <button type="button" class="placeholder-chip" data-admin-insert="{address}">{address}</button>
+                                            <button type="button" class="placeholder-chip" data-admin-insert="{items}">{items}</button>
+                                            <button type="button" class="placeholder-chip" data-admin-insert="{trackingUrl}">{trackingUrl}</button>
+                                        </div>
+                                        <textarea id="adminWhatsappTemplateTextarea" name="adminWhatsappTemplate" rows="8" style="width: 100%; font-family: inherit; font-size: 13px; line-height: 1.5; padding: 10px; border-radius: 6px; border: 1px solid var(--brand-border); resize: vertical;" dir="rtl"></textarea>
+                                    </div>
+                                    <div style="margin-top: 14px;">
+                                        <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;"><i class="fas fa-eye"></i> Admin Message Preview:</div>
+                                        <div class="wa-preview-card">
+                                            <div class="wa-bubble" id="adminWaLivePreview"></div>
+                                            <div class="wa-bubble-time">Just now ✓✓</div>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <div style="border: 1px solid var(--brand-border); border-radius: 10px; padding: 18px; margin-bottom: 16px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                        <i class="fas fa-user-check" style="color: var(--brand-blue); font-size: 16px;"></i>
+                                        <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--brand-dark);">Customer Order Confirmation</h3>
+                                    </div>
+                                    <div class="form-grid" style="grid-template-columns: 1fr; gap: 12px;">
+                                        <label>Automatic WhatsApp Confirmation to Customer
+                                            <select name="whatsappEnabled" id="whatsappEnabledSelect">
+                                                <option value="true">Enabled (Send confirmation to customer)</option>
+                                                <option value="false">Disabled</option>
+                                            </select>
+                                        </label>
+                                        <div>
+                                            <label for="whatsappTemplateTextarea">Customer Message Template</label>
+                                            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Click any tag below to insert it into your message:</div>
+                                            <div class="chip-container" id="placeholderChips">
+                                                <button type="button" class="placeholder-chip" data-insert="{customerName}">{customerName}</button>
+                                                <button type="button" class="placeholder-chip" data-insert="{orderId}">{orderId}</button>
+                                                <button type="button" class="placeholder-chip" data-insert="{total}">{total}</button>
+                                                <button type="button" class="placeholder-chip" data-insert="{payment}">{payment}</button>
+                                                <button type="button" class="placeholder-chip" data-insert="{area}">{area}</button>
+                                                <button type="button" class="placeholder-chip" data-insert="{address}">{address}</button>
+                                                <button type="button" class="placeholder-chip" data-insert="{items}">{items}</button>
+                                                <button type="button" class="placeholder-chip" data-insert="{trackingUrl}">{trackingUrl}</button>
+                                            </div>
+                                            <textarea id="whatsappTemplateTextarea" name="whatsappTemplate" rows="10" style="width: 100%; font-family: inherit; font-size: 13px; line-height: 1.5; padding: 10px; border-radius: 6px; border: 1px solid var(--brand-border); resize: vertical;" dir="rtl"></textarea>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 14px;">
+                                        <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;"><i class="fas fa-eye"></i> Customer Message Preview:</div>
+                                        <div class="wa-preview-card">
+                                            <div class="wa-bubble" id="waLivePreview"></div>
+                                            <div class="wa-bubble-time">12:00 PM ✓✓</div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="actions" style="margin-top: 14px;">
                                     <button class="primary-btn" type="submit"><i class="fas fa-save"></i> Save WhatsApp Settings</button>
-                                    <button class="secondary-btn" id="resetWhatsAppTemplateBtn" type="button"><i class="fas fa-undo"></i> Reset to Default</button>
+                                    <button class="secondary-btn" id="resetWhatsAppTemplateBtn" type="button"><i class="fas fa-undo"></i> Reset Customer Template</button>
                                 </div>
                             </form>
-                            <div style="margin-top: 20px;">
-                                <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;"><i class="fas fa-eye"></i> Live Message Preview (Customer View):</div>
-                                <div class="wa-preview-card">
-                                    <div class="wa-bubble" id="waLivePreview"></div>
-                                    <div class="wa-bubble-time">12:00 PM ✓✓</div>
-                                </div>
-                            </div>
                         </div>
 
                         <div class="panel-section">
@@ -2530,8 +2593,84 @@
             });
         }
         function parseMoney(value) {
-            const match = String(value || "").match(/[0-9]+(?:\.[0-9]+)?/);
+            const match = String(value || "").replace(/,/g, "").match(/[0-9]+(?:\.[0-9]+)?/);
             return match ? Number(match[0]) : 0;
+        }
+
+        const DEFAULT_CURRENCIES = [
+            { code: "USD", symbol: "$", label: "$ (USD)" },
+            { code: "LBP", symbol: "LBP", label: "LBP (Lebanese Pound)" },
+            { code: "EUR", symbol: "€", label: "€ (EUR)" },
+            { code: "AED", symbol: "AED", label: "AED (Dirham)" },
+            { code: "SAR", symbol: "SAR", label: "SAR (Riyal)" },
+            { code: "GBP", symbol: "£", label: "£ (GBP)" },
+            { code: "QAR", symbol: "QAR", label: "QAR (Qatari Riyal)" },
+            { code: "KWD", symbol: "KWD", label: "KWD (Kuwaiti Dinar)" },
+            { code: "EGP", symbol: "EGP", label: "EGP (Egyptian Pound)" }
+        ];
+
+        function getStoredCurrencies() {
+            try {
+                const saved = JSON.parse(localStorage.getItem("admin_custom_currencies") || "[]");
+                const all = [...DEFAULT_CURRENCIES];
+                saved.forEach(c => {
+                    if (c && c.symbol && !all.some(x => x.symbol === c.symbol || x.code === c.code)) {
+                        all.push(c);
+                    }
+                });
+                return all;
+            } catch (e) {
+                return [...DEFAULT_CURRENCIES];
+            }
+        }
+
+        function populateCurrencyDropdown() {
+            const select = document.getElementById("productCurrencySelect");
+            if (!select) return;
+            const currentVal = select.value;
+            const list = getStoredCurrencies();
+            select.innerHTML = list.map(c => `<option value="${escapeHtml(c.symbol)}">${escapeHtml(c.label || c.symbol)}</option>`).join("");
+            if (currentVal && list.some(c => c.symbol === currentVal)) {
+                select.value = currentVal;
+            }
+        }
+
+        function addCurrencyToList(input) {
+            const val = String(input || "").trim();
+            if (!val) return;
+            const list = getStoredCurrencies();
+            if (!list.some(c => c.symbol.toLowerCase() === val.toLowerCase() || c.code.toLowerCase() === val.toLowerCase())) {
+                const newCurr = { code: val.toUpperCase(), symbol: val, label: `${val} (${val})` };
+                try {
+                    const saved = JSON.parse(localStorage.getItem("admin_custom_currencies") || "[]");
+                    saved.push(newCurr);
+                    localStorage.setItem("admin_custom_currencies", JSON.stringify(saved));
+                } catch (e) {}
+                try {
+                    setDoc(doc(db, "settings", "currencies"), { list: getStoredCurrencies() }, { merge: true }).catch(() => {});
+                } catch (e) {}
+            }
+            populateCurrencyDropdown();
+            const select = document.getElementById("productCurrencySelect");
+            if (select) select.value = val;
+        }
+
+        document.getElementById("addCustomCurrencyBtn")?.addEventListener("click", function () {
+            const input = prompt("Enter currency symbol or code (e.g. $, LBP, EUR, SAR, AED, GBP):");
+            if (input && input.trim()) {
+                addCurrencyToList(input.trim());
+            }
+        });
+        populateCurrencyDropdown();
+
+        function formatWithCurrency(amount, currency) {
+            const clean = String(amount || "").replace(/[^0-9.]/g, "").trim();
+            if (!clean) return "";
+            const curr = String(currency || "$").trim();
+            if (curr === "$" || curr === "€" || curr === "£") {
+                return `${curr}${clean}`;
+            }
+            return `${clean} ${curr}`;
         }
         function slug(value) {
             return String(value || "product").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 90) || "product";
@@ -2902,8 +3041,8 @@
                     <div class="product-variant-grid">
                         <label>Size / Option <input data-variant-key="name" value="${escapeHtml(item.name)}" placeholder="100ml, 250ml, S, M..."></label>
                         <label>SKU <input data-variant-key="sku" value="${escapeHtml(item.sku)}" placeholder="Optional"></label>
-                        <label>Old price <input data-variant-key="oldPrice" value="${escapeHtml(item.oldPrice)}" placeholder="$0.00"></label>
-                        <label>New price <input data-variant-key="newPrice" value="${escapeHtml(item.newPrice)}" placeholder="$0.00"></label>
+                        <label>Old price <input data-variant-key="oldPrice" value="${escapeHtml(item.oldPriceAmount ?? (item.oldPrice ? parseMoney(item.oldPrice) : ''))}" placeholder="0.00"></label>
+                        <label>New price <input data-variant-key="newPrice" value="${escapeHtml(item.priceAmount ?? (item.newPrice ? parseMoney(item.newPrice) : ''))}" placeholder="0.00"></label>
                         <label>Inventory <input data-variant-key="inventory" type="number" min="0" value="${escapeHtml(item.inventory)}"></label>
                         <label>Available
                             <select data-variant-key="available">
@@ -2931,6 +3070,7 @@
         async function collectProductVariants(productId) {
             const rows = Array.from(productVariantsList.querySelectorAll("[data-variant-row]"));
             const variants = [];
+            const selCurr = document.getElementById("productCurrencySelect")?.value || "$";
             for (const [index, row] of rows.entries()) {
                 if (!variantRowHasData(row)) continue;
                 const valueFor = function (key) {
@@ -2940,13 +3080,20 @@
                 const uploadedImageUrl = await uploadVariantImage(productId, file, index);
                 const name = String(valueFor("name")).trim();
                 if (!name) continue;
+                const rawOld = valueFor("oldPrice");
+                const rawNew = valueFor("newPrice");
+                const formattedOld = rawOld ? formatWithCurrency(rawOld, selCurr) : "";
+                const formattedNew = rawNew ? formatWithCurrency(rawNew, selCurr) : "";
                 variants.push({
                     name,
                     sku: String(valueFor("sku")).trim(),
-                    oldPrice: String(valueFor("oldPrice")).trim(),
-                    newPrice: String(valueFor("newPrice")).trim(),
-                    oldPriceValue: parseMoney(valueFor("oldPrice")),
-                    newPriceValue: parseMoney(valueFor("newPrice")),
+                    currency: selCurr,
+                    oldPrice: formattedOld,
+                    newPrice: formattedNew,
+                    priceAmount: parseMoney(rawNew || formattedNew),
+                    oldPriceAmount: parseMoney(rawOld || formattedOld),
+                    oldPriceValue: parseMoney(formattedOld),
+                    newPriceValue: parseMoney(formattedNew),
                     inventory: Number(valueFor("inventory") || 0),
                     available: boolFromForm(valueFor("available")),
                     imageUrl: uploadedImageUrl || String(valueFor("imageUrl")).trim()
@@ -5550,8 +5697,11 @@
             const inventory = formInventory === "" && variants.length
                 ? variants.reduce((total, variant) => total + Number(variant.inventory || 0), 0)
                 : Number(form.inventory || 0);
-            const oldPrice = form.oldPrice || firstVariant?.oldPrice || "";
-            const newPrice = form.newPrice || firstVariant?.newPrice || "";
+            const selCurrency = form.currency || document.getElementById("productCurrencySelect")?.value || "$";
+            const rawOldPrice = form.oldPrice;
+            const rawNewPrice = form.newPrice;
+            const oldPrice = rawOldPrice ? formatWithCurrency(rawOldPrice, selCurrency) : (firstVariant?.oldPrice || "");
+            const newPrice = rawNewPrice ? formatWithCurrency(rawNewPrice, selCurrency) : (firstVariant?.newPrice || "");
             const primaryImageUrl = galleryUrls[0] || form.imageUrl || firstVariant?.imageUrl || "";
             const belongingTitles = currentProductBelongings.map(b => b.title.trim()).filter(Boolean);
             const primaryBelonging = currentProductBelongings.find(b => b.isPrimary)?.title || form.category || belongingTitles[0] || "";
@@ -5568,6 +5718,7 @@
                 collections: collectionsList,
                 section: form.section || "",
                 badge: form.badge,
+                currency: selCurrency,
                 oldPrice,
                 newPrice,
                 oldPriceValue: parseMoney(oldPrice),
@@ -5611,7 +5762,14 @@
             const remove = event.target.closest("[data-delete-product]");
             if (edit) {
                 const product = products.find(item => item.id === edit.dataset.editProduct);
-                fillForm(productForm, { ...product, available: product.available === false ? "false" : "true" });
+                if (product?.currency) {
+                    addCurrencyToList(product.currency);
+                }
+                fillForm(productForm, {
+                    ...product,
+                    currency: product?.currency || "$",
+                    available: product.available === false ? "false" : "true"
+                });
                 renderProductVariants(product?.variants || []);
                 loadProductBelongings(product);
                 const existingImages = [
@@ -6402,6 +6560,20 @@
 
 📍 يمكنك الرد على هذه الرسالة بموقعك الجغرافي (Location Pin) لتسهيل وتنسيق التوصيل.`;
 
+        const DEFAULT_ADMIN_WHATSAPP_TEMPLATE = `🚨 طلب جديد! New Order Received!
+
+📦 رقم الطلب (Order ID): {orderId}
+👤 الزبون (Customer): {customerName}
+📞 الهاتف (Phone): {customerPhone}
+💰 المجموع (Total): {total} ({payment})
+📍 المنطقة (Area): {area}
+🏢 العنوان (Address): {address}
+
+🛒 المنتجات (Items):
+{items}
+
+🔗 رابط التتبع (Tracking): {trackingUrl}`;
+
         const DEFAULT_DELIVERY_AREAS = [
             { value: "akkar", label: "Akkar - عكار", cost: 5, active: true },
             { value: "aley", label: "Aley - عاليه", cost: 4, active: true },
@@ -6449,7 +6621,10 @@
 
         let whatsappSettings = {
             whatsappEnabled: true,
-            whatsappTemplate: DEFAULT_WHATSAPP_TEMPLATE
+            whatsappTemplate: DEFAULT_WHATSAPP_TEMPLATE,
+            adminNotifyEnabled: true,
+            adminNotifyPhone: "",
+            adminWhatsappTemplate: DEFAULT_ADMIN_WHATSAPP_TEMPLATE
         };
 
         let deliverySettings = {
@@ -6459,20 +6634,36 @@
 
         async function loadSettings() {
             try {
-                const [notifSnap, deliverySnap] = await Promise.all([
+                const [notifSnap, deliverySnap, currSnap] = await Promise.all([
                     getDoc(doc(db, "settings", "notifications")),
-                    getDoc(doc(db, "settings", "delivery"))
+                    getDoc(doc(db, "settings", "delivery")),
+                    getDoc(doc(db, "settings", "currencies")).catch(() => null)
                 ]);
+                if (currSnap && currSnap.exists()) {
+                    const cData = currSnap.data();
+                    if (Array.isArray(cData.list) && cData.list.length) {
+                        try {
+                            localStorage.setItem("admin_custom_currencies", JSON.stringify(cData.list));
+                            populateCurrencyDropdown();
+                        } catch (e) {}
+                    }
+                }
                 if (notifSnap.exists()) {
                     const data = notifSnap.data();
                     whatsappSettings = {
                         whatsappEnabled: data.whatsappEnabled !== false,
-                        whatsappTemplate: data.whatsappTemplate || DEFAULT_WHATSAPP_TEMPLATE
+                        whatsappTemplate: data.whatsappTemplate || DEFAULT_WHATSAPP_TEMPLATE,
+                        adminNotifyEnabled: data.adminNotifyEnabled !== false,
+                        adminNotifyPhone: data.adminNotifyPhone || data.adminPhone || "",
+                        adminWhatsappTemplate: data.adminWhatsappTemplate || DEFAULT_ADMIN_WHATSAPP_TEMPLATE
                     };
                 } else {
                     whatsappSettings = {
                         whatsappEnabled: true,
-                        whatsappTemplate: DEFAULT_WHATSAPP_TEMPLATE
+                        whatsappTemplate: DEFAULT_WHATSAPP_TEMPLATE,
+                        adminNotifyEnabled: true,
+                        adminNotifyPhone: "",
+                        adminWhatsappTemplate: DEFAULT_ADMIN_WHATSAPP_TEMPLATE
                     };
                 }
                 if (deliverySnap.exists()) {
@@ -6497,9 +6688,18 @@
         function renderWhatsAppSettings() {
             const enabledSelect = document.getElementById("whatsappEnabledSelect");
             const textarea = document.getElementById("whatsappTemplateTextarea");
+            const adminEnabledSelect = document.getElementById("adminNotifyEnabledSelect");
+            const adminPhoneInput = document.getElementById("adminNotifyPhoneInput");
+            const adminTextarea = document.getElementById("adminWhatsappTemplateTextarea");
+
             if (enabledSelect) enabledSelect.value = whatsappSettings.whatsappEnabled ? "true" : "false";
-            if (textarea) textarea.value = whatsappSettings.whatsappTemplate;
+            if (textarea) textarea.value = whatsappSettings.whatsappTemplate || DEFAULT_WHATSAPP_TEMPLATE;
+            if (adminEnabledSelect) adminEnabledSelect.value = whatsappSettings.adminNotifyEnabled !== false ? "true" : "false";
+            if (adminPhoneInput) adminPhoneInput.value = whatsappSettings.adminNotifyPhone || "";
+            if (adminTextarea) adminTextarea.value = whatsappSettings.adminWhatsappTemplate || DEFAULT_ADMIN_WHATSAPP_TEMPLATE;
+
             updateWhatsAppPreview();
+            updateAdminWhatsAppPreview();
         }
 
         function updateWhatsAppPreview() {
@@ -6510,6 +6710,29 @@
             const sampleVars = {
                 customerName: "Ahmad Khalil",
                 orderId: "HM-20260826-A1B2C",
+                total: "$35.00",
+                payment: "الدفع عند الاستلام (Cash on Delivery)",
+                area: "Matn - المتن",
+                address: "Jal El Dib، Main Street، بناية Al-Amir، طابق 2",
+                items: "• Panadol Extra (x2) - $20.00\n• Vitamin C 1000mg (x1) - $15.00",
+                trackingUrl: "https://heliomed-lb.com/track-order.html?order=HM-20260826-A1B2C",
+                siteUrl: "https://heliomed-lb.com"
+            };
+            const rendered = template.replace(/\{([a-zA-Z0-9_-]+)\}/g, (match, key) => {
+                return sampleVars[key] !== undefined ? sampleVars[key] : match;
+            });
+            previewEl.textContent = rendered;
+        }
+
+        function updateAdminWhatsAppPreview() {
+            const textarea = document.getElementById("adminWhatsappTemplateTextarea");
+            const previewEl = document.getElementById("adminWaLivePreview");
+            if (!textarea || !previewEl) return;
+            const template = textarea.value || DEFAULT_ADMIN_WHATSAPP_TEMPLATE;
+            const sampleVars = {
+                orderId: "HM-20260826-A1B2C",
+                customerName: "Ahmad Khalil",
+                customerPhone: "+961 70 123 456",
                 total: "$35.00",
                 payment: "الدفع عند الاستلام (Cash on Delivery)",
                 area: "Matn - المتن",
@@ -6593,18 +6816,55 @@
             }
         });
 
+        document.getElementById("adminPlaceholderChips")?.addEventListener("click", (event) => {
+            const chip = event.target.closest("[data-admin-insert]");
+            if (!chip) return;
+            const tag = chip.dataset.adminInsert;
+            const textarea = document.getElementById("adminWhatsappTemplateTextarea");
+            if (!textarea) return;
+            const start = textarea.selectionStart || 0;
+            const end = textarea.selectionEnd || 0;
+            const text = textarea.value;
+            textarea.value = text.slice(0, start) + tag + text.slice(end);
+            textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+            textarea.focus();
+            updateAdminWhatsAppPreview();
+        });
+
+        document.getElementById("adminWhatsappTemplateTextarea")?.addEventListener("input", updateAdminWhatsAppPreview);
+
+        document.getElementById("resetAdminWhatsAppTemplateBtn")?.addEventListener("click", () => {
+            if (confirm("Reset Admin WhatsApp template to the standard default?")) {
+                document.getElementById("adminWhatsappTemplateTextarea").value = DEFAULT_ADMIN_WHATSAPP_TEMPLATE;
+                updateAdminWhatsAppPreview();
+            }
+        });
+
         document.getElementById("whatsappSettingsForm")?.addEventListener("submit", async (event) => {
             event.preventDefault();
             const enabled = document.getElementById("whatsappEnabledSelect").value === "true";
             const template = document.getElementById("whatsappTemplateTextarea").value.trim() || DEFAULT_WHATSAPP_TEMPLATE;
+            const adminNotifyEnabled = document.getElementById("adminNotifyEnabledSelect")?.value === "true";
+            const adminNotifyPhone = (document.getElementById("adminNotifyPhoneInput")?.value || "").trim();
+            const adminTemplate = document.getElementById("adminWhatsappTemplateTextarea")?.value.trim() || DEFAULT_ADMIN_WHATSAPP_TEMPLATE;
+
             try {
                 await setDoc(doc(db, "settings", "notifications"), {
                     whatsappEnabled: enabled,
                     whatsappTemplate: template,
+                    adminNotifyEnabled,
+                    adminNotifyPhone,
+                    adminWhatsappTemplate: adminTemplate,
                     updatedAt: serverTimestamp()
                 }, { merge: true });
-                whatsappSettings = { whatsappEnabled: enabled, whatsappTemplate: template };
-                showStatus("WhatsApp settings saved successfully.");
+                whatsappSettings = {
+                    whatsappEnabled: enabled,
+                    whatsappTemplate: template,
+                    adminNotifyEnabled,
+                    adminNotifyPhone,
+                    adminWhatsappTemplate: adminTemplate
+                };
+                showStatus("WhatsApp notification settings saved successfully.");
             } catch (err) {
                 console.error(err);
                 showStatus("Failed to save WhatsApp settings.");

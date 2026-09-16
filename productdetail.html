@@ -1357,9 +1357,10 @@
         function variantPrice(variant, product) {
             const oldPrice = variant?.oldPrice || product.oldPrice || "";
             const newPrice = variant?.newPrice || product.newPrice || "";
+            const currency = variant?.currency || product.currency || "";
             const oldValue = Number(variant?.oldPriceValue || product.oldPriceValue || parseMoney(oldPrice));
             const newValue = Number(variant?.newPriceValue || product.newPriceValue || parseMoney(newPrice));
-            return { oldPrice, newPrice, oldValue, newValue };
+            return { oldPrice, newPrice, oldValue, newValue, currency };
         }
 
         function isSoldOut(product, variant = selectedVariant) {
@@ -1373,7 +1374,12 @@
             const discount = price.oldValue > price.newValue && price.newValue > 0
                 ? Math.round(((price.oldValue - price.newValue) / price.oldValue) * 100)
                 : 0;
-            document.querySelector(".price-row").hidden = hidePrice;
+            const priceRow = document.querySelector(".price-row");
+            priceRow.hidden = hidePrice;
+            if (price.currency) {
+                priceRow.dataset.currency = price.currency;
+            }
+            priceRow.dataset.price = String(price.newValue);
             document.getElementById("oldPrice").textContent = !hidePrice && price.oldPrice ? "MSRP: " + price.oldPrice : "";
             document.getElementById("newPrice").textContent = !hidePrice ? price.newPrice : "";
             document.getElementById("discountText").textContent = hidePrice ? "" : (discount ? "Save " + discount + "% today" : "Everyday care pricing");
@@ -1697,6 +1703,7 @@
                 title: currentProduct.title + (variantName ? " - " + variantName : ""),
                 brand: brand,
                 imageUrl: selectedVariant?.imageUrl || currentProduct.imageUrl || "",
+                currency: price.currency || currentProduct.currency || "$",
                 oldPrice: price.oldPrice,
                 newPrice: price.newPrice,
                 price: Number(price.newValue || parseMoney(price.newPrice)),

@@ -21,7 +21,10 @@ import {
     rebuildDirtyProducts
 } from "./rebuild-service.js";
 import { submitProductReview as submitProductReviewTransaction } from "./review-service.js";
-import { sendOrderConfirmationWhatsApp } from "./whatsapp-service.js";
+import {
+    sendOrderConfirmationWhatsApp,
+    sendAdminOrderNotificationWhatsApp
+} from "./whatsapp-service.js";
 
 initializeApp();
 
@@ -85,17 +88,40 @@ export const createOrder = onCall(createOrderOptions, async (request) => {
         try {
             const notificationSnapshot = await db.collection("settings").doc("notifications").get().catch(() => null);
             const notifications = notificationSnapshot?.exists ? notificationSnapshot.data() : null;
+            const idInstance = greenApiIdInstance.value();
+            const apiTokenInstance = greenApiTokenInstance.value();
 
-            await sendOrderConfirmationWhatsApp({
-                order,
-                idInstance: greenApiIdInstance.value(),
-                apiTokenInstance: greenApiTokenInstance.value(),
-                template: notifications?.whatsappTemplate,
-                enabled: notifications?.whatsappEnabled !== false,
-                logger: functionsLogger
-            });
+            await Promise.allSettled([
+                sendOrderConfirmationWhatsApp({
+                    order,
+                    idInstance,
+                    apiTokenInstance,
+                    template: notifications?.whatsappTemplate,
+                    enabled: notifications?.whatsappEnabled !== false,
+                    logger: functionsLogger
+                }).catch((err) => {
+                    functionsLogger.error("Failed to send WhatsApp confirmation:", err);
+                }),
+                (() => {
+                    const adminPhone = notifications?.adminNotifyPhone || notifications?.adminPhone;
+                    if (adminPhone && notifications?.adminNotifyEnabled !== false) {
+                        return sendAdminOrderNotificationWhatsApp({
+                            order,
+                            adminPhone,
+                            template: notifications?.adminWhatsappTemplate,
+                            enabled: true,
+                            idInstance,
+                            apiTokenInstance,
+                            logger: functionsLogger
+                        }).catch((err) => {
+                            functionsLogger.error("Failed to send admin WhatsApp alert:", err);
+                        });
+                    }
+                    return Promise.resolve();
+                })()
+            ]);
         } catch (notificationError) {
-            functionsLogger.error("Failed to send WhatsApp confirmation:", notificationError);
+            functionsLogger.error("Failed to process WhatsApp notifications:", notificationError);
         }
 
         return order;

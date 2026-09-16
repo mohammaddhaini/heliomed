@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import {
+    buildAdminOrderNotificationMessage,
     buildOrderConfirmationMessage,
     normalizeWhatsAppPhone,
+    sendAdminOrderNotificationWhatsApp,
     sendGreenApiMessage,
     sendOrderConfirmationWhatsApp,
     toGreenApiChatId
@@ -287,3 +289,136 @@ describe("sendOrderConfirmationWhatsApp", () => {
         assert.match(loggedInfo, /WhatsApp confirmation disabled/);
     });
 });
+
+describe("buildAdminOrderNotificationMessage", () => {
+    it("formats an alert message containing customer phone, order details, and items", () => {
+        const order = sampleOrder();
+        const message = buildAdminOrderNotificationMessage(order, { siteUrl: "https://heliomed-lb.com" });
+
+        assert.match(message, /طلب جديد! New Order Received/);
+        assert.match(message, /HM-20260820-ABCDE/);
+        assert.match(message, /Ahmad Khalil/);
+        assert.match(message, /\+961 70 123 456/);
+        assert.match(message, /\$35\.50/);
+        assert.match(message, /Cash on Delivery/);
+        assert.match(message, /Matn - المتن/);
+        assert.match(message, /Panadol Extra \(x2\)/);
+        assert.match(message, /https:\/\/heliomed-lb\.com\/track-order\.html\?order=HM-20260820-ABCDE/);
+    });
+
+    it("interpolates admin template with customerPhone and other placeholders", () => {
+        const order = sampleOrder();
+        const customTemplate = "ADMIN ALERT: Order {orderId} by {customerName} ({customerPhone}) - Total: ${total}. Items: {items}";
+        const message = buildAdminOrderNotificationMessage(order, { template: customTemplate });
+
+        assert.match(message, /ADMIN ALERT: Order HM-20260820-ABCDE by Ahmad Khalil \(\+961 70 123 456\) - Total: \$35\.50/);
+        assert.match(message, /Panadol Extra \(x2\)/);
+    });
+});
+
+describe("sendAdminOrderNotificationWhatsApp", () => {
+    it("successfully sends admin alert to the specified admin phone number", async () => {
+        let loggedInfo = "";
+        let capturedPayload = null;
+        const mockLogger = {
+            info: (msg) => { loggedInfo = msg; },
+            warn: () => {},
+            error: () => {}
+        };
+
+        const mockFetch = async (url, options) => {
+            capturedPayload = JSON.parse(options.body);
+            return {
+                ok: true,
+                json: async () => ({ idMessage: "ADMIN_MSG_123" })
+            };
+        };
+
+        const result = await sendAdminOrderNotificationWhatsApp({
+            order: sampleOrder(),
+            adminPhone: "71 999 888",
+            idInstance: "1101000001",
+            apiTokenInstance: "test-token",
+            fetchImpl: mockFetch,
+            logger: mockLogger
+        });
+
+        assert.equal(result.sent, true);
+        assert.equal(result.recipient, "+96171999888");
+        assert.equal(result.chatId, "96171999888@c.us");
+        assert.equal(capturedPayload.chatId, "96171999888@c.us");
+        assert.match(capturedPayload.message, /طلب جديد! New Order Received/);
+        assert.match(loggedInfo, /Admin WhatsApp alert sent via Green API for order HM-20260820-ABCDE to \+96171999888/);
+    });
+
+    it("returns sent:false when admin phone number is invalid", async () => {
+        let loggedWarn = "";
+        const mockLogger = {
+            info: () => {},
+            warn: (msg) => { loggedWarn = msg; },
+            error: () => {}
+        };
+
+        const result = await sendAdminOrderNotificationWhatsApp({
+            order: sampleOrder(),
+            adminPhone: "invalid-number",
+            idInstance: "1101000001",
+            apiTokenInstance: "test-token",
+            logger: mockLogger
+        });
+
+        assert.equal(result.sent, false);
+        assert.equal(result.reason, "invalid-phone");
+        assert.match(loggedWarn, /Invalid or missing admin phone number/);
+    });
+
+    it("skips sending when enabled is false", async () => {
+        let loggedInfo = "";
+        const mockLogger = {
+            info: (msg) => { loggedInfo = msg; },
+            warn: () => {},
+            error: () => {}
+        };
+
+        const result = await sendAdminOrderNotificationWhatsApp({
+            order: sampleOrder(),
+            adminPhone: "+96170123456",
+            enabled: false,
+            logger: mockLogger
+        });
+
+        assert.equal(result.sent, false);
+        assert.equal(result.reason, "disabled");
+        assert.match(loggedInfo, /Admin WhatsApp alert disabled/);
+    });
+
+    it("returns sent:false when Green API returns an error", async () => {
+        let loggedError = "";
+        const mockLogger = {
+            info: () => {},
+            warn: () => {},
+            error: (msg) => { loggedError = msg; }
+        };
+
+        const mockFetch = async () => ({
+            ok: false,
+            status: 500,
+            statusText: "Internal Error",
+            json: async () => ({ message: "Gateway timeout" })
+        });
+
+        const result = await sendAdminOrderNotificationWhatsApp({
+            order: sampleOrder(),
+            adminPhone: "+96170123456",
+            idInstance: "1101000001",
+            apiTokenInstance: "test-token",
+            fetchImpl: mockFetch,
+            logger: mockLogger
+        });
+
+        assert.equal(result.sent, false);
+        assert.match(result.error, /Green API error: Gateway timeout/);
+        assert.match(loggedError, /Failed to send Admin WhatsApp alert/);
+    });
+});
+
