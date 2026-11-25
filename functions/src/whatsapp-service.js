@@ -298,6 +298,8 @@ export async function sendOrderConfirmationWhatsApp({
 export async function sendAdminOrderNotificationWhatsApp({
     order,
     adminPhone,
+    adminPhoneSecondary,
+    adminPhones,
     template,
     enabled = true,
     idInstance = process.env.GREEN_API_ID_INSTANCE,
@@ -316,32 +318,85 @@ export async function sendAdminOrderNotificationWhatsApp({
         return { sent: false, reason: "missing-order" };
     }
 
-    const rawPhone = String(adminPhone || "").trim();
-    const recipientPhone = normalizeWhatsAppPhone(rawPhone);
+    const rawCandidates = [];
+    if (Array.isArray(adminPhones)) {
+        rawCandidates.push(...adminPhones);
+    } else if (typeof adminPhones === "string" && adminPhones.trim()) {
+        rawCandidates.push(adminPhones);
+    }
+    if (adminPhone) rawCandidates.push(adminPhone);
+    if (adminPhoneSecondary) rawCandidates.push(adminPhoneSecondary);
 
-    if (!recipientPhone) {
-        logger.warn?.(`sendAdminOrderNotificationWhatsApp: Invalid or missing admin phone number: "${rawPhone}"`);
+    const individualPhones = [];
+    for (const candidate of rawCandidates) {
+        if (typeof candidate === "string") {
+            const split = candidate.split(/[,;\n\r]+/);
+            for (const s of split) {
+                const trimmed = s.trim();
+                if (trimmed) individualPhones.push(trimmed);
+            }
+        }
+    }
+
+    const validRecipients = [];
+    const seen = new Set();
+    for (const raw of individualPhones) {
+        const normalized = normalizeWhatsAppPhone(raw);
+        if (normalized && !seen.has(normalized)) {
+            seen.add(normalized);
+            validRecipients.push(normalized);
+        }
+    }
+
+    if (validRecipients.length === 0) {
+        logger.warn?.(`sendAdminOrderNotificationWhatsApp: Invalid or missing admin phone number(s): "${individualPhones.join(", ")}"`);
         return { sent: false, reason: "invalid-phone" };
     }
 
     const message = buildAdminOrderNotificationMessage(order, { siteUrl, template });
-    const chatId = toGreenApiChatId(recipientPhone);
 
-    try {
-        const result = await sendGreenApiMessage({
-            idInstance,
-            apiTokenInstance,
-            apiUrl,
-            chatId,
-            message,
-            fetchImpl
-        });
+    const dispatchPromises = validRecipients.map(async (recipientPhone) => {
+        const chatId = toGreenApiChatId(recipientPhone);
+        try {
+            const result = await sendGreenApiMessage({
+                idInstance,
+                apiTokenInstance,
+                apiUrl,
+                chatId,
+                message,
+                fetchImpl
+            });
+            logger.info?.(`Admin WhatsApp alert sent via Green API for order ${order.id} to ${recipientPhone}`);
+            return { sent: true, recipient: recipientPhone, chatId, result };
+        } catch (error) {
+            logger.error?.(`Failed to send Admin WhatsApp alert via Green API for order ${order.id} to ${recipientPhone}:`, error);
+            return { sent: false, recipient: recipientPhone, error: error.message };
+        }
+    });
 
-        logger.info?.(`Admin WhatsApp alert sent via Green API for order ${order.id} to ${recipientPhone}`);
-        return { sent: true, recipient: recipientPhone, chatId, result };
-    } catch (error) {
-        logger.error?.(`Failed to send Admin WhatsApp alert via Green API for order ${order.id} to ${recipientPhone}:`, error);
-        return { sent: false, error: error.message };
+    const settled = await Promise.allSettled(dispatchPromises);
+    const results = settled.map((s, idx) => {
+        if (s.status === "fulfilled") return s.value;
+        return { sent: false, recipient: validRecipients[idx], error: s.reason?.message || "Unknown error" };
+    });
+
+    const anySent = results.some((r) => r.sent === true);
+    const primaryResult = results[0] || {};
+
+    if (!anySent && results.length === 1 && results[0].error) {
+        return {
+            sent: false,
+            recipient: primaryResult.recipient,
+            error: primaryResult.error,
+            results
+        };
     }
+
+    return {
+        sent: anySent,
+        recipient: primaryResult.recipient,
+        chatId: primaryResult.chatId,
+        results
+    };
 }
 

@@ -10,6 +10,10 @@ service-account.json
 .dev.vars
 .dev.vars.*
 
+# Database backups
+backup/
+backups/
+
 # Firebase local state and logs
 .firebase/
 firebase-debug.log*

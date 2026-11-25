@@ -104,10 +104,15 @@ export const createOrder = onCall(createOrderOptions, async (request) => {
                 }),
                 (() => {
                     const adminPhone = notifications?.adminNotifyPhone || notifications?.adminPhone;
-                    if (adminPhone && notifications?.adminNotifyEnabled !== false) {
+                    const adminPhoneSecondary = notifications?.adminNotifyPhoneSecondary || notifications?.adminPhone2;
+                    const adminPhones = notifications?.adminNotifyPhones;
+                    const hasAdminPhone = Boolean(adminPhone || adminPhoneSecondary || (Array.isArray(adminPhones) && adminPhones.length));
+                    if (hasAdminPhone && notifications?.adminNotifyEnabled !== false) {
                         return sendAdminOrderNotificationWhatsApp({
                             order,
                             adminPhone,
+                            adminPhoneSecondary,
+                            adminPhones,
                             template: notifications?.adminWhatsappTemplate,
                             enabled: true,
                             idInstance,

@@ -1430,13 +1430,12 @@
         }
 
         function renderAvailability(product, variant = selectedVariant) {
-            const inventory = variant?.inventory ?? product.inventory;
             const soldOut = isSoldOut(product, variant);
             const hasPrice = Boolean(variantPrice(variant, product).newPrice);
             availability.classList.toggle("is-out", soldOut);
             availability.innerHTML = soldOut
                 ? '<i class="fas fa-circle-xmark"></i> ' + escapeHtml(t("product.outOfStock"))
-                : '<i class="fas fa-check-circle"></i> ' + escapeHtml(t("product.inStock")) + (Number(inventory) > 0 ? ' (' + Number(inventory) + ')' : '');
+                : '<i class="fas fa-check-circle"></i> ' + escapeHtml(t("product.inStock"));
             addToCart.disabled = soldOut || !hasPrice;
             buyNow.disabled = soldOut || !hasPrice;
             stickyAdd.disabled = soldOut || !hasPrice;
@@ -1556,7 +1555,7 @@
 
         function renderProductTexts(product) {
             if (!product) return;
-            const brand = getBrand(product.title);
+            const brand = product.brand || getBrand(product.title);
             const isAr = window.HeliomedI18n?.currentLang
                 ? window.HeliomedI18n.currentLang() === "ar"
                 : ((document.documentElement.lang || localStorage.getItem("heliomed_lang") || "").toLowerCase().startsWith("ar"));

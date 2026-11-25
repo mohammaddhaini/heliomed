@@ -8,7 +8,8 @@
   "scripts": {
     "test": "node --test product-url.test.js hero-image.test.mjs i18n.test.js test-products-cache.test.js header.test.js",
     "generate:products": "node generate-product-pages.js",
-    "build": "node build-site.js"
+    "build": "node build-site.js",
+    "backup:firestore": "node scripts/backup-firestore.js"
   },
   "dependencies": {
     "firebase-admin": "^14.3.0"

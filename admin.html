@@ -1776,7 +1776,7 @@
                     <button class="tab-btn" type="button" data-tab="homepageCms"><i class="fas fa-cubes"></i> Homepage Builder</button>
                     <button class="tab-btn" type="button" data-tab="products"><i class="fas fa-box"></i> Products</button>
                     <button class="tab-btn" type="button" data-tab="categories"><i class="fas fa-sitemap"></i> Categories</button>
-                    <button class="tab-btn" type="button" data-tab="orders"><i class="fas fa-receipt"></i> Orders</button>
+                    <button class="tab-btn" type="button" data-tab="orders" style="display:flex; align-items:center;"><i class="fas fa-receipt"></i> Orders <span id="ordersNavBadge" style="display:none; margin-left:auto; background:#dc2626; color:#fff; font-size:11px; font-weight:800; padding:2px 8px; border-radius:999px;">0</span></button>
                     <button class="tab-btn" type="button" data-tab="users"><i class="fas fa-users"></i> Users</button>
                     <button class="tab-btn" type="button" data-tab="discounts"><i class="fas fa-tag"></i> Discounts</button>
                     <button class="tab-btn" type="button" data-tab="settings"><i class="fas fa-sliders"></i> Store Settings</button>
@@ -1794,13 +1794,64 @@
 
                 <!-- DASHBOARD PANEL -->
                 <section class="tab-panel" id="dashboardPanel">
+                    <div id="incomingOrdersBanner" style="display:none; margin-bottom:20px; background:linear-gradient(135deg, #fef2f2 0%, #fff1f2 100%); border:1px solid #fecaca; border-left:5px solid #ef4444; border-radius:10px; padding:16px 20px; box-shadow:var(--shadow-card); align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+                        <div style="display:flex; align-items:center; gap:14px;">
+                            <div style="width:42px; height:42px; border-radius:50%; background:#fee2e2; display:flex; align-items:center; justify-content:center; color:#dc2626; font-size:18px; flex-shrink:0;">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div>
+                                <div style="font-size:16px; font-weight:800; color:#991b1b; display:flex; align-items:center; gap:8px;">
+                                    <span id="incomingOrdersBannerText">0 New Orders Received</span>
+                                    <span style="font-size:11px; background:#dc2626; color:#fff; padding:2px 8px; border-radius:999px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Incoming</span>
+                                </div>
+                                <div style="font-size:13px; color:#7f1d1d; margin-top:2px;" id="incomingOrdersBannerSubtext">
+                                    You have incoming customer orders awaiting review and confirmation.
+                                </div>
+                            </div>
+                        </div>
+                        <button class="primary-btn" id="dashboardViewOrdersBtn" type="button" style="background:#dc2626; border-color:#dc2626; padding:8px 16px; font-size:13px; display:inline-flex; align-items:center; gap:8px;">
+                            <span>Review New Orders</span> <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+
                     <div class="dashboard-grid">
+                        <div class="stat-card" id="incomingOrderCard" style="border-color:#fca5a5; background:#fffaf9; cursor:pointer;" title="Click to view incoming orders">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <strong id="incomingOrderCount" style="color:#dc2626;">0</strong>
+                                <span id="incomingOrderPill" style="font-size:11px; font-weight:800; padding:2px 8px; border-radius:999px; background:#fee2e2; color:#dc2626;">0 New</span>
+                            </div>
+                            <span style="display:flex; align-items:center; gap:6px; color:#991b1b; font-weight:700;"><i class="fas fa-inbox"></i> Incoming Orders</span>
+                        </div>
                         <div class="stat-card"><strong id="cmsSectionCount">0</strong><span>CMS Sections</span></div>
                         <div class="stat-card"><strong id="productCount">0</strong><span>Products</span></div>
                         <div class="stat-card"><strong id="categoryCount">0</strong><span>Categories</span></div>
-                        <div class="stat-card"><strong id="orderCount">0</strong><span>Orders</span></div>
+                        <div class="stat-card"><strong id="orderCount">0</strong><span>Total Orders</span></div>
                         <div class="stat-card"><strong id="userCount">0</strong><span>User Profiles</span></div>
                         <div class="stat-card"><strong id="discountCount">0</strong><span>Discounts</span></div>
+                    </div>
+
+                    <div class="panel-section" id="dashboardRecentIncomingSection" style="display:none; margin-top:24px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                            <h2 style="margin:0; font-size:16px; font-weight:800; color:var(--brand-dark); display:flex; align-items:center; gap:8px;">
+                                <i class="fas fa-clock" style="color:#dc2626;"></i> Pending Incoming Orders
+                            </h2>
+                            <button class="secondary-btn" id="dashboardViewAllOrdersBtn" type="button" style="font-size:12px; padding:4px 10px;">View in Orders Tab <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table id="dashboardIncomingOrdersTable" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Order</th>
+                                        <th>Customer</th>
+                                        <th>Phone</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboardIncomingOrdersTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
 
@@ -2299,8 +2350,16 @@
                                                 <option value="false">Disabled</option>
                                             </select>
                                         </label>
-                                        <label>Admin WhatsApp Phone Number
-                                            <input type="tel" id="adminNotifyPhoneInput" name="adminNotifyPhone" placeholder="e.g. +961 70 123 456 or 70123456" autocomplete="tel">
+                                        <label>Primary Admin WhatsApp Phone
+                                            <input type="tel" id="adminNotifyPhoneInput" name="adminNotifyPhone" placeholder="e.g. +961 71 002 778 or 71002778" autocomplete="tel">
+                                        </label>
+                                    </div>
+                                    <div class="form-grid" style="grid-template-columns: 1fr; gap: 14px; margin-bottom: 14px;">
+                                        <label>Secondary Admin WhatsApp Phone (Optional)
+                                            <input type="tel" id="adminNotifyPhoneSecondaryInput" name="adminNotifyPhoneSecondary" placeholder="e.g. +961 70 123 456 (Alert an additional phone number)" autocomplete="tel">
+                                            <span style="font-size: 11px; color: var(--text-muted); font-weight: normal; margin-top: 4px; display: block;">
+                                                Order alerts will be sent simultaneously to both WhatsApp numbers. You may also enter comma-separated numbers in either field.
+                                            </span>
                                         </label>
                                     </div>
                                     <div>
@@ -5246,6 +5305,7 @@
             const snapshot = await getDocs(collection(db, "orders"));
             orders = snapshot.docs.map(item => ({ id: item.id, ...item.data() })).sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
             renderOrders();
+            renderDashboard();
         }
         let adminUids = new Set();
         let adminEmailsList = new Set();
@@ -5360,6 +5420,82 @@
             document.getElementById("orderCount").textContent = orders.length;
             document.getElementById("userCount").textContent = users.length;
             document.getElementById("discountCount").textContent = discounts.length;
+
+            const incomingOrders = orders.filter(o => !o.status || o.status === "Order received");
+            const incomingCount = incomingOrders.length;
+
+            const navBadge = document.getElementById("ordersNavBadge");
+            if (navBadge) {
+                if (incomingCount > 0) {
+                    navBadge.textContent = incomingCount;
+                    navBadge.style.display = "inline-flex";
+                } else {
+                    navBadge.style.display = "none";
+                }
+            }
+
+            const banner = document.getElementById("incomingOrdersBanner");
+            const bannerText = document.getElementById("incomingOrdersBannerText");
+            const bannerSubtext = document.getElementById("incomingOrdersBannerSubtext");
+            if (banner) {
+                if (incomingCount > 0) {
+                    banner.style.display = "flex";
+                    if (bannerText) {
+                        bannerText.textContent = `${incomingCount} New Order${incomingCount === 1 ? "" : "s"} Received`;
+                    }
+                    if (bannerSubtext) {
+                        bannerSubtext.textContent = `You have ${incomingCount} incoming customer order${incomingCount === 1 ? "" : "s"} awaiting review and confirmation.`;
+                    }
+                } else {
+                    banner.style.display = "none";
+                }
+            }
+
+            const incomingCountEl = document.getElementById("incomingOrderCount");
+            if (incomingCountEl) incomingCountEl.textContent = incomingCount;
+            const incomingPillEl = document.getElementById("incomingOrderPill");
+            if (incomingPillEl) {
+                if (incomingCount > 0) {
+                    incomingPillEl.textContent = `${incomingCount} New`;
+                    incomingPillEl.style.background = "#fee2e2";
+                    incomingPillEl.style.color = "#dc2626";
+                } else {
+                    incomingPillEl.textContent = "0 New";
+                    incomingPillEl.style.background = "#f1f5f9";
+                    incomingPillEl.style.color = "#64748b";
+                }
+            }
+
+            const incomingSection = document.getElementById("dashboardRecentIncomingSection");
+            const incomingTbody = document.getElementById("dashboardIncomingOrdersTableBody");
+            if (incomingSection && incomingTbody) {
+                if (incomingCount > 0) {
+                    incomingSection.style.display = "block";
+                    incomingTbody.innerHTML = incomingOrders.slice(0, 8).map(order => {
+                        const customerName = escapeHtml(order.customer?.name || order.customerName || order.name || "Customer");
+                        const customerPhone = escapeHtml(order.customer?.phone || order.customerPhone || order.phone || "-");
+                        const totalVal = Number(order.total || 0);
+                        const totalFormatted = `$${totalVal.toFixed(2)}`;
+                        const orderId = escapeHtml(order.id || "");
+                        const createdAt = escapeHtml(order.createdAt || "");
+                        return `
+                            <tr>
+                                <td><strong>${orderId}</strong><br><small style="color:var(--text-muted);">${createdAt}</small></td>
+                                <td><strong>${customerName}</strong></td>
+                                <td>${customerPhone !== "-" ? `<a href="tel:${customerPhone}" style="color:var(--brand); text-decoration:none;">${customerPhone}</a>` : "-"}</td>
+                                <td><strong>${totalFormatted}</strong></td>
+                                <td><span class="status-badge" style="background:#fee2e2; color:#dc2626; font-weight:700;">Order received</span></td>
+                                <td>
+                                    <button type="button" class="tiny-btn" data-dash-order-id="${orderId}"><i class="fas fa-arrow-right"></i> Review</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join("");
+                } else {
+                    incomingSection.style.display = "none";
+                    incomingTbody.innerHTML = "";
+                }
+            }
         }
 
         function categoryRows() {
@@ -5632,6 +5768,39 @@
         document.querySelector(".tabs").addEventListener("click", function (event) {
             const button = event.target.closest(".tab-btn");
             if (button) openTab(button.dataset.tab);
+        });
+
+        function showIncomingOrders() {
+            openTab("orders");
+            const statusSelect = document.getElementById("orderStatusFilter");
+            if (statusSelect) {
+                statusSelect.value = "Order received";
+            }
+            const searchInput = document.getElementById("orderSearch");
+            if (searchInput) {
+                searchInput.value = "";
+            }
+            renderOrders();
+        }
+
+        document.getElementById("dashboardViewOrdersBtn")?.addEventListener("click", showIncomingOrders);
+        document.getElementById("dashboardViewAllOrdersBtn")?.addEventListener("click", showIncomingOrders);
+        document.getElementById("incomingOrderCard")?.addEventListener("click", showIncomingOrders);
+
+        document.getElementById("dashboardIncomingOrdersTableBody")?.addEventListener("click", (event) => {
+            const btn = event.target.closest("[data-dash-order-id]");
+            if (!btn) return;
+            const orderId = btn.dataset.dashOrderId;
+            openTab("orders");
+            const searchInput = document.getElementById("orderSearch");
+            if (searchInput) {
+                searchInput.value = orderId;
+            }
+            const statusSelect = document.getElementById("orderStatusFilter");
+            if (statusSelect) {
+                statusSelect.value = "";
+            }
+            renderOrders();
         });
 
         loginForm.addEventListener("submit", async function (event) {
@@ -6624,6 +6793,7 @@
             whatsappTemplate: DEFAULT_WHATSAPP_TEMPLATE,
             adminNotifyEnabled: true,
             adminNotifyPhone: "",
+            adminNotifyPhoneSecondary: "",
             adminWhatsappTemplate: DEFAULT_ADMIN_WHATSAPP_TEMPLATE
         };
 
@@ -6655,6 +6825,7 @@
                         whatsappTemplate: data.whatsappTemplate || DEFAULT_WHATSAPP_TEMPLATE,
                         adminNotifyEnabled: data.adminNotifyEnabled !== false,
                         adminNotifyPhone: data.adminNotifyPhone || data.adminPhone || "",
+                        adminNotifyPhoneSecondary: data.adminNotifyPhoneSecondary || data.adminPhone2 || "",
                         adminWhatsappTemplate: data.adminWhatsappTemplate || DEFAULT_ADMIN_WHATSAPP_TEMPLATE
                     };
                 } else {
@@ -6663,6 +6834,7 @@
                         whatsappTemplate: DEFAULT_WHATSAPP_TEMPLATE,
                         adminNotifyEnabled: true,
                         adminNotifyPhone: "",
+                        adminNotifyPhoneSecondary: "",
                         adminWhatsappTemplate: DEFAULT_ADMIN_WHATSAPP_TEMPLATE
                     };
                 }
@@ -6690,12 +6862,14 @@
             const textarea = document.getElementById("whatsappTemplateTextarea");
             const adminEnabledSelect = document.getElementById("adminNotifyEnabledSelect");
             const adminPhoneInput = document.getElementById("adminNotifyPhoneInput");
+            const adminPhoneSecondaryInput = document.getElementById("adminNotifyPhoneSecondaryInput");
             const adminTextarea = document.getElementById("adminWhatsappTemplateTextarea");
 
             if (enabledSelect) enabledSelect.value = whatsappSettings.whatsappEnabled ? "true" : "false";
             if (textarea) textarea.value = whatsappSettings.whatsappTemplate || DEFAULT_WHATSAPP_TEMPLATE;
             if (adminEnabledSelect) adminEnabledSelect.value = whatsappSettings.adminNotifyEnabled !== false ? "true" : "false";
             if (adminPhoneInput) adminPhoneInput.value = whatsappSettings.adminNotifyPhone || "";
+            if (adminPhoneSecondaryInput) adminPhoneSecondaryInput.value = whatsappSettings.adminNotifyPhoneSecondary || "";
             if (adminTextarea) adminTextarea.value = whatsappSettings.adminWhatsappTemplate || DEFAULT_ADMIN_WHATSAPP_TEMPLATE;
 
             updateWhatsAppPreview();
@@ -6846,6 +7020,7 @@
             const template = document.getElementById("whatsappTemplateTextarea").value.trim() || DEFAULT_WHATSAPP_TEMPLATE;
             const adminNotifyEnabled = document.getElementById("adminNotifyEnabledSelect")?.value === "true";
             const adminNotifyPhone = (document.getElementById("adminNotifyPhoneInput")?.value || "").trim();
+            const adminNotifyPhoneSecondary = (document.getElementById("adminNotifyPhoneSecondaryInput")?.value || "").trim();
             const adminTemplate = document.getElementById("adminWhatsappTemplateTextarea")?.value.trim() || DEFAULT_ADMIN_WHATSAPP_TEMPLATE;
 
             try {
@@ -6854,6 +7029,7 @@
                     whatsappTemplate: template,
                     adminNotifyEnabled,
                     adminNotifyPhone,
+                    adminNotifyPhoneSecondary,
                     adminWhatsappTemplate: adminTemplate,
                     updatedAt: serverTimestamp()
                 }, { merge: true });
@@ -6862,6 +7038,7 @@
                     whatsappTemplate: template,
                     adminNotifyEnabled,
                     adminNotifyPhone,
+                    adminNotifyPhoneSecondary,
                     adminWhatsappTemplate: adminTemplate
                 };
                 showStatus("WhatsApp notification settings saved successfully.");

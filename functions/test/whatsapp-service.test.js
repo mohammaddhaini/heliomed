@@ -420,5 +420,87 @@ describe("sendAdminOrderNotificationWhatsApp", () => {
         assert.match(result.error, /Green API error: Gateway timeout/);
         assert.match(loggedError, /Failed to send Admin WhatsApp alert/);
     });
+
+    it("sends alerts to both primary and secondary admin recipients", async () => {
+        const sentRecipients = [];
+        const mockFetch = async (url, options) => {
+            const body = JSON.parse(options.body);
+            sentRecipients.push(body.chatId);
+            return {
+                ok: true,
+                json: async () => ({ idMessage: `MSG_${sentRecipients.length}` })
+            };
+        };
+
+        const result = await sendAdminOrderNotificationWhatsApp({
+            order: sampleOrder(),
+            adminPhone: "+96171002778",
+            adminPhoneSecondary: "70 123 456",
+            idInstance: "1101000001",
+            apiTokenInstance: "test-token",
+            fetchImpl: mockFetch
+        });
+
+        assert.equal(result.sent, true);
+        assert.equal(result.results.length, 2);
+        assert.deepEqual(sentRecipients, ["96171002778@c.us", "96170123456@c.us"]);
+    });
+
+    it("handles comma-separated phone numbers and deduplicates matching numbers", async () => {
+        const sentRecipients = [];
+        const mockFetch = async (url, options) => {
+            const body = JSON.parse(options.body);
+            sentRecipients.push(body.chatId);
+            return {
+                ok: true,
+                json: async () => ({ idMessage: `MSG_${sentRecipients.length}` })
+            };
+        };
+
+        const result = await sendAdminOrderNotificationWhatsApp({
+            order: sampleOrder(),
+            adminPhone: "+96171002778, 03123456, 71002778",
+            idInstance: "1101000001",
+            apiTokenInstance: "test-token",
+            fetchImpl: mockFetch
+        });
+
+        assert.equal(result.sent, true);
+        assert.equal(result.results.length, 2);
+        assert.deepEqual(sentRecipients, ["96171002778@c.us", "9613123456@c.us"]);
+    });
+
+    it("handles partial failure where one recipient succeeds and another fails", async () => {
+        const mockFetch = async (url, options) => {
+            const body = JSON.parse(options.body);
+            if (body.chatId.startsWith("96171002778")) {
+                return {
+                    ok: true,
+                    json: async () => ({ idMessage: "MSG_OK" })
+                };
+            }
+            return {
+                ok: false,
+                status: 400,
+                statusText: "Bad Request",
+                json: async () => ({ message: "Recipient not on WhatsApp" })
+            };
+        };
+
+        const result = await sendAdminOrderNotificationWhatsApp({
+            order: sampleOrder(),
+            adminPhone: "+96171002778",
+            adminPhoneSecondary: "+96170999999",
+            idInstance: "1101000001",
+            apiTokenInstance: "test-token",
+            fetchImpl: mockFetch
+        });
+
+        assert.equal(result.sent, true);
+        assert.equal(result.results.length, 2);
+        assert.equal(result.results[0].sent, true);
+        assert.equal(result.results[1].sent, false);
+        assert.match(result.results[1].error, /Recipient not on WhatsApp/);
+    });
 });
 
