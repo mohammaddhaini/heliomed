@@ -114,6 +114,7 @@
         .empty-checkout {
             border: 1px solid var(--brand-border);
             background: #fff;
+            min-width: 0;
         }
         .checkout-form {
             padding: 22px;
@@ -326,10 +327,15 @@
         }
         @media (max-width: 860px) {
             .header { padding: 12px 16px; }
+            .page-title { flex-wrap: wrap; gap: 10px; }
             .checkout-layout,
             .field-grid,
             .payment-options {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr);
+            }
+            .checkout-form,
+            .summary-panel {
+                padding: 16px;
             }
             .summary-panel { position: static; }
         }
