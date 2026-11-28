@@ -3135,10 +3135,10 @@
                 const valueFor = function (key) {
                     return row.querySelector('[data-variant-key="' + key + '"]')?.value || "";
                 };
-                const file = row.querySelector('[data-variant-key="imageFile"]')?.files?.[0];
-                const uploadedImageUrl = await uploadVariantImage(productId, file, index);
                 const name = String(valueFor("name")).trim();
                 if (!name) continue;
+                const file = row.querySelector('[data-variant-key="imageFile"]')?.files?.[0];
+                const uploadedImageUrl = await uploadVariantImage(productId, file, index);
                 const rawOld = valueFor("oldPrice");
                 const rawNew = valueFor("newPrice");
                 const formattedOld = rawOld ? formatWithCurrency(rawOld, selCurr) : "";
@@ -4679,7 +4679,11 @@
                 e.target.dispatchEvent(new Event("input", { bubbles: true }));
             }
             const fileInput = e.target.closest(".cms-media-dropzone input[type='file']");
-            if (fileInput?.files?.[0]) uploadFromDropzone(fileInput.closest(".cms-media-dropzone"), fileInput.files[0]);
+            if (fileInput?.files?.[0]) {
+                const selectedFile = fileInput.files[0];
+                fileInput.value = "";
+                uploadFromDropzone(fileInput.closest(".cms-media-dropzone"), selectedFile);
+            }
         });
 
         function transformCMSValue(input) {
@@ -4776,16 +4780,18 @@
         });
 
         function uploadFromDropzone(dropzone, file) {
-            if (!file || !file.type.startsWith("image/") || activeSectionIndex < 0) return;
+            const isImageFile = file && (file.type.startsWith("image/") || /\.(png|jpe?g|webp|gif|svg|avif)$/i.test(file.name || ""));
+            if (!isImageFile || activeSectionIndex < 0) return;
             const sec = homepageLayout.sections[activeSectionIndex];
             const config = REPEATER_CONFIG[sec.type];
             const key = dropzone.dataset.key || "imageUrl";
             const target = dropzone.dataset.uploadTarget;
             const itemIndex = Number(dropzone.closest(".cms-repeater-item")?.dataset.itemIndex);
-            const targetObject = target === "section" ? sec : sec[config.arrayKey]?.[itemIndex];
+            const targetObject = target === "section" ? sec : sec[config?.arrayKey]?.[itemIndex];
             if (!targetObject) return;
 
             const progressBar = dropzone.querySelector(".cms-upload-progress span");
+            if (progressBar) progressBar.style.width = "0%";
             const path = "homepage-cms/" + sec.type + "/" + Date.now() + "-" + safeFileName(file.name);
             const imageRef = ref(storage, path);
             const uploadTask = uploadBytesResumable(imageRef, file, {
@@ -4799,13 +4805,20 @@
                 if (progressBar) progressBar.style.width = percent + "%";
             }, error => {
                 console.error(error);
-                showStatus("Image upload failed.");
+                if (progressBar) progressBar.style.width = "0%";
+                showStatus("Image upload failed (" + (error?.code || "error") + ").");
             }, async () => {
-                const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-                targetObject[key] = downloadUrl;
-                renderRepeaterItems(sec);
-                markCustomizerDirty("Image uploaded and preview updated");
-                showStatus("Image uploaded.");
+                try {
+                    const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+                    targetObject[key] = downloadUrl;
+                    renderRepeaterItems(sec);
+                    markCustomizerDirty("Image uploaded and preview updated");
+                    showStatus("Image uploaded.");
+                } catch (error) {
+                    console.error(error);
+                    if (progressBar) progressBar.style.width = "0%";
+                    showStatus("Image upload failed (" + (error?.code || "error") + ").");
+                }
             });
         }
 
@@ -5856,74 +5869,84 @@
 
         productForm.addEventListener("submit", async function (event) {
             event.preventDefault();
-            const form = Object.fromEntries(new FormData(productForm).entries());
-            const id = form.id || slug(form.title);
-            showStatus(hasPendingGalleryUpload() || hasPendingVariantUpload() ? "Uploading photos..." : "Saving product...");
-            const galleryUrls = await uploadProductGalleryImages(id);
-            const variants = await collectProductVariants(id);
-            const firstVariant = variants[0] || null;
-            const formInventory = String(form.inventory || "").trim();
-            const inventory = formInventory === "" && variants.length
-                ? variants.reduce((total, variant) => total + Number(variant.inventory || 0), 0)
-                : Number(form.inventory || 0);
-            const selCurrency = form.currency || document.getElementById("productCurrencySelect")?.value || "$";
-            const rawOldPrice = form.oldPrice;
-            const rawNewPrice = form.newPrice;
-            const oldPrice = rawOldPrice ? formatWithCurrency(rawOldPrice, selCurrency) : (firstVariant?.oldPrice || "");
-            const newPrice = rawNewPrice ? formatWithCurrency(rawNewPrice, selCurrency) : (firstVariant?.newPrice || "");
-            const primaryImageUrl = galleryUrls[0] || form.imageUrl || firstVariant?.imageUrl || "";
-            const belongingTitles = currentProductBelongings.map(b => b.title.trim()).filter(Boolean);
-            const primaryBelonging = currentProductBelongings.find(b => b.isPrimary)?.title || form.category || belongingTitles[0] || "";
-            const categoryList = Array.from(new Set([primaryBelonging, ...belongingTitles])).filter(Boolean);
-            const categorySlugs = categoryList.map(c => slug(c));
-            const collectionsList = currentProductBelongings.filter(b => b.type === "collection").map(b => b.title.trim());
-            const data = {
-                title: form.title,
-                title_ar: form.title_ar || "",
-                brand: form.brand || getBrand(form.title),
-                category: primaryBelonging,
-                categories: categoryList,
-                categorySlugs,
-                collections: collectionsList,
-                section: form.section || "",
-                badge: form.badge,
-                currency: selCurrency,
-                oldPrice,
-                newPrice,
-                oldPriceValue: parseMoney(oldPrice),
-                newPriceValue: parseMoney(newPrice),
-                inventory,
-                available: boolFromForm(form.available),
-                imageUrl: primaryImageUrl,
-                images: galleryUrls,
-                variants,
-                description: form.description,
-                description_ar: form.description_ar || "",
-                usage: form.usage,
-                usage_ar: form.usage_ar || "",
-                warnings: form.warnings,
-                warnings_ar: form.warnings_ar || "",
-                searchText: [
-                    form.title,
-                    form.title_ar,
-                    form.brand,
-                    primaryBelonging,
-                    categoryList.join(" "),
-                    collectionsList.join(" "),
-                    form.section,
-                    form.badge,
-                    form.description,
-                    form.description_ar,
-                    variants.map(variant => variant.name).join(" ")
-                ].filter(Boolean).join(" "),
-                updatedAt: serverTimestamp()
-            };
-            await setDoc(doc(db, "medicines", id), data, { merge: true });
-            await clearAllProductCache();
-            clearProductForm();
-            await loadProducts();
-            renderDashboard();
-            showStatus("Product saved.");
+            const submitBtn = productForm.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.disabled = true;
+            try {
+                const form = Object.fromEntries(new FormData(productForm).entries());
+                const titleSlug = slug(form.title);
+                const id = form.id || (titleSlug === "product" ? "product-" + Date.now().toString(36) : titleSlug);
+                showStatus(hasPendingGalleryUpload() || hasPendingVariantUpload() ? "Uploading photos..." : "Saving product...");
+                const galleryUrls = await uploadProductGalleryImages(id);
+                const variants = await collectProductVariants(id);
+                const firstVariant = variants[0] || null;
+                const formInventory = String(form.inventory || "").trim();
+                const inventory = formInventory === "" && variants.length
+                    ? variants.reduce((total, variant) => total + Number(variant.inventory || 0), 0)
+                    : Number(form.inventory || 0);
+                const selCurrency = form.currency || document.getElementById("productCurrencySelect")?.value || "$";
+                const rawOldPrice = form.oldPrice;
+                const rawNewPrice = form.newPrice;
+                const oldPrice = rawOldPrice ? formatWithCurrency(rawOldPrice, selCurrency) : (firstVariant?.oldPrice || "");
+                const newPrice = rawNewPrice ? formatWithCurrency(rawNewPrice, selCurrency) : (firstVariant?.newPrice || "");
+                const primaryImageUrl = galleryUrls[0] || form.imageUrl || firstVariant?.imageUrl || "";
+                const belongingTitles = currentProductBelongings.map(b => b.title.trim()).filter(Boolean);
+                const primaryBelonging = currentProductBelongings.find(b => b.isPrimary)?.title || form.category || belongingTitles[0] || "";
+                const categoryList = Array.from(new Set([primaryBelonging, ...belongingTitles])).filter(Boolean);
+                const categorySlugs = categoryList.map(c => slug(c));
+                const collectionsList = currentProductBelongings.filter(b => b.type === "collection").map(b => b.title.trim());
+                const data = {
+                    title: form.title,
+                    title_ar: form.title_ar || "",
+                    brand: form.brand || getBrand(form.title),
+                    category: primaryBelonging,
+                    categories: categoryList,
+                    categorySlugs,
+                    collections: collectionsList,
+                    section: form.section || "",
+                    badge: form.badge,
+                    currency: selCurrency,
+                    oldPrice,
+                    newPrice,
+                    oldPriceValue: parseMoney(oldPrice),
+                    newPriceValue: parseMoney(newPrice),
+                    inventory,
+                    available: boolFromForm(form.available),
+                    imageUrl: primaryImageUrl,
+                    images: galleryUrls,
+                    variants,
+                    description: form.description,
+                    description_ar: form.description_ar || "",
+                    usage: form.usage,
+                    usage_ar: form.usage_ar || "",
+                    warnings: form.warnings,
+                    warnings_ar: form.warnings_ar || "",
+                    searchText: [
+                        form.title,
+                        form.title_ar,
+                        form.brand,
+                        primaryBelonging,
+                        categoryList.join(" "),
+                        collectionsList.join(" "),
+                        form.section,
+                        form.badge,
+                        form.description,
+                        form.description_ar,
+                        variants.map(variant => variant.name).join(" ")
+                    ].filter(Boolean).join(" "),
+                    updatedAt: serverTimestamp()
+                };
+                await setDoc(doc(db, "medicines", id), data, { merge: true });
+                await clearAllProductCache();
+                clearProductForm();
+                await loadProducts();
+                renderDashboard();
+                showStatus("Product saved.");
+            } catch (error) {
+                console.error("Failed to save product:", error);
+                showStatus("Failed to save product (" + (error?.code || error?.message || "error") + ").");
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+            }
         });
 
         productsTable.addEventListener("click", async function (event) {
