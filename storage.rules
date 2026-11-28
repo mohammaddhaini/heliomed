@@ -2,32 +2,29 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    function signedIn() {
-      return request.auth != null;
-    }
-
-    function adminByUid() {
-      return signedIn()
-        && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid))
-        && firestore.get(/databases/(default)/documents/admins/$(request.auth.uid)).data.get('active', true) != false;
-    }
-
-    function adminByEmail() {
-      return signedIn()
-        && request.auth.token.email != null
-        && firestore.exists(/databases/(default)/documents/adminEmails/$(request.auth.token.email))
-        && firestore.get(/databases/(default)/documents/adminEmails/$(request.auth.token.email)).data.get('active', true) != false;
-    }
-
     function isAdmin() {
-      return signedIn() && (request.auth.token.admin == true || adminByUid() || adminByEmail());
+      return request.auth != null && (
+        request.auth.token.admin == true ||
+        (
+          request.auth.token.email != null &&
+          request.auth.token.email.lower() in [
+            'heliomedlb@gmail.com',
+            'tabibclinic@gmail.com',
+            'mohammad.bk.dhaini@outlook.com'
+          ]
+        )
+      );
     }
 
     match /{allPaths=**} {
       allow read: if true;
       allow create, update: if isAdmin()
+        && request.resource != null
         && request.resource.size < 15 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+        && (
+          request.resource.contentType == null ||
+          request.resource.contentType.matches('image/.*')
+        );
       allow delete: if isAdmin();
     }
   }
