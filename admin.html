@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin | Helio Med</title>
     <meta name="description" content="Helio Med admin management.">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1734,7 +1735,7 @@
 <body>
 
     <!-- LOGIN CONTAINER -->
-    <div class="login-container" id="loginPanel">
+    <div class="login-container hidden" id="loginPanel">
         <section class="login-card">
             <div class="logo">
                 <img src="heliomed-logo.png" alt="Helio Med logo" loading="lazy">
@@ -5841,8 +5842,28 @@
             });
         }
 
+        const ADMIN_ACCESS_KEY = "hm-portal-2026";
+        const ADMIN_ACCESS_STORAGE_KEY = "heliomedAdminAccess";
+        function hasAdminPortalKey() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get("key") === ADMIN_ACCESS_KEY) {
+                try { sessionStorage.setItem(ADMIN_ACCESS_STORAGE_KEY, "1"); } catch (e) {}
+                return true;
+            }
+            try {
+                return sessionStorage.getItem(ADMIN_ACCESS_STORAGE_KEY) === "1";
+            } catch (e) {
+                return false;
+            }
+        }
+        hasAdminPortalKey();
+
         onAuthStateChanged(auth, async function (user) {
             if (!user) {
+                if (!hasAdminPortalKey()) {
+                    window.location.replace("./index.html");
+                    return;
+                }
                 loginPanel.classList.remove("hidden");
                 adminWrapper.classList.add("hidden");
                 return;
@@ -5852,6 +5873,10 @@
             try {
                 const allowed = await verifyAdmin(user);
                 if (!allowed) {
+                    if (!hasAdminPortalKey()) {
+                        window.location.replace("./index.html");
+                        return;
+                    }
                     loginNote.textContent = "This account is not marked as an admin.";
                     adminWrapper.classList.add("hidden");
                     loginPanel.classList.remove("hidden");
@@ -5863,7 +5888,12 @@
                 showStatus("Admin loaded.");
             } catch (error) {
                 console.error(error);
+                if (!hasAdminPortalKey()) {
+                    window.location.replace("./index.html");
+                    return;
+                }
                 loginNote.textContent = "Could not verify admin access.";
+                loginPanel.classList.remove("hidden");
             }
         });
 
